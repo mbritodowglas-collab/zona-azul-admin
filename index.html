@@ -4,203 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zona Azul Admin</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <link rel="stylesheet" href="./assets/css/global.css" />
 </head>
-
 <body>
-
-  <!-- ================= ADMIN ================= -->
-  <div id="adminApp" class="app">
-    
+  <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">ZA</div>
         <div>
           <h1>Zona Azul Admin</h1>
-          <p>MVP administrativo</p>
+          <p>Painel operacional</p>
         </div>
       </div>
 
       <nav class="nav">
-        <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
-        <a href="#" class="nav-link" data-page="leads">Leads</a>
-        <a href="#" class="nav-link" data-page="alunos">Clientes</a>
-        <a href="#" class="nav-link" data-page="diagnostico">Diagnóstico</a>
-        <a href="#" class="nav-link" data-page="planejamento">Planejamento</a>
-        <a href="#" class="nav-link" data-page="periodizacao">Periodização</a>
-        <a href="#" class="nav-link" data-page="relatorio-admin">Relatório</a>
+        <a class="active" href="./index.html">Dashboard</a>
+        <a href="./leads/">Leads</a>
+        <a href="./pre-diagnostico/">Pré-diagnóstico</a>
       </nav>
     </aside>
 
     <main class="main">
-
-      <!-- DASHBOARD -->
-      <section id="dashboard" class="page">
-        <div class="topbar">
-          <div>
-            <h2>Dashboard</h2>
-            <p>Visão geral do fluxo operacional do Zona Azul.</p>
-          </div>
-          <a class="btn secondary" href="#public-pre">Abrir link público</a>
+      <div class="topbar">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Visão geral do funil do Protocolo Zona Azul.</p>
         </div>
+      </div>
 
-        <div class="grid grid-4">
-          <div class="stat">
-            <div class="stat-label">Leads</div>
-            <div class="stat-value" id="dashboardLeadsCount">0</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Em análise</div>
-            <div class="stat-value" id="dashboardAnaliseCount">0</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Convertidos</div>
-            <div class="stat-value" id="dashboardConvertidosCount">0</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Score médio</div>
-            <div class="stat-value" id="dashboardMediaCount">0.0</div>
-          </div>
+      <section class="grid grid-4">
+        <article class="stat-card">
+          <span class="stat-label">Leads totais</span>
+          <strong class="stat-value" id="stat-leads">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Leads novos</span>
+          <strong class="stat-value" id="stat-novos">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Convertidos</span>
+          <strong class="stat-value" id="stat-convertidos">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Média geral</span>
+          <strong class="stat-value" id="stat-media">0.0</strong>
+        </article>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h3>Atalhos</h3>
         </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h3>Links do sistema</h3>
-            <p class="muted">Use estes links depois de publicar.</p>
-
-            <div class="grid grid-2">
-              <div class="kpi-box">
-                <span>Pré-diagnóstico</span>
-                <strong>#public-pre</strong>
-              </div>
-
-              <div class="kpi-box">
-                <span>Relatório</span>
-                <strong>#report/EMAIL</strong>
-              </div>
-            </div>
+        <div class="card-body">
+          <div class="actions">
+            <a class="btn" href="./pre-diagnostico/">Abrir pré-diagnóstico</a>
+            <a class="btn secondary" href="./leads/">Ver leads</a>
           </div>
         </div>
       </section>
 
-      <!-- LEADS -->
-      <section id="leads" class="page hidden">
-        <div class="topbar">
-          <h2>Leads</h2>
-          <p>Captados automaticamente.</p>
+      <section class="card">
+        <div class="card-header">
+          <h3>Link público</h3>
         </div>
-
-        <div class="card">
-          <div class="card-header">
-            <h3>Lista de leads</h3>
-            <button class="btn secondary" id="clearLeadsBtn">
-              Limpar leads
-            </button>
-          </div>
-
-          <div class="card-body">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Pilar</th>
-                    <th>Média</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="leadsTableBody"></tbody>
-              </table>
-            </div>
-
-            <div id="noLeadsMessage" class="empty hidden">
-              Nenhum lead ainda.
-            </div>
-          </div>
+        <div class="card-body">
+          <p class="muted">Use este link para enviar o questionário:</p>
+          <div class="code-box" id="public-link-box"></div>
         </div>
       </section>
-
-      <!-- CLIENTES -->
-      <section id="alunos" class="page hidden">
-        <div class="topbar">
-          <h2>Clientes</h2>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="muted">Em breve.</p>
-          </div>
-        </div>
-      </section>
-
     </main>
   </div>
 
-  <!-- ================= PÚBLICO ================= -->
-  <div id="publicPrePage" class="public-page hidden">
-    <div class="public-wrap">
-
-      <div class="hero">
-        <h1>Pré-diagnóstico Zona Azul</h1>
-        <p>Responda e receba seu relatório.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
-
-          <form id="preForm">
-
-            <div class="field">
-              <label>Nome</label>
-              <input id="nome" required>
-            </div>
-
-            <div class="field">
-              <label>Email</label>
-              <input id="email" type="email" required>
-            </div>
-
-            <div class="field">
-              <label>Movimento (1-10)</label>
-              <input id="score_movimento" type="number" min="1" max="10" required>
-            </div>
-
-            <button class="btn">Gerar relatório</button>
-
-          </form>
-
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ================= RELATÓRIO ================= -->
-  <div id="reportPage" class="report-shell hidden">
-    <div class="report-wrap">
-
-      <div class="report-actions no-print">
-        <a href="./" class="btn secondary">Voltar</a>
-        <button class="btn" onclick="window.print()">
-          Baixar PDF
-        </button>
-      </div>
-
-      <div id="reportContent"></div>
-
-    </div>
-  </div>
-
-  <!-- JS -->
   <script src="./assets/js/storage.js"></script>
   <script src="./assets/js/calculos.js"></script>
-  <script src="./assets/js/admin.js"></script>
-  <script src="./assets/js/publico.js"></script>
-  <script src="./assets/js/relatorio.js"></script>
-  <script src="./assets/js/app.js"></script>
-
+  <script src="./assets/js/dashboard.js"></script>
 </body>
 </html>
