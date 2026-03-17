@@ -63,12 +63,17 @@ window.ZACalculos = (() => {
   function validarFormulario(payload) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!payload.nome || !payload.email || !payload.faixa_etaria || !payload.origem) {
+    if (!payload.nome || !payload.email || payload.idade === "" || !payload.origem) {
       return "Preencha os dados de identificação.";
     }
 
     if (!emailRegex.test(payload.email)) {
       return "Digite um email válido.";
+    }
+
+    const idade = Number(payload.idade);
+    if (!Number.isInteger(idade) || idade < 1 || idade > 120) {
+      return "Digite uma idade válida entre 1 e 120.";
     }
 
     const scoreFields = [
@@ -104,7 +109,7 @@ window.ZACalculos = (() => {
       created_at: new Date().toISOString(),
       nome: payload.nome.trim(),
       email: payload.email.toLowerCase().trim(),
-      faixa_etaria: payload.faixa_etaria,
+      idade: Number(payload.idade),
       origem: payload.origem,
       exp_personal: payload.exp_personal,
       exp_emagrecimento: payload.exp_emagrecimento,
