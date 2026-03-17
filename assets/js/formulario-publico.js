@@ -89,7 +89,7 @@
     const payload = {
       nome: document.getElementById("nome").value,
       email: document.getElementById("email").value,
-      idade: document.getElementById("idade").value,
+      data_nascimento: document.getElementById("data_nascimento").value,
       origem: document.getElementById("origem").value,
       exp_personal: document.getElementById("exp_personal").value,
       exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
