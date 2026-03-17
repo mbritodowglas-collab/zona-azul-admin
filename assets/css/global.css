@@ -355,3 +355,46 @@ th{color:var(--muted);font-weight:600}
     font-size:14px;
   }
 }
+
+.option-group{
+  display:grid;
+  gap:12px;
+  margin-top:8px;
+}
+
+.option-group.vertical{
+  grid-template-columns:1fr;
+}
+
+.option-card{
+  width:100%;
+  text-align:left;
+  padding:16px 18px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  font-size:15px;
+  line-height:1.4;
+  transition:.2s ease;
+  box-shadow:none;
+}
+
+.option-card:hover{
+  border-color:rgba(94,160,255,.35);
+  background:rgba(94,160,255,.08);
+}
+
+.option-card.selected{
+  border-color:rgba(94,160,255,.75);
+  background:linear-gradient(135deg, rgba(94,160,255,.18), rgba(138,116,255,.18));
+  box-shadow:0 0 0 1px rgba(94,160,255,.25) inset;
+}
+
+.option-card-lg{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  font-size:16px;
+  font-weight:600;
+}
