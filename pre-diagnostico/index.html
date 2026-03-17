@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pré-diagnóstico | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css" />
+</head>
+<body class="public-body">
+  <main class="public-wrap">
+    <section class="hero-card">
+      <span class="hero-badge">PROTOCOLO ZONA AZUL</span>
+      <h1>Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
+      <p>
+        Responda com sinceridade. Este questionário gera a leitura inicial do seu
+        perfil e ajuda a identificar seus principais gaps.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>Questionário inicial</h3>
+      </div>
+      <div class="card-body">
+        <form id="pre-form">
+          <div class="grid grid-2">
+            <div>
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" name="nome" type="text" required />
+              </div>
+
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required />
+              </div>
+
+              <div class="field">
+                <label for="faixa_etaria">Faixa etária</label>
+                <select id="faixa_etaria" name="faixa_etaria" required>
+                  <option value="">Selecione</option>
+                  <option value="25-30">25-30</option>
+                  <option value="31-40">31-40</option>
+                  <option value="41-50">41-50</option>
+                  <option value="51-60">51-60</option>
+                  <option value="acima de 60">acima de 60</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="origem">Origem</label>
+                <select id="origem" name="origem" required>
+                  <option value="">Selecione</option>
+                  <option value="indicacao">indicação</option>
+                  <option value="instagram">instagram</option>
+                  <option value="google">google</option>
+                  <option value="outro">outro</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
+                <select id="exp_personal" name="exp_personal" required>
+                  <option value="">Selecione</option>
+                  <option value="nunca">nunca</option>
+                  <option value="fez_nao_manteve">fez_nao_manteve</option>
+                  <option value="faz_atualmente">faz_atualmente</option>
+                  <option value="fez_manteve">fez_manteve</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento ou reeducação alimentar?</label>
+                <select id="exp_emagrecimento" name="exp_emagrecimento" required>
+                  <option value="">Selecione</option>
+                  <option value="nunca">nunca</option>
+                  <option value="nao_funcionou">nao_funcionou</option>
+                  <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
+                  <option value="em_processo">em_processo</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="field">
+                <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
+                <textarea id="o_que_funcionou" name="o_que_funcionou"></textarea>
+              </div>
+
+              <div class="field">
+                <label for="por_que_parou">Por que você parou?</label>
+                <textarea id="por_que_parou" name="por_que_parou" required></textarea>
+              </div>
+
+              <div class="field">
+                <label for="desafio_atual">Qual é o seu maior desafio hoje quando o assunto é saúde e qualidade de vida?</label>
+                <textarea id="desafio_atual" name="desafio_atual" required></textarea>
+              </div>
+
+              <div class="field">
+                <label for="meta_6_meses">O que te faria sentir que sua vida está mais saudável e completa daqui a 6 meses?</label>
+                <textarea id="meta_6_meses" name="meta_6_meses" required></textarea>
+              </div>
+            </div>
+          </div>
+
+          <section class="card inner-card">
+            <div class="card-header">
+              <h3>Radar Zona Azul</h3>
+            </div>
+            <div class="card-body">
+              <p class="muted">Escala de 1 a 10, onde 1 é muito ruim/nunca e 10 é excelente/sempre.</p>
+
+              <div class="grid grid-2">
+                <div class="field">
+                  <label for="score_movimento">Movimento</label>
+                  <input id="score_movimento" name="score_movimento" type="number" min="1" max="10" required />
+                </div>
+
+                <div class="field">
+                  <label for="score_alimentacao">Alimentação</label>
+                  <input id="score_alimentacao" name="score_alimentacao" type="number" min="1" max="10" required />
+                </div>
+
+                <div class="field">
+                  <label for="score_sono">Sono</label>
+                  <input id="score_sono" name="score_sono" type="number" min="1" max="10" required />
+                </div>
+
+                <div class="field">
+                  <label for="score_proposito">Propósito</label>
+                  <input id="score_proposito" name="score_proposito" type="number" min="1" max="10" required />
+                </div>
+
+                <div class="field">
+                  <label for="score_social">Vida social</label>
+                  <input id="score_social" name="score_social" type="number" min="1" max="10" required />
+                </div>
+
+                <div class="field">
+                  <label for="score_estresse">Estresse</label>
+                  <input id="score_estresse" name="score_estresse" type="number" min="1" max="10" required />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="actions">
+            <button class="btn" type="submit">Enviar pré-diagnóstico</button>
+            <a class="btn secondary" href="../index.html">Voltar ao painel</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/calculos.js"></script>
+  <script src="../assets/js/pre-diagnostico.js"></script>
+</body>
+</html>
