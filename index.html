@@ -1,41 +1,468 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zona Azul Admin</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    :root{
+      --bg:#0b1020;
+      --bg2:#111936;
+      --panel:#151f42;
+      --panel2:#1b2752;
+      --line:rgba(255,255,255,.08);
+      --text:#eef2ff;
+      --muted:#9aa8cf;
+      --primary:#5ea0ff;
+      --primary2:#8a74ff;
+      --success:#2ecc71;
+      --warning:#ffb020;
+      --danger:#ff5c7c;
+      --radius:18px;
+      --shadow:0 12px 28px rgba(0,0,0,.28);
     }
-    .box {
-      background: #121936;
-      padding: 32px;
-      border-radius: 16px;
-      max-width: 600px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.3);
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:Arial, sans-serif;
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+      color:var(--text);
+      min-height:100vh;
     }
-    h1 {
-      margin-top: 0;
+
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+
+    .app{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
     }
-    p {
-      color: #b8c2e0;
+
+    .sidebar{
+      background:rgba(10,16,32,.7);
+      border-right:1px solid var(--line);
+      padding:24px 18px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      margin-bottom:24px;
+    }
+
+    .brand-badge{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      box-shadow:var(--shadow);
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:16px;
+    }
+
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .nav{
+      display:grid;
+      gap:8px;
+    }
+
+    .nav a{
+      padding:12px 14px;
+      border-radius:14px;
+      color:var(--muted);
+      border:1px solid transparent;
+      display:block;
+      transition:.2s;
+    }
+
+    .nav a:hover,
+    .nav a.active{
+      color:var(--text);
+      background:rgba(94,160,255,.10);
+      border-color:rgba(94,160,255,.20);
+    }
+
+    .main{
+      padding:28px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .topbar h2{
+      margin:0;
+      font-size:26px;
+    }
+
+    .topbar p{
+      margin:6px 0 0;
+      color:var(--muted);
+    }
+
+    .grid{
+      display:grid;
+      gap:18px;
+    }
+
+    .grid-4{
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .card{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .card-body{
+      padding:20px;
+    }
+
+    .stat{
+      padding:18px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+    }
+
+    .stat-label{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .stat-value{
+      font-size:30px;
+      font-weight:700;
+      margin-top:10px;
+    }
+
+    .btn{
+      display:inline-block;
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      color:#fff;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      font-weight:700;
+      box-shadow:var(--shadow);
+    }
+
+    .btn.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+
+    .table-wrap{
+      overflow:auto;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:700px;
+    }
+
+    th,td{
+      text-align:left;
+      padding:14px 12px;
+      border-bottom:1px solid var(--line);
+      font-size:14px;
+    }
+
+    th{
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+    }
+
+    .chip.warning{
+      color:#ffe1a6;
+      background:rgba(255,176,32,.12);
+    }
+
+    .chip.success{
+      color:#c6ffdb;
+      background:rgba(46,204,113,.12);
+    }
+
+    .chip.danger{
+      color:#ffd1da;
+      background:rgba(255,92,124,.12);
+    }
+
+    .empty{
+      padding:22px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:16px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media (max-width: 980px){
+      .app{
+        grid-template-columns:1fr;
+      }
+      .grid-4{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>Zona Azul Admin</h1>
-    <p>Se você está vendo esta tela, o GitHub Pages está funcionando normalmente.</p>
-    <p>O problema da tela branca estava no JavaScript do arquivo anterior.</p>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul Admin</h1>
+          <p>MVP administrativo</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
+        <a href="#" class="nav-link" data-page="leads">Leads</a>
+        <a href="#" class="nav-link" data-page="alunos">Alunos</a>
+        <a href="#" class="nav-link" data-page="diagnostico">Diagnóstico</a>
+        <a href="#" class="nav-link" data-page="planejamento">Planejamento</a>
+        <a href="#" class="nav-link" data-page="periodizacao">Periodização</a>
+        <a href="#" class="nav-link" data-page="relatorio">Relatório</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section id="dashboard" class="page">
+        <div class="topbar">
+          <h2>Dashboard</h2>
+          <p>Visão geral do fluxo operacional do Zona Azul.</p>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="stat">
+            <div class="stat-label">Leads</div>
+            <div class="stat-value">12</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Em análise</div>
+            <div class="stat-value">4</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Alunos ativos</div>
+            <div class="stat-value">6</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Relatórios</div>
+            <div class="stat-value">5</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h3>Próximos passos do sistema</h3>
+            <p style="color:var(--muted);">
+              Esta é a base visual do app. Agora vamos encaixar o cadastro de leads,
+              alunos e formulários, depois ligamos o Supabase.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="leads" class="page hidden">
+        <div class="topbar">
+          <h2>Leads</h2>
+          <p>Interessados que responderam o pré-diagnóstico.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Objetivo</th>
+                    <th>Status</th>
+                    <th>Entrada</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana Souza</td>
+                    <td>Emagrecimento</td>
+                    <td><span class="chip warning">em análise</span></td>
+                    <td>17/03/2026</td>
+                  </tr>
+                  <tr>
+                    <td>Paula Lima</td>
+                    <td>Rotina e treino</td>
+                    <td><span class="chip success">convertido</span></td>
+                    <td>16/03/2026</td>
+                  </tr>
+                  <tr>
+                    <td>Bruna Costa</td>
+                    <td>Qualidade de vida</td>
+                    <td><span class="chip warning">proposta enviada</span></td>
+                    <td>15/03/2026</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="alunos" class="page hidden">
+        <div class="topbar">
+          <h2>Alunos</h2>
+          <p>Base ativa do protocolo.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Objetivo</th>
+                    <th>Status</th>
+                    <th>Responsável</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana Souza</td>
+                    <td>Emagrecimento</td>
+                    <td><span class="chip success">ativo</span></td>
+                    <td>Márcio</td>
+                  </tr>
+                  <tr>
+                    <td>Paula Lima</td>
+                    <td>Constância</td>
+                    <td><span class="chip warning">em planejamento</span></td>
+                    <td>Sócio</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="diagnostico" class="page hidden">
+        <div class="topbar">
+          <h2>Diagnóstico</h2>
+          <p>Área de avaliação física, comportamental e ambiental.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <p style="color:var(--muted);">
+              Aqui vai entrar a ficha completa de diagnóstico interno.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="planejamento" class="page hidden">
+        <div class="topbar">
+          <h2>Planejamento</h2>
+          <p>Direção estratégica do caso.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <p style="color:var(--muted);">
+              Aqui entra objetivo central, direção comportamental, direção física e metas da fase.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="periodizacao" class="page hidden">
+        <div class="topbar">
+          <h2>Periodização</h2>
+          <p>Organização dos ciclos do treino.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <p style="color:var(--muted);">
+              Aqui entram os ciclos, duração, frequência, divisão e resumo para o MFIT.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="relatorio" class="page hidden">
+        <div class="topbar">
+          <h2>Relatório</h2>
+          <p>Resumo final para visualização por link e PDF.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <p style="color:var(--muted);">
+              Aqui vai entrar a estrutura do relatório do aluno.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
+
+  <script>
+    const navLinks = document.querySelectorAll(".nav-link");
+    const pages = document.querySelectorAll(".page");
+
+    navLinks.forEach(link => {
+      link.addEventListener("click", function(e) {
+        e.preventDefault();
+
+        const pageId = this.dataset.page;
+
+        navLinks.forEach(item => item.classList.remove("active"));
+        this.classList.add("active");
+
+        pages.forEach(page => page.classList.add("hidden"));
+        document.getElementById(pageId).classList.remove("hidden");
+      });
+    });
+  </script>
 </body>
 </html>
