@@ -307,3 +307,51 @@ th{color:var(--muted);font-weight:600}
     grid-template-columns:1fr 1fr 1fr;
   }
 }
+
+.field-help{
+  margin:6px 0 12px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.5;
+}
+
+.score-group{
+  display:grid;
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+  gap:10px;
+  margin-top:8px;
+}
+
+.score-btn{
+  min-height:48px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  font-weight:700;
+  font-size:15px;
+  transition:.2s ease;
+  box-shadow:none;
+}
+
+.score-btn:hover{
+  border-color:rgba(94,160,255,.35);
+  background:rgba(94,160,255,.08);
+}
+
+.score-btn.selected{
+  border-color:rgba(94,160,255,.75);
+  background:linear-gradient(135deg, rgba(94,160,255,.18), rgba(138,116,255,.18));
+  box-shadow:0 0 0 1px rgba(94,160,255,.25) inset;
+}
+
+@media (max-width:640px){
+  .score-group{
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+  }
+
+  .score-btn{
+    min-height:44px;
+    font-size:14px;
+  }
+}
