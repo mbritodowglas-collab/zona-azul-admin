@@ -3,82 +3,211 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zona Azul Admin</title>
-  <link rel="stylesheet" href="./assets/css/global.css" />
+  <title>Pré-diagnóstico | Zona Azul Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css" />
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar no-public">
       <div class="brand">
         <div class="brand-badge">ZA</div>
         <div>
           <h1>Zona Azul Admin</h1>
-          <p>Painel operacional</p>
+          <p>Triagem e conversão</p>
         </div>
       </div>
 
       <nav class="nav">
-        <a class="active" href="./index.html">Dashboard</a>
-        <a href="./pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="./clientes/">Clientes</a>
+        <a href="../index.html">Dashboard</a>
+        <a class="active" href="./index.html">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
       </nav>
     </aside>
 
     <main class="main">
       <div class="topbar">
         <div>
-          <h2>Dashboard</h2>
-          <p>Visão geral do fluxo do protocolo.</p>
+          <h2>Pré-diagnóstico</h2>
+          <p>Leads captados pelo formulário público.</p>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="toggle-public-form-btn">Abrir formulário público</button>
+          <button class="btn danger" id="clear-all-btn">Limpar tudo</button>
         </div>
       </div>
 
-      <section class="grid grid-4">
-        <article class="stat-card">
-          <span class="stat-label">Leads totais</span>
-          <strong class="stat-value" id="stat-leads">0</strong>
-        </article>
+      <section class="card hidden" id="public-form-card">
+        <div class="card-header">
+          <h3>Formulário público</h3>
+        </div>
+        <div class="card-body">
+          <form id="public-pre-form">
+            <div class="grid grid-2">
+              <div>
+                <div class="field">
+                  <label for="nome">Nome</label>
+                  <input id="nome" type="text" required />
+                </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Leads novos</span>
-          <strong class="stat-value" id="stat-novos">0</strong>
-        </article>
+                <div class="field">
+                  <label for="email">Email</label>
+                  <input id="email" type="email" required />
+                </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Convertidos</span>
-          <strong class="stat-value" id="stat-convertidos">0</strong>
-        </article>
+                <div class="field">
+                  <label for="faixa_etaria">Faixa etária</label>
+                  <select id="faixa_etaria" required>
+                    <option value="">Selecione</option>
+                    <option value="25-30">25-30</option>
+                    <option value="31-40">31-40</option>
+                    <option value="41-50">41-50</option>
+                    <option value="51-60">51-60</option>
+                    <option value="acima de 60">acima de 60</option>
+                  </select>
+                </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Clientes ativos</span>
-          <strong class="stat-value" id="stat-clientes">0</strong>
-        </article>
+                <div class="field">
+                  <label for="origem">Origem</label>
+                  <select id="origem" required>
+                    <option value="">Selecione</option>
+                    <option value="indicacao">indicação</option>
+                    <option value="instagram">instagram</option>
+                    <option value="google">google</option>
+                    <option value="outro">outro</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
+                  <select id="exp_personal" required>
+                    <option value="">Selecione</option>
+                    <option value="nunca">nunca</option>
+                    <option value="fez_nao_manteve">fez_nao_manteve</option>
+                    <option value="faz_atualmente">faz_atualmente</option>
+                    <option value="fez_manteve">fez_manteve</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
+                  <select id="exp_emagrecimento" required>
+                    <option value="">Selecione</option>
+                    <option value="nunca">nunca</option>
+                    <option value="nao_funcionou">nao_funcionou</option>
+                    <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
+                    <option value="em_processo">em_processo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <div class="field">
+                  <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
+                  <textarea id="o_que_funcionou"></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="por_que_parou">Por que você parou?</label>
+                  <textarea id="por_que_parou" required></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="desafio_atual">Maior desafio atual</label>
+                  <textarea id="desafio_atual" required></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="meta_6_meses">Meta para 6 meses</label>
+                  <textarea id="meta_6_meses" required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <section class="card inner-card">
+              <div class="card-header">
+                <h3>Radar Zona Azul</h3>
+              </div>
+              <div class="card-body">
+                <p class="muted">Escala de 1 a 10.</p>
+
+                <div class="grid grid-2">
+                  <div class="field">
+                    <label for="score_movimento">Movimento</label>
+                    <input id="score_movimento" type="number" min="1" max="10" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="score_alimentacao">Alimentação</label>
+                    <input id="score_alimentacao" type="number" min="1" max="10" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="score_sono">Sono</label>
+                    <input id="score_sono" type="number" min="1" max="10" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="score_proposito">Propósito</label>
+                    <input id="score_proposito" type="number" min="1" max="10" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="score_social">Vida social</label>
+                    <input id="score_social" type="number" min="1" max="10" required />
+                  </div>
+
+                  <div class="field">
+                    <label for="score_estresse">Estresse</label>
+                    <input id="score_estresse" type="number" min="1" max="10" required />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="actions">
+              <button class="btn" type="submit">Salvar resposta</button>
+            </div>
+          </form>
+        </div>
       </section>
 
       <section class="card">
         <div class="card-header">
-          <h3>Atalhos</h3>
+          <h3>Leads recebidos</h3>
         </div>
         <div class="card-body">
-          <div class="actions">
-            <a class="btn" href="./pre-diagnostico/">Abrir Pré-diagnóstico</a>
-            <a class="btn secondary" href="./clientes/">Ver Clientes</a>
+          <div id="empty-leads" class="empty-state hidden">Nenhum lead recebido ainda.</div>
+
+          <div class="table-wrap" id="leads-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Origem</th>
+                  <th>Pilar mais baixo</th>
+                  <th>Média</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="leads-table-body"></tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      <section class="card">
+      <section class="card hidden" id="lead-detail-card">
         <div class="card-header">
-          <h3>Link público</h3>
+          <h3>Detalhes do lead</h3>
         </div>
-        <div class="card-body">
-          <p class="muted">Use este link na sua landing page:</p>
-          <div class="code-box" id="public-link-box"></div>
-        </div>
+        <div class="card-body" id="lead-detail-body"></div>
       </section>
     </main>
   </div>
 
-  <script src="./assets/js/storage.js"></script>
-  <script src="./assets/js/dashboard.js"></script>
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/calculos.js"></script>
+  <script src="../assets/js/pre-diagnostico.js"></script>
 </body>
 </html>
