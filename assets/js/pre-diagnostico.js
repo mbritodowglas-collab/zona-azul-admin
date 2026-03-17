@@ -83,6 +83,7 @@
           <h4>Identificação</h4>
           <p><strong>Nome:</strong> ${lead.nome}</p>
           <p><strong>Email:</strong> ${lead.email}</p>
+          <p><strong>Data de nascimento:</strong> ${new Date(lead.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR")}</p>
           <p><strong>Idade:</strong> ${lead.idade}</p>
           <p><strong>Origem:</strong> ${lead.origem}</p>
         </div>
