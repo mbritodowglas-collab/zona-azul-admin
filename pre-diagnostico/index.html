@@ -72,14 +72,28 @@
           </div>
         </div>
       </section>
-
-      <section class="card hidden" id="lead-detail-card">
-        <div class="card-header">
-          <h3>Detalhes do lead</h3>
-        </div>
-        <div class="card-body" id="lead-detail-body"></div>
-      </section>
     </main>
+  </div>
+
+  <!-- MODAL DE CONVERSÃO -->
+  <div class="modal-overlay hidden" id="convert-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Converter lead em cliente</h3>
+        <p class="muted">
+          Essa ação vai enviar os dados do pré-diagnóstico para a área de clientes.
+        </p>
+      </div>
+
+      <div class="modal-body">
+        <p id="convert-modal-text">Deseja converter este lead em cliente?</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" id="cancel-convert-btn">Cancelar</button>
+        <button type="button" class="btn" id="confirm-convert-btn">Confirmar conversão</button>
+      </div>
+    </div>
   </div>
 
   <script src="../assets/js/storage.js"></script>
