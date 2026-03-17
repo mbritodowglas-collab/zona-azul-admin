@@ -19,12 +19,24 @@
 
     <section class="card" id="form-card">
       <div class="card-header">
-        <h3>Questionário inicial</h3>
+        <div>
+          <h3 id="step-title">Identificação</h3>
+          <p class="muted" id="step-subtitle">Vamos começar com seus dados básicos.</p>
+        </div>
+        <span class="step-indicator" id="step-indicator">Etapa 1 de 5</span>
       </div>
+
       <div class="card-body">
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 20%;"></div>
+          </div>
+        </div>
+
         <form id="public-pre-form">
-          <div class="grid grid-2">
-            <div>
+          <!-- ETAPA 1 -->
+          <div class="form-step" data-step="1">
+            <div class="grid grid-2">
               <div class="field">
                 <label for="nome">Nome</label>
                 <input id="nome" type="text" required />
@@ -50,96 +62,101 @@
                   <option value="outro">outro</option>
                 </select>
               </div>
+            </div>
+          </div>
 
-              <div class="field">
-                <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
-                <select id="exp_personal" required>
-                  <option value="">Selecione</option>
-                  <option value="nunca">nunca</option>
-                  <option value="fez_nao_manteve">fez_nao_manteve</option>
-                  <option value="faz_atualmente">faz_atualmente</option>
-                  <option value="fez_manteve">fez_manteve</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
-                <select id="exp_emagrecimento" required>
-                  <option value="">Selecione</option>
-                  <option value="nunca">nunca</option>
-                  <option value="nao_funcionou">nao_funcionou</option>
-                  <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
-                  <option value="em_processo">em_processo</option>
-                </select>
-              </div>
+          <!-- ETAPA 2 -->
+          <div class="form-step hidden" data-step="2">
+            <div class="field">
+              <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
+              <select id="exp_personal" required>
+                <option value="">Selecione</option>
+                <option value="nunca">nunca</option>
+                <option value="fez_nao_manteve">fez_nao_manteve</option>
+                <option value="faz_atualmente">faz_atualmente</option>
+                <option value="fez_manteve">fez_manteve</option>
+              </select>
             </div>
 
-            <div>
+            <div class="field">
+              <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
+              <select id="exp_emagrecimento" required>
+                <option value="">Selecione</option>
+                <option value="nunca">nunca</option>
+                <option value="nao_funcionou">nao_funcionou</option>
+                <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
+                <option value="em_processo">em_processo</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
+              <textarea id="o_que_funcionou"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="por_que_parou">Por que você parou?</label>
+              <textarea id="por_que_parou" required></textarea>
+            </div>
+          </div>
+
+          <!-- ETAPA 3 -->
+          <div class="form-step hidden" data-step="3">
+            <div class="grid grid-2">
               <div class="field">
-                <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
-                <textarea id="o_que_funcionou"></textarea>
+                <label for="score_movimento">Movimento</label>
+                <input id="score_movimento" type="number" min="1" max="10" required />
               </div>
 
               <div class="field">
-                <label for="por_que_parou">Por que você parou?</label>
-                <textarea id="por_que_parou" required></textarea>
+                <label for="score_alimentacao">Alimentação</label>
+                <input id="score_alimentacao" type="number" min="1" max="10" required />
               </div>
 
               <div class="field">
-                <label for="desafio_atual">Maior desafio atual</label>
-                <textarea id="desafio_atual" required></textarea>
-              </div>
-
-              <div class="field">
-                <label for="meta_6_meses">Meta para 6 meses</label>
-                <textarea id="meta_6_meses" required></textarea>
+                <label for="score_sono">Sono</label>
+                <input id="score_sono" type="number" min="1" max="10" required />
               </div>
             </div>
           </div>
 
-          <section class="card inner-card">
-            <div class="card-header">
-              <h3>Radar Zona Azul</h3>
-            </div>
-            <div class="card-body">
-              <p class="muted">Escala de 1 a 10.</p>
+          <!-- ETAPA 4 -->
+          <div class="form-step hidden" data-step="4">
+            <div class="grid grid-2">
+              <div class="field">
+                <label for="score_proposito">Propósito</label>
+                <input id="score_proposito" type="number" min="1" max="10" required />
+              </div>
 
-              <div class="grid grid-2">
-                <div class="field">
-                  <label for="score_movimento">Movimento</label>
-                  <input id="score_movimento" type="number" min="1" max="10" required />
-                </div>
+              <div class="field">
+                <label for="score_social">Vida social</label>
+                <input id="score_social" type="number" min="1" max="10" required />
+              </div>
 
-                <div class="field">
-                  <label for="score_alimentacao">Alimentação</label>
-                  <input id="score_alimentacao" type="number" min="1" max="10" required />
-                </div>
-
-                <div class="field">
-                  <label for="score_sono">Sono</label>
-                  <input id="score_sono" type="number" min="1" max="10" required />
-                </div>
-
-                <div class="field">
-                  <label for="score_proposito">Propósito</label>
-                  <input id="score_proposito" type="number" min="1" max="10" required />
-                </div>
-
-                <div class="field">
-                  <label for="score_social">Vida social</label>
-                  <input id="score_social" type="number" min="1" max="10" required />
-                </div>
-
-                <div class="field">
-                  <label for="score_estresse">Estresse</label>
-                  <input id="score_estresse" type="number" min="1" max="10" required />
-                </div>
+              <div class="field">
+                <label for="score_estresse">Estresse</label>
+                <input id="score_estresse" type="number" min="1" max="10" required />
               </div>
             </div>
-          </section>
+          </div>
 
-          <div class="actions">
-            <button class="btn" type="submit">Enviar respostas</button>
+          <!-- ETAPA 5 -->
+          <div class="form-step hidden" data-step="5">
+            <div class="field">
+              <label for="desafio_atual">Maior desafio atual</label>
+              <textarea id="desafio_atual" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="meta_6_meses">Meta para 6 meses</label>
+              <textarea id="meta_6_meses" required></textarea>
+            </div>
+          </div>
+
+          <div class="actions form-nav">
+            <button type="button" class="btn secondary hidden" id="prev-step-btn">Voltar</button>
+            <button type="button" class="btn" id="next-step-btn">Avançar</button>
+            <button type="submit" class="btn hidden" id="submit-btn">Enviar respostas</button>
           </div>
         </form>
       </div>
