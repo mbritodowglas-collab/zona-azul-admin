@@ -488,3 +488,76 @@ th{color:var(--muted);font-weight:600}
     line-height:1.5;
   }
 }
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2, 6, 23, 0.72);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:9999;
+}
+
+.modal-box{
+  width:100%;
+  max-width:460px;
+  background:linear-gradient(180deg, rgba(21,31,66,.98), rgba(17,25,54,.98));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.modal-header{
+  padding:22px 22px 12px;
+}
+
+.modal-header h3{
+  margin:0 0 8px;
+  font-size:22px;
+  color:var(--text);
+}
+
+.modal-header p{
+  margin:0;
+  line-height:1.5;
+}
+
+.modal-body{
+  padding:0 22px 18px;
+}
+
+.modal-body p{
+  margin:0;
+  color:var(--text);
+  line-height:1.5;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  padding:18px 22px 22px;
+}
+
+@media (max-width:640px){
+  .modal-box{
+    border-radius:20px;
+  }
+
+  .modal-header h3{
+    font-size:20px;
+  }
+
+  .modal-actions{
+    flex-direction:column-reverse;
+  }
+
+  .modal-actions .btn{
+    width:100%;
+    text-align:center;
+  }
+}
