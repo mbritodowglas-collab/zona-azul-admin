@@ -82,10 +82,27 @@ window.ZAStorage = (() => {
     };
 
     data.clientes.unshift(cliente);
-
-    // remove completamente o lead do pré-diagnóstico
     data.leads.splice(leadIndex, 1);
+    saveData(data);
+    return true;
+  }
 
+  function archiveLead(email) {
+    const data = getData();
+    const emailNormalized = email.toLowerCase().trim();
+    const leadIndex = data.leads.findIndex(item => item.email === emailNormalized);
+
+    if (leadIndex < 0) return false;
+
+    data.leads[leadIndex].status = "arquivado";
+    saveData(data);
+    return true;
+  }
+
+  function removeLead(email) {
+    const data = getData();
+    const emailNormalized = email.toLowerCase().trim();
+    data.leads = data.leads.filter(item => item.email !== emailNormalized);
     saveData(data);
     return true;
   }
@@ -101,6 +118,8 @@ window.ZAStorage = (() => {
     getClientes,
     upsertLead,
     convertLeadToCliente,
+    archiveLead,
+    removeLead,
     clearAll
   };
 })();
