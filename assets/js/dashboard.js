@@ -1,22 +1,18 @@
 (() => {
-  const leads = window.ZAStorage.getLeads();
+  const data = window.ZAStorage.getData();
+  const leads = data.leads || [];
+  const clientes = data.clientes || [];
 
   const total = leads.length;
   const novos = leads.filter(lead => lead.status === "novo").length;
   const convertidos = leads.filter(lead => lead.status === "convertido").length;
-  const media = total
-    ? (leads.reduce((acc, lead) => acc + Number(lead.media_geral || 0), 0) / total).toFixed(1)
-    : "0.0";
+  const clientesAtivos = clientes.filter(cliente => cliente.status === "ativo").length;
 
-  const leadsEl = document.getElementById("stat-leads");
-  const novosEl = document.getElementById("stat-novos");
-  const convertidosEl = document.getElementById("stat-convertidos");
-  const mediaEl = document.getElementById("stat-media");
-  const linkEl = document.getElementById("public-link-box");
+  document.getElementById("stat-leads").textContent = total;
+  document.getElementById("stat-novos").textContent = novos;
+  document.getElementById("stat-convertidos").textContent = convertidos;
+  document.getElementById("stat-clientes").textContent = clientesAtivos;
 
-  if (leadsEl) leadsEl.textContent = total;
-  if (novosEl) novosEl.textContent = novos;
-  if (convertidosEl) convertidosEl.textContent = convertidos;
-  if (mediaEl) mediaEl.textContent = media;
-  if (linkEl) linkEl.textContent = `${window.location.origin}${window.location.pathname.replace("index.html", "")}pre-diagnostico/`;
+  const basePath = window.location.origin + window.location.pathname.replace("index.html", "");
+  document.getElementById("public-link-box").textContent = `${basePath}pre-diagnostico/`;
 })();
