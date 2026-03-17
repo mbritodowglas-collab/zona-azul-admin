@@ -95,8 +95,9 @@ window.ZACalculos = (() => {
   }
 
   function criarLead(payload) {
-    const media_geral = mediaGeral(payload);
-    const pilar_mais_baixo = pilarMaisBaixo(payload);
+    const media = mediaGeral(payload);
+    const pilar = pilarMaisBaixo(payload);
+    const gaps = gerarGaps(payload).slice(0, 3);
 
     return {
       id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
@@ -117,9 +118,11 @@ window.ZACalculos = (() => {
       score_proposito: Number(payload.score_proposito),
       score_social: Number(payload.score_social),
       score_estresse: Number(payload.score_estresse),
-      media_geral,
-      pilar_mais_baixo,
+      media_geral: media,
+      pilar_mais_baixo: pilar,
+      top_3_gaps: gaps,
       status: "novo",
+      historico_contato: []
     };
   }
 
@@ -130,6 +133,6 @@ window.ZACalculos = (() => {
     gerarGaps,
     pilarMaisBaixo,
     validarFormulario,
-    criarLead,
+    criarLead
   };
 })();
