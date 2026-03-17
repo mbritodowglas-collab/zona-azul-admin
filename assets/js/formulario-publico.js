@@ -38,6 +38,24 @@
     }
   };
 
+  function setupOptionCards() {
+    const groups = document.querySelectorAll(".option-group");
+
+    groups.forEach(group => {
+      const targetId = group.dataset.target;
+      const hiddenInput = document.getElementById(targetId);
+      const buttons = group.querySelectorAll(".option-card");
+
+      buttons.forEach(button => {
+        button.addEventListener("click", () => {
+          buttons.forEach(btn => btn.classList.remove("selected"));
+          button.classList.add("selected");
+          hiddenInput.value = button.dataset.value;
+        });
+      });
+    });
+  }
+
   function showStep(step) {
     steps.forEach((el, index) => {
       el.classList.toggle("hidden", index !== step - 1);
@@ -57,17 +75,20 @@
 
   function validateCurrentStep(step) {
     const currentFields = steps[step - 1].querySelectorAll("input, select, textarea");
+
     for (const field of currentFields) {
       if (!field.checkValidity()) {
         field.reportValidity();
         return false;
       }
     }
+
     return true;
   }
 
   nextBtn?.addEventListener("click", () => {
     if (!validateCurrentStep(currentStep)) return;
+
     if (currentStep < totalSteps) {
       currentStep += 1;
       showStep(currentStep);
@@ -86,10 +107,18 @@
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const nascimentoDia = document.getElementById("nascimento_dia").value;
+    const nascimentoMes = document.getElementById("nascimento_mes").value;
+    const nascimentoAno = document.getElementById("nascimento_ano").value;
+
+    const dataNascimento = (nascimentoDia && nascimentoMes && nascimentoAno)
+      ? `${nascimentoAno}-${String(nascimentoMes).padStart(2, "0")}-${String(nascimentoDia).padStart(2, "0")}`
+      : "";
+
     const payload = {
       nome: document.getElementById("nome").value,
       email: document.getElementById("email").value,
-      data_nascimento: document.getElementById("data_nascimento").value,
+      data_nascimento: dataNascimento,
       origem: document.getElementById("origem").value,
       exp_personal: document.getElementById("exp_personal").value,
       exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
@@ -115,10 +144,12 @@
     window.ZAStorage.upsertLead(lead);
 
     form.reset();
+    document.querySelectorAll(".option-card").forEach(card => card.classList.remove("selected"));
     formCard.classList.add("hidden");
     successCard.classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+  setupOptionCards();
   showStep(currentStep);
 })();
