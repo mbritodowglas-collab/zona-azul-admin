@@ -17,6 +17,22 @@ window.ZACalculos = (() => {
     score_estresse: "ESTRESSE"
   };
 
+  function calcularIdade(dataNascimento) {
+    if (!dataNascimento) return null;
+
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento + "T00:00:00");
+
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+
+    return idade;
+  }
+
   function mediaGeral(scores) {
     const values = [
       Number(scores.score_movimento),
@@ -63,7 +79,7 @@ window.ZACalculos = (() => {
   function validarFormulario(payload) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!payload.nome || !payload.email || payload.idade === "" || !payload.origem) {
+    if (!payload.nome || !payload.email || !payload.data_nascimento || !payload.origem) {
       return "Preencha os dados de identificação.";
     }
 
@@ -71,9 +87,9 @@ window.ZACalculos = (() => {
       return "Digite um email válido.";
     }
 
-    const idade = Number(payload.idade);
-    if (!Number.isInteger(idade) || idade < 1 || idade > 120) {
-      return "Digite uma idade válida entre 1 e 120.";
+    const idade = calcularIdade(payload.data_nascimento);
+    if (idade === null || idade < 1 || idade > 120) {
+      return "Digite uma data de nascimento válida.";
     }
 
     const scoreFields = [
@@ -109,7 +125,8 @@ window.ZACalculos = (() => {
       created_at: new Date().toISOString(),
       nome: payload.nome.trim(),
       email: payload.email.toLowerCase().trim(),
-      idade: Number(payload.idade),
+      data_nascimento: payload.data_nascimento,
+      idade: calcularIdade(payload.data_nascimento),
       origem: payload.origem,
       exp_personal: payload.exp_personal,
       exp_emagrecimento: payload.exp_emagrecimento,
@@ -133,6 +150,7 @@ window.ZACalculos = (() => {
 
   return {
     pillarLabels,
+    calcularIdade,
     mediaGeral,
     statusPorScore,
     gerarGaps,
