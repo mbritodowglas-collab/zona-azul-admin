@@ -9,7 +9,6 @@
       --bg:#0b1020;
       --bg2:#111936;
       --panel:#151f42;
-      --panel2:#1b2752;
       --line:rgba(255,255,255,.08);
       --text:#eef2ff;
       --muted:#9aa8cf;
@@ -26,7 +25,7 @@
     html,body{
       margin:0;
       padding:0;
-      font-family:Arial, sans-serif;
+      font-family:Arial,sans-serif;
       background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
       color:var(--text);
       min-height:100vh;
@@ -70,16 +69,8 @@
       box-shadow:var(--shadow);
     }
 
-    .brand h1{
-      margin:0;
-      font-size:16px;
-    }
-
-    .brand p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:12px;
-    }
+    .brand h1{margin:0;font-size:16px}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
 
     .nav{
       display:grid;
@@ -126,6 +117,10 @@
 
     .grid-4{
       grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .grid-2{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
     .card{
@@ -233,11 +228,8 @@
       display:none !important;
     }
 
-    .form-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-      margin-bottom:18px;
+    .field{
+      margin-bottom:16px;
     }
 
     .field label{
@@ -258,14 +250,22 @@
       color:white;
     }
 
-    @media (max-width: 980px){
+    .field textarea{
+      min-height:100px;
+      resize:vertical;
+    }
+
+    .public-wrap{
+      max-width:900px;
+      margin:0 auto;
+      width:100%;
+    }
+
+    @media (max-width:980px){
       .app{
         grid-template-columns:1fr;
       }
-      .grid-4{
-        grid-template-columns:1fr;
-      }
-      .form-grid{
+      .grid-4,.grid-2{
         grid-template-columns:1fr;
       }
     }
@@ -290,6 +290,7 @@
         <a href="#" class="nav-link" data-page="planejamento">Planejamento</a>
         <a href="#" class="nav-link" data-page="periodizacao">Periodização</a>
         <a href="#" class="nav-link" data-page="relatorio">Relatório</a>
+        <a href="#" class="nav-link" data-page="prediagnostico">Pré-diagnóstico</a>
       </nav>
     </aside>
 
@@ -323,7 +324,7 @@
           <div class="card-body">
             <h3>Próximos passos do sistema</h3>
             <p style="color:var(--muted);">
-              Esta é a base visual do app. Agora o módulo de leads já está vivo e salvando no navegador.
+              O lead agora nasce pelo pré-diagnóstico. Nada de cadastro manual. Bem mais elegante, menos gambiarra.
             </p>
           </div>
         </div>
@@ -332,43 +333,7 @@
       <section id="leads" class="page hidden">
         <div class="topbar">
           <h2>Leads</h2>
-          <p>Interessados que responderam o pré-diagnóstico.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h3 style="margin-top:0;">Novo lead</h3>
-
-            <div class="form-grid">
-              <div class="field">
-                <label>Nome</label>
-                <input id="leadNome" type="text" placeholder="Nome do lead">
-              </div>
-
-              <div class="field">
-                <label>Objetivo</label>
-                <input id="leadObjetivo" type="text" placeholder="Ex.: Emagrecimento">
-              </div>
-
-              <div class="field">
-                <label>Status</label>
-                <select id="leadStatus">
-                  <option value="novo">novo</option>
-                  <option value="em análise">em análise</option>
-                  <option value="proposta enviada">proposta enviada</option>
-                  <option value="convertido">convertido</option>
-                  <option value="não convertido">não convertido</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label>Data</label>
-                <input id="leadData" type="date">
-              </div>
-            </div>
-
-            <button class="btn" id="addLeadBtn">Adicionar lead</button>
-          </div>
+          <p>Interessados captados automaticamente pelo pré-diagnóstico.</p>
         </div>
 
         <div class="card">
@@ -380,6 +345,7 @@
                 <thead>
                   <tr>
                     <th>Nome</th>
+                    <th>Telefone</th>
                     <th>Objetivo</th>
                     <th>Status</th>
                     <th>Entrada</th>
@@ -390,7 +356,7 @@
             </div>
 
             <div id="noLeadsMessage" class="empty" style="margin-top:16px; display:none;">
-              Nenhum lead cadastrado ainda.
+              Nenhum lead respondeu o pré-diagnóstico ainda.
             </div>
           </div>
         </div>
@@ -493,6 +459,81 @@
           </div>
         </div>
       </section>
+
+      <section id="prediagnostico" class="page hidden">
+        <div class="topbar">
+          <h2>Pré-diagnóstico</h2>
+          <p>Formulário público que gera o lead automaticamente.</p>
+        </div>
+
+        <div class="public-wrap">
+          <div class="card">
+            <div class="card-body">
+              <h3 style="margin-top:0;">Questionário inicial</h3>
+
+              <div class="grid grid-2">
+                <div>
+                  <div class="field">
+                    <label>Nome completo</label>
+                    <input id="preNome" type="text" placeholder="Seu nome">
+                  </div>
+
+                  <div class="field">
+                    <label>Telefone</label>
+                    <input id="preTelefone" type="text" placeholder="(92) 99999-9999">
+                  </div>
+
+                  <div class="field">
+                    <label>E-mail</label>
+                    <input id="preEmail" type="email" placeholder="seuemail@email.com">
+                  </div>
+
+                  <div class="field">
+                    <label>Objetivo principal</label>
+                    <input id="preObjetivo" type="text" placeholder="Ex.: Emagrecimento">
+                  </div>
+                </div>
+
+                <div>
+                  <div class="field">
+                    <label>Como está sua rotina hoje?</label>
+                    <select id="preRotina">
+                      <option value="muito desorganizada">Muito desorganizada</option>
+                      <option value="razoável">Razoável</option>
+                      <option value="bem organizada">Bem organizada</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label>Como está seu sono?</label>
+                    <select id="preSono">
+                      <option value="ruim">Ruim</option>
+                      <option value="mediano">Mediano</option>
+                      <option value="bom">Bom</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label>Como está sua alimentação?</label>
+                    <select id="preAlimentacao">
+                      <option value="desorganizada">Desorganizada</option>
+                      <option value="razoável">Razoável</option>
+                      <option value="boa">Boa</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label>Maior dificuldade hoje</label>
+                    <textarea id="preDificuldade" placeholder="Descreva sua principal dificuldade"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn" id="submitPreBtn">Enviar pré-diagnóstico</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -563,6 +604,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${lead.nome}</td>
+          <td>${lead.telefone}</td>
           <td>${lead.objetivo}</td>
           <td><span class="chip ${getStatusClass(lead.status)}">${lead.status}</span></td>
           <td>${lead.data}</td>
@@ -573,35 +615,61 @@
       updateDashboard();
     }
 
-    function setupLeadForm() {
-      const addLeadBtn = document.getElementById("addLeadBtn");
-      if (!addLeadBtn) return;
+    function setupPreDiagnostico() {
+      const submitBtn = document.getElementById("submitPreBtn");
+      if (!submitBtn) return;
 
-      addLeadBtn.addEventListener("click", () => {
-        const nome = document.getElementById("leadNome").value.trim();
-        const objetivo = document.getElementById("leadObjetivo").value.trim();
-        const status = document.getElementById("leadStatus").value;
-        const data = document.getElementById("leadData").value;
+      submitBtn.addEventListener("click", () => {
+        const nome = document.getElementById("preNome").value.trim();
+        const telefone = document.getElementById("preTelefone").value.trim();
+        const email = document.getElementById("preEmail").value.trim();
+        const objetivo = document.getElementById("preObjetivo").value.trim();
+        const rotina = document.getElementById("preRotina").value;
+        const sono = document.getElementById("preSono").value;
+        const alimentacao = document.getElementById("preAlimentacao").value;
+        const dificuldade = document.getElementById("preDificuldade").value.trim();
 
-        if (!nome || !objetivo || !data) {
-          alert("Preencha nome, objetivo e data.");
+        if (!nome || !telefone || !email || !objetivo) {
+          alert("Preencha nome, telefone, e-mail e objetivo.");
           return;
         }
 
         const leads = getLeads();
-        leads.push({ nome, objetivo, status, data });
+
+        const novoLead = {
+          nome,
+          telefone,
+          email,
+          objetivo,
+          status: "em análise",
+          data: new Date().toLocaleDateString("pt-BR"),
+          respostas: {
+            rotina,
+            sono,
+            alimentacao,
+            dificuldade
+          }
+        };
+
+        leads.push(novoLead);
         saveLeads(leads);
         renderLeads();
 
-        document.getElementById("leadNome").value = "";
-        document.getElementById("leadObjetivo").value = "";
-        document.getElementById("leadStatus").value = "novo";
-        document.getElementById("leadData").value = "";
+        document.getElementById("preNome").value = "";
+        document.getElementById("preTelefone").value = "";
+        document.getElementById("preEmail").value = "";
+        document.getElementById("preObjetivo").value = "";
+        document.getElementById("preRotina").value = "muito desorganizada";
+        document.getElementById("preSono").value = "ruim";
+        document.getElementById("preAlimentacao").value = "desorganizada";
+        document.getElementById("preDificuldade").value = "";
+
+        alert("Pré-diagnóstico enviado. Lead criado com sucesso.");
       });
     }
 
     renderLeads();
-    setupLeadForm();
+    setupPreDiagnostico();
     updateDashboard();
   </script>
 </body>
