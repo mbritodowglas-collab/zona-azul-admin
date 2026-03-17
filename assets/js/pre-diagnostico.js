@@ -1,35 +1,43 @@
 (() => {
   const tableBody = document.getElementById("leads-table-body");
   const emptyLeads = document.getElementById("empty-leads");
-  const clearAllBtn = document.getElementById("clear-all-btn");
   const publicFormLinkBox = document.getElementById("public-form-link-box");
 
-  const convertModal = document.getElementById("convert-modal");
-  const convertModalText = document.getElementById("convert-modal-text");
-  const cancelConvertBtn = document.getElementById("cancel-convert-btn");
-  const confirmConvertBtn = document.getElementById("confirm-convert-btn");
+  const actionModal = document.getElementById("action-modal");
+  const actionModalTitle = document.getElementById("action-modal-title");
+  const actionModalSubtitle = document.getElementById("action-modal-subtitle");
+  const actionModalText = document.getElementById("action-modal-text");
+  const cancelActionBtn = document.getElementById("cancel-action-btn");
+  const confirmActionBtn = document.getElementById("confirm-action-btn");
 
-  let leadEmailToConvert = null;
+  let pendingAction = null;
 
   function statusClass(status) {
     if (status === "convertido") return "success";
+    if (status === "arquivado") return "warning";
     if (status === "perdido") return "danger";
     return "warning";
   }
 
-  function openConvertModal(email, nome) {
-    leadEmailToConvert = email;
-    convertModalText.textContent = `Deseja converter ${nome} em cliente?`;
-    convertModal.classList.remove("hidden");
+  function openActionModal({ title, subtitle, text, confirmLabel = "Confirmar", onConfirm }) {
+    pendingAction = onConfirm;
+    actionModalTitle.textContent = title;
+    actionModalSubtitle.textContent = subtitle;
+    actionModalText.textContent = text;
+    confirmActionBtn.textContent = confirmLabel;
+    actionModal.classList.remove("hidden");
   }
 
-  function closeConvertModal() {
-    leadEmailToConvert = null;
-    convertModal.classList.add("hidden");
+  function closeActionModal() {
+    pendingAction = null;
+    actionModal.classList.add("hidden");
   }
 
   function renderLeads() {
-    const leads = window.ZAStorage.getLeads().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const leads = window.ZAStorage
+      .getLeads()
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
     tableBody.innerHTML = "";
 
     if (!leads.length) {
@@ -51,7 +59,22 @@
         <td>
           <div class="actions">
             <a class="btn secondary" href="../relatorio/?email=${encodeURIComponent(lead.email)}">Relatório</a>
-            ${lead.status !== "convertido" ? `<button class="btn btn-convert" data-email="${lead.email}" data-nome="${lead.nome}">Converter</button>` : ""}
+
+            ${lead.status !== "arquivado" ? `
+              <button class="btn secondary btn-archive" data-email="${lead.email}" data-nome="${lead.nome}">
+                Arquivar
+              </button>
+            ` : ""}
+
+            <button class="btn danger btn-delete" data-email="${lead.email}" data-nome="${lead.nome}">
+              Excluir
+            </button>
+
+            ${lead.status !== "arquivado" ? `
+              <button class="btn btn-convert" data-email="${lead.email}" data-nome="${lead.nome}">
+                Converter
+              </button>
+            ` : ""}
           </div>
         </td>
       `;
@@ -66,37 +89,78 @@
       btn.addEventListener("click", () => {
         const email = btn.dataset.email;
         const nome = btn.dataset.nome;
-        openConvertModal(email, nome);
+
+        openActionModal({
+          title: "Converter lead em cliente",
+          subtitle: "Essa ação move o lead do pré-diagnóstico para a área de clientes.",
+          text: `Deseja converter ${nome} em cliente?`,
+          confirmLabel: "Confirmar conversão",
+          onConfirm: () => {
+            window.ZAStorage.convertLeadToCliente(email);
+            closeActionModal();
+            renderLeads();
+          }
+        });
+      });
+    });
+
+    document.querySelectorAll(".btn-archive").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const email = btn.dataset.email;
+        const nome = btn.dataset.nome;
+
+        openActionModal({
+          title: "Arquivar lead",
+          subtitle: "O lead continuará salvo, mas sairá do fluxo ativo de triagem.",
+          text: `Deseja arquivar ${nome}?`,
+          confirmLabel: "Arquivar",
+          onConfirm: () => {
+            window.ZAStorage.archiveLead(email);
+            closeActionModal();
+            renderLeads();
+          }
+        });
+      });
+    });
+
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const email = btn.dataset.email;
+        const nome = btn.dataset.nome;
+
+        openActionModal({
+          title: "Excluir lead",
+          subtitle: "Essa ação remove permanentemente o lead do pré-diagnóstico.",
+          text: `Deseja excluir ${nome}?`,
+          confirmLabel: "Excluir",
+          onConfirm: () => {
+            window.ZAStorage.removeLead(email);
+            closeActionModal();
+            renderLeads();
+          }
+        });
       });
     });
   }
 
-  cancelConvertBtn?.addEventListener("click", closeConvertModal);
+  cancelActionBtn?.addEventListener("click", closeActionModal);
 
-  confirmConvertBtn?.addEventListener("click", () => {
-    if (!leadEmailToConvert) return;
-
-    window.ZAStorage.convertLeadToCliente(leadEmailToConvert);
-    closeConvertModal();
-    renderLeads();
-  });
-
-  convertModal?.addEventListener("click", (event) => {
-    if (event.target === convertModal) {
-      closeConvertModal();
+  confirmActionBtn?.addEventListener("click", () => {
+    if (typeof pendingAction === "function") {
+      pendingAction();
     }
   });
 
-  clearAllBtn?.addEventListener("click", () => {
-    const ok = confirm("Isso apaga leads e clientes locais. Deseja continuar?");
-    if (!ok) return;
-    window.ZAStorage.clearAll();
-    location.reload();
+  actionModal?.addEventListener("click", (event) => {
+    if (event.target === actionModal) {
+      closeActionModal();
+    }
   });
 
   if (publicFormLinkBox) {
-    const base = window.location.origin + window.location.pathname.replace("pre-diagnostico/", "");
-    publicFormLinkBox.textContent = `${base}formulario/`;
+    const origin = window.location.origin;
+    const repoBase = window.location.pathname.replace(/pre-diagnostico\/?$/, "");
+    publicFormLinkBox.textContent = `${origin}${repoBase}formulario/`;
   }
 
   renderLeads();
