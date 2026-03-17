@@ -58,6 +58,8 @@
           <h4>Resumo</h4>
           <p><strong>Nome:</strong> ${cliente.nome}</p>
           <p><strong>Email:</strong> ${cliente.email}</p>
+          <p><strong>Data de nascimento:</strong> ${new Date(cliente.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR")}</p>
+          <p><strong>Idade:</strong> ${cliente.idade}</p>
           <p><strong>Status:</strong> ${cliente.status}</p>
           <p><strong>Plano:</strong> ${cliente.plano || "-"}</p>
           <p><strong>Fase atual:</strong> ${cliente.fase_nome}</p>
