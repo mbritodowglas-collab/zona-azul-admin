@@ -295,3 +295,15 @@ th{color:var(--muted);font-weight:600}
   justify-content:space-between;
   margin-top:12px;
 }
+
+.birth-grid{
+  display:grid;
+  grid-template-columns:1fr 1.2fr 1.2fr;
+  gap:10px;
+}
+
+@media (max-width:640px){
+  .birth-grid{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+}
