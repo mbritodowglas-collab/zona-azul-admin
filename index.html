@@ -4,275 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zona Azul Admin</title>
-  <style>
-    :root{
-      --bg:#0b1020;
-      --bg2:#111936;
-      --panel:#151f42;
-      --line:rgba(255,255,255,.08);
-      --text:#eef2ff;
-      --muted:#9aa8cf;
-      --primary:#5ea0ff;
-      --primary2:#8a74ff;
-      --success:#2ecc71;
-      --warning:#ffb020;
-      --danger:#ff5c7c;
-      --radius:18px;
-      --shadow:0 12px 28px rgba(0,0,0,.28);
-    }
-
-    *{box-sizing:border-box}
-    html,body{
-      margin:0;
-      padding:0;
-      font-family:Arial,sans-serif;
-      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
-      color:var(--text);
-      min-height:100vh;
-    }
-
-    a{text-decoration:none;color:inherit}
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-
-    .app{
-      display:grid;
-      grid-template-columns:260px 1fr;
-      min-height:100vh;
-    }
-
-    .sidebar{
-      background:rgba(10,16,32,.7);
-      border-right:1px solid var(--line);
-      padding:24px 18px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:rgba(255,255,255,.03);
-      margin-bottom:24px;
-    }
-
-    .brand-badge{
-      width:42px;
-      height:42px;
-      border-radius:12px;
-      display:grid;
-      place-items:center;
-      font-weight:700;
-      background:linear-gradient(135deg,var(--primary),var(--primary2));
-      box-shadow:var(--shadow);
-    }
-
-    .brand h1{margin:0;font-size:16px}
-    .brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
-
-    .nav{
-      display:grid;
-      gap:8px;
-    }
-
-    .nav a{
-      padding:12px 14px;
-      border-radius:14px;
-      color:var(--muted);
-      border:1px solid transparent;
-      display:block;
-      transition:.2s;
-    }
-
-    .nav a:hover,
-    .nav a.active{
-      color:var(--text);
-      background:rgba(94,160,255,.10);
-      border-color:rgba(94,160,255,.20);
-    }
-
-    .main{
-      padding:28px;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
-    }
-
-    .topbar h2{
-      margin:0;
-      font-size:26px;
-    }
-
-    .topbar p{
-      margin:6px 0 0;
-      color:var(--muted);
-    }
-
-    .grid{
-      display:grid;
-      gap:18px;
-    }
-
-    .grid-4{
-      grid-template-columns:repeat(4,minmax(0,1fr));
-    }
-
-    .grid-2{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    .card{
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-    }
-
-    .card-body{
-      padding:20px;
-    }
-
-    .stat{
-      padding:18px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
-    }
-
-    .stat-label{
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .stat-value{
-      font-size:30px;
-      font-weight:700;
-      margin-top:10px;
-    }
-
-    .btn{
-      display:inline-block;
-      border:none;
-      border-radius:12px;
-      padding:12px 16px;
-      color:#fff;
-      background:linear-gradient(135deg,var(--primary),var(--primary2));
-      font-weight:700;
-      box-shadow:var(--shadow);
-    }
-
-    .btn.secondary{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      box-shadow:none;
-    }
-
-    .table-wrap{
-      overflow:auto;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:700px;
-    }
-
-    th,td{
-      text-align:left;
-      padding:14px 12px;
-      border-bottom:1px solid var(--line);
-      font-size:14px;
-    }
-
-    th{
-      color:var(--muted);
-      font-weight:600;
-    }
-
-    .chip{
-      display:inline-block;
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-    }
-
-    .chip.warning{
-      color:#ffe1a6;
-      background:rgba(255,176,32,.12);
-    }
-
-    .chip.success{
-      color:#c6ffdb;
-      background:rgba(46,204,113,.12);
-    }
-
-    .chip.danger{
-      color:#ffd1da;
-      background:rgba(255,92,124,.12);
-    }
-
-    .empty{
-      padding:22px;
-      text-align:center;
-      color:var(--muted);
-      border:1px dashed rgba(255,255,255,.14);
-      border-radius:16px;
-      background:rgba(255,255,255,.02);
-    }
-
-    .hidden{
-      display:none !important;
-    }
-
-    .field{
-      margin-bottom:16px;
-    }
-
-    .field label{
-      display:block;
-      margin-bottom:6px;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .field input,
-    .field select,
-    .field textarea{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.04);
-      color:white;
-    }
-
-    .field textarea{
-      min-height:100px;
-      resize:vertical;
-    }
-
-    .public-wrap{
-      max-width:900px;
-      margin:0 auto;
-      width:100%;
-    }
-
-    @media (max-width:980px){
-      .app{
-        grid-template-columns:1fr;
-      }
-      .grid-4,.grid-2{
-        grid-template-columns:1fr;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <div class="app">
+  <div id="adminApp" class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">ZA</div>
@@ -285,20 +20,22 @@
       <nav class="nav">
         <a href="#" class="nav-link active" data-page="dashboard">Dashboard</a>
         <a href="#" class="nav-link" data-page="leads">Leads</a>
-        <a href="#" class="nav-link" data-page="alunos">Alunos</a>
+        <a href="#" class="nav-link" data-page="alunos">Clientes</a>
         <a href="#" class="nav-link" data-page="diagnostico">Diagnóstico</a>
         <a href="#" class="nav-link" data-page="planejamento">Planejamento</a>
         <a href="#" class="nav-link" data-page="periodizacao">Periodização</a>
-        <a href="#" class="nav-link" data-page="relatorio">Relatório</a>
-        <a href="#" class="nav-link" data-page="prediagnostico">Pré-diagnóstico</a>
+        <a href="#" class="nav-link" data-page="relatorio-admin">Relatório</a>
       </nav>
     </aside>
 
     <main class="main">
       <section id="dashboard" class="page">
         <div class="topbar">
-          <h2>Dashboard</h2>
-          <p>Visão geral do fluxo operacional do Zona Azul.</p>
+          <div>
+            <h2>Dashboard</h2>
+            <p>Visão geral do fluxo operacional do Zona Azul.</p>
+          </div>
+          <a class="btn secondary" href="#public-pre">Abrir link público</a>
         </div>
 
         <div class="grid grid-4">
@@ -311,51 +48,64 @@
             <div class="stat-value" id="dashboardAnaliseCount">0</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Alunos ativos</div>
-            <div class="stat-value">0</div>
+            <div class="stat-label">Convertidos</div>
+            <div class="stat-value" id="dashboardConvertidosCount">0</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Relatórios</div>
-            <div class="stat-value">0</div>
+            <div class="stat-label">Score médio</div>
+            <div class="stat-value" id="dashboardMediaCount">0.0</div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-body">
-            <h3>Próximos passos do sistema</h3>
-            <p style="color:var(--muted);">
-              O lead agora nasce pelo pré-diagnóstico. Nada de cadastro manual. Bem mais elegante, menos gambiarra.
-            </p>
+            <h3>Links do sistema</h3>
+            <p class="muted">Use estes links depois de publicar no GitHub Pages.</p>
+            <div class="grid grid-2">
+              <div class="kpi-box">
+                <span>Pré-diagnóstico público</span>
+                <strong id="publicLinkBox">#public-pre</strong>
+              </div>
+              <div class="kpi-box">
+                <span>Relatório de um lead</span>
+                <strong>#report/EMAIL_DO_LEAD</strong>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="leads" class="page hidden">
         <div class="topbar">
-          <h2>Leads</h2>
-          <p>Interessados captados automaticamente pelo pré-diagnóstico.</p>
+          <div>
+            <h2>Leads</h2>
+            <p>Captados automaticamente pelo pré-diagnóstico.</p>
+          </div>
         </div>
 
         <div class="card">
+          <div class="card-header">
+            <h3>Lista de leads</h3>
+            <button class="btn secondary" id="clearLeadsBtn">Limpar leads locais</button>
+          </div>
           <div class="card-body">
-            <h3 style="margin-top:0;">Lista de leads</h3>
-
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
                     <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>Objetivo</th>
+                    <th>Email</th>
+                    <th>Pilar mais baixo</th>
+                    <th>Média</th>
                     <th>Status</th>
-                    <th>Entrada</th>
+                    <th>Por que parou</th>
+                    <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody id="leadsTableBody"></tbody>
               </table>
             </div>
-
-            <div id="noLeadsMessage" class="empty" style="margin-top:16px; display:none;">
+            <div id="noLeadsMessage" class="empty hidden">
               Nenhum lead respondeu o pré-diagnóstico ainda.
             </div>
           </div>
@@ -364,38 +114,12 @@
 
       <section id="alunos" class="page hidden">
         <div class="topbar">
-          <h2>Alunos</h2>
-          <p>Base ativa do protocolo.</p>
+          <h2>Clientes</h2>
+          <p>Área reservada para os clientes convertidos do lead.</p>
         </div>
-
         <div class="card">
           <div class="card-body">
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Objetivo</th>
-                    <th>Status</th>
-                    <th>Responsável</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Ana Souza</td>
-                    <td>Emagrecimento</td>
-                    <td><span class="chip success">ativo</span></td>
-                    <td>Márcio</td>
-                  </tr>
-                  <tr>
-                    <td>Paula Lima</td>
-                    <td>Constância</td>
-                    <td><span class="chip warning">em planejamento</span></td>
-                    <td>Sócio</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <p class="muted">Placeholder até ligarmos a conversão completa.</p>
           </div>
         </div>
       </section>
@@ -403,14 +127,11 @@
       <section id="diagnostico" class="page hidden">
         <div class="topbar">
           <h2>Diagnóstico</h2>
-          <p>Área de avaliação física, comportamental e ambiental.</p>
+          <p>Aqui entra a avaliação interna completa após o diagnóstico pago.</p>
         </div>
-
         <div class="card">
           <div class="card-body">
-            <p style="color:var(--muted);">
-              Aqui vai entrar a ficha completa de diagnóstico interno.
-            </p>
+            <p class="muted">Módulo reservado para a próxima etapa.</p>
           </div>
         </div>
       </section>
@@ -420,12 +141,9 @@
           <h2>Planejamento</h2>
           <p>Direção estratégica do caso.</p>
         </div>
-
         <div class="card">
           <div class="card-body">
-            <p style="color:var(--muted);">
-              Aqui entra objetivo central, direção comportamental, direção física e metas da fase.
-            </p>
+            <p class="muted">Módulo reservado para a próxima etapa.</p>
           </div>
         </div>
       </section>
@@ -433,244 +151,184 @@
       <section id="periodizacao" class="page hidden">
         <div class="topbar">
           <h2>Periodização</h2>
-          <p>Organização dos ciclos do treino.</p>
+          <p>Estrutura dos ciclos e resumo operacional para o MFIT.</p>
         </div>
-
         <div class="card">
           <div class="card-body">
-            <p style="color:var(--muted);">
-              Aqui entram os ciclos, duração, frequência, divisão e resumo para o MFIT.
-            </p>
+            <p class="muted">Módulo reservado para a próxima etapa.</p>
           </div>
         </div>
       </section>
 
-      <section id="relatorio" class="page hidden">
+      <section id="relatorio-admin" class="page hidden">
         <div class="topbar">
           <h2>Relatório</h2>
-          <p>Resumo final para visualização por link e PDF.</p>
+          <p>O relatório individual é acessado pela lista de leads.</p>
         </div>
-
         <div class="card">
           <div class="card-body">
-            <p style="color:var(--muted);">
-              Aqui vai entrar a estrutura do relatório do aluno.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="prediagnostico" class="page hidden">
-        <div class="topbar">
-          <h2>Pré-diagnóstico</h2>
-          <p>Formulário público que gera o lead automaticamente.</p>
-        </div>
-
-        <div class="public-wrap">
-          <div class="card">
-            <div class="card-body">
-              <h3 style="margin-top:0;">Questionário inicial</h3>
-
-              <div class="grid grid-2">
-                <div>
-                  <div class="field">
-                    <label>Nome completo</label>
-                    <input id="preNome" type="text" placeholder="Seu nome">
-                  </div>
-
-                  <div class="field">
-                    <label>Telefone</label>
-                    <input id="preTelefone" type="text" placeholder="(92) 99999-9999">
-                  </div>
-
-                  <div class="field">
-                    <label>E-mail</label>
-                    <input id="preEmail" type="email" placeholder="seuemail@email.com">
-                  </div>
-
-                  <div class="field">
-                    <label>Objetivo principal</label>
-                    <input id="preObjetivo" type="text" placeholder="Ex.: Emagrecimento">
-                  </div>
-                </div>
-
-                <div>
-                  <div class="field">
-                    <label>Como está sua rotina hoje?</label>
-                    <select id="preRotina">
-                      <option value="muito desorganizada">Muito desorganizada</option>
-                      <option value="razoável">Razoável</option>
-                      <option value="bem organizada">Bem organizada</option>
-                    </select>
-                  </div>
-
-                  <div class="field">
-                    <label>Como está seu sono?</label>
-                    <select id="preSono">
-                      <option value="ruim">Ruim</option>
-                      <option value="mediano">Mediano</option>
-                      <option value="bom">Bom</option>
-                    </select>
-                  </div>
-
-                  <div class="field">
-                    <label>Como está sua alimentação?</label>
-                    <select id="preAlimentacao">
-                      <option value="desorganizada">Desorganizada</option>
-                      <option value="razoável">Razoável</option>
-                      <option value="boa">Boa</option>
-                    </select>
-                  </div>
-
-                  <div class="field">
-                    <label>Maior dificuldade hoje</label>
-                    <textarea id="preDificuldade" placeholder="Descreva sua principal dificuldade"></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <button class="btn" id="submitPreBtn">Enviar pré-diagnóstico</button>
-            </div>
+            <p class="muted">Na tabela de leads, clique em “Relatório”.</p>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script>
-    const navLinks = document.querySelectorAll(".nav-link");
-    const pages = document.querySelectorAll(".page");
+  <div id="publicPrePage" class="public-page hidden">
+    <div class="public-wrap">
+      <div class="hero">
+        <small>PROTOCOLO ZONA AZUL</small>
+        <h1>Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
+        <p>
+          Responda com sinceridade. Este questionário gera um mini relatório inicial
+          para identificar seus principais gaps e o pilar com maior potencial de alavanca.
+        </p>
+      </div>
 
-    navLinks.forEach(link => {
-      link.addEventListener("click", function(e) {
-        e.preventDefault();
+      <div class="card">
+        <div class="card-body">
+          <form id="preForm">
+            <div class="grid grid-2">
+              <div>
+                <div class="field">
+                  <label>Nome</label>
+                  <input id="nome" type="text" required>
+                </div>
 
-        const pageId = this.dataset.page;
+                <div class="field">
+                  <label>Email</label>
+                  <input id="email" type="email" required>
+                </div>
 
-        navLinks.forEach(item => item.classList.remove("active"));
-        this.classList.add("active");
+                <div class="field">
+                  <label>Faixa etária</label>
+                  <select id="faixa_etaria" required>
+                    <option value="">Selecione</option>
+                    <option value="25-30">25-30</option>
+                    <option value="31-40">31-40</option>
+                    <option value="41-50">41-50</option>
+                    <option value="51-60">51-60</option>
+                    <option value="acima de 60">acima de 60</option>
+                  </select>
+                </div>
 
-        pages.forEach(page => page.classList.add("hidden"));
-        document.getElementById(pageId).classList.remove("hidden");
-      });
-    });
+                <div class="field">
+                  <label>Origem</label>
+                  <select id="origem" required>
+                    <option value="">Selecione</option>
+                    <option value="indicacao">indicação</option>
+                    <option value="instagram">instagram</option>
+                    <option value="google">google</option>
+                    <option value="outro">outro</option>
+                  </select>
+                </div>
+              </div>
 
-    const leadsStorageKey = "zonaAzulLeads";
+              <div>
+                <div class="field">
+                  <label>Já fez acompanhamento com personal ou nutricionista?</label>
+                  <select id="exp_personal" required>
+                    <option value="">Selecione</option>
+                    <option value="nunca">nunca</option>
+                    <option value="fez_nao_manteve">fez_nao_manteve</option>
+                    <option value="faz_atualmente">faz_atualmente</option>
+                    <option value="fez_manteve">fez_manteve</option>
+                  </select>
+                </div>
 
-    function getLeads() {
-      const data = localStorage.getItem(leadsStorageKey);
-      return data ? JSON.parse(data) : [];
-    }
+                <div class="field">
+                  <label>Já seguiu algum processo de emagrecimento ou reeducação alimentar?</label>
+                  <select id="exp_emagrecimento" required>
+                    <option value="">Selecione</option>
+                    <option value="nunca">nunca</option>
+                    <option value="nao_funcionou">nao_funcionou</option>
+                    <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
+                    <option value="em_processo">em_processo</option>
+                  </select>
+                </div>
 
-    function saveLeads(leads) {
-      localStorage.setItem(leadsStorageKey, JSON.stringify(leads));
-    }
+                <div class="field">
+                  <label>O que já funcionou para você? (opcional)</label>
+                  <textarea id="o_que_funcionou"></textarea>
+                </div>
 
-    function getStatusClass(status) {
-      if (status === "convertido") return "success";
-      if (status === "não convertido") return "danger";
-      return "warning";
-    }
+                <div class="field">
+                  <label>Por que você parou?</label>
+                  <textarea id="por_que_parou" required></textarea>
+                </div>
+              </div>
+            </div>
 
-    function updateDashboard() {
-      const leads = getLeads();
-      const leadsCount = document.getElementById("dashboardLeadsCount");
-      const analiseCount = document.getElementById("dashboardAnaliseCount");
+            <div class="card" style="margin:8px 0 18px;">
+              <div class="card-body">
+                <h3 style="margin-top:0;">Radar Zona Azul</h3>
+                <p class="muted">Escala de 1 a 10, onde 1 é muito ruim/nunca e 10 é excelente/sempre.</p>
 
-      if (leadsCount) leadsCount.textContent = leads.length;
-      if (analiseCount) {
-        analiseCount.textContent = leads.filter(lead => lead.status === "em análise").length;
-      }
-    }
+                <div class="grid grid-2">
+                  <div class="field">
+                    <label>Movimento</label>
+                    <input id="score_movimento" type="number" min="1" max="10" required>
+                  </div>
+                  <div class="field">
+                    <label>Alimentação</label>
+                    <input id="score_alimentacao" type="number" min="1" max="10" required>
+                  </div>
+                  <div class="field">
+                    <label>Sono</label>
+                    <input id="score_sono" type="number" min="1" max="10" required>
+                  </div>
+                  <div class="field">
+                    <label>Propósito</label>
+                    <input id="score_proposito" type="number" min="1" max="10" required>
+                  </div>
+                  <div class="field">
+                    <label>Vida Social</label>
+                    <input id="score_social" type="number" min="1" max="10" required>
+                  </div>
+                  <div class="field">
+                    <label>Estresse</label>
+                    <input id="score_estresse" type="number" min="1" max="10" required>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    function renderLeads() {
-      const leads = getLeads();
-      const tableBody = document.getElementById("leadsTableBody");
-      const emptyMessage = document.getElementById("noLeadsMessage");
+            <div class="grid grid-2">
+              <div class="field">
+                <label>Qual é o seu maior desafio hoje?</label>
+                <textarea id="desafio_atual" required></textarea>
+              </div>
+              <div class="field">
+                <label>O que te faria sentir sua vida mais saudável em 6 meses?</label>
+                <textarea id="meta_6_meses" required></textarea>
+              </div>
+            </div>
 
-      if (!tableBody) return;
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <button type="submit" class="btn">Gerar mini relatório</button>
+              <a href="./" class="btn secondary">Voltar ao painel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      tableBody.innerHTML = "";
+  <div id="reportPage" class="report-shell hidden">
+    <div class="report-wrap">
+      <div class="report-actions no-print" style="margin-bottom:18px;">
+        <a href="./" class="btn secondary">Voltar ao painel</a>
+        <button class="btn" id="printReportBtn">Baixar / imprimir PDF</button>
+      </div>
+      <div class="report-card" id="reportContent"></div>
+    </div>
+  </div>
 
-      if (leads.length === 0) {
-        emptyMessage.style.display = "block";
-        updateDashboard();
-        return;
-      }
-
-      emptyMessage.style.display = "none";
-
-      leads.forEach(lead => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${lead.nome}</td>
-          <td>${lead.telefone}</td>
-          <td>${lead.objetivo}</td>
-          <td><span class="chip ${getStatusClass(lead.status)}">${lead.status}</span></td>
-          <td>${lead.data}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-
-      updateDashboard();
-    }
-
-    function setupPreDiagnostico() {
-      const submitBtn = document.getElementById("submitPreBtn");
-      if (!submitBtn) return;
-
-      submitBtn.addEventListener("click", () => {
-        const nome = document.getElementById("preNome").value.trim();
-        const telefone = document.getElementById("preTelefone").value.trim();
-        const email = document.getElementById("preEmail").value.trim();
-        const objetivo = document.getElementById("preObjetivo").value.trim();
-        const rotina = document.getElementById("preRotina").value;
-        const sono = document.getElementById("preSono").value;
-        const alimentacao = document.getElementById("preAlimentacao").value;
-        const dificuldade = document.getElementById("preDificuldade").value.trim();
-
-        if (!nome || !telefone || !email || !objetivo) {
-          alert("Preencha nome, telefone, e-mail e objetivo.");
-          return;
-        }
-
-        const leads = getLeads();
-
-        const novoLead = {
-          nome,
-          telefone,
-          email,
-          objetivo,
-          status: "em análise",
-          data: new Date().toLocaleDateString("pt-BR"),
-          respostas: {
-            rotina,
-            sono,
-            alimentacao,
-            dificuldade
-          }
-        };
-
-        leads.push(novoLead);
-        saveLeads(leads);
-        renderLeads();
-
-        document.getElementById("preNome").value = "";
-        document.getElementById("preTelefone").value = "";
-        document.getElementById("preEmail").value = "";
-        document.getElementById("preObjetivo").value = "";
-        document.getElementById("preRotina").value = "muito desorganizada";
-        document.getElementById("preSono").value = "ruim";
-        document.getElementById("preAlimentacao").value = "desorganizada";
-        document.getElementById("preDificuldade").value = "";
-
-        alert("Pré-diagnóstico enviado. Lead criado com sucesso.");
-      });
-    }
-
-    renderLeads();
-    setupPreDiagnostico();
-    updateDashboard();
-  </script>
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/calculos.js"></script>
+  <script src="assets/js/admin.js"></script>
+  <script src="assets/js/publico.js"></script>
+  <script src="assets/js/relatorio.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
