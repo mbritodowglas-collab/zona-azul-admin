@@ -56,6 +56,24 @@
     });
   }
 
+  function setupScoreButtons() {
+    const groups = document.querySelectorAll(".score-group");
+
+    groups.forEach(group => {
+      const targetId = group.dataset.target;
+      const hiddenInput = document.getElementById(targetId);
+      const buttons = group.querySelectorAll(".score-btn");
+
+      buttons.forEach(button => {
+        button.addEventListener("click", () => {
+          buttons.forEach(btn => btn.classList.remove("selected"));
+          button.classList.add("selected");
+          hiddenInput.value = button.dataset.value;
+        });
+      });
+    });
+  }
+
   function showStep(step) {
     steps.forEach((el, index) => {
       el.classList.toggle("hidden", index !== step - 1);
@@ -145,11 +163,13 @@
 
     form.reset();
     document.querySelectorAll(".option-card").forEach(card => card.classList.remove("selected"));
+    document.querySelectorAll(".score-btn").forEach(card => card.classList.remove("selected"));
     formCard.classList.add("hidden");
     successCard.classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   setupOptionCards();
+  setupScoreButtons();
   showStep(currentStep);
 })();
