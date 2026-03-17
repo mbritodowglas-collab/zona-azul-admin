@@ -33,7 +33,6 @@
 
         <div class="actions">
           <a class="btn secondary" href="../formulario/" target="_blank">Abrir formulário público</a>
-          <button class="btn danger" id="clear-all-btn">Limpar tudo</button>
         </div>
       </div>
 
@@ -75,23 +74,21 @@
     </main>
   </div>
 
-  <!-- MODAL DE CONVERSÃO -->
-  <div class="modal-overlay hidden" id="convert-modal">
+  <!-- MODAL GENÉRICO -->
+  <div class="modal-overlay hidden" id="action-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>Converter lead em cliente</h3>
-        <p class="muted">
-          Essa ação vai enviar os dados do pré-diagnóstico para a área de clientes.
-        </p>
+        <h3 id="action-modal-title">Confirmar ação</h3>
+        <p class="muted" id="action-modal-subtitle">Revise antes de continuar.</p>
       </div>
 
       <div class="modal-body">
-        <p id="convert-modal-text">Deseja converter este lead em cliente?</p>
+        <p id="action-modal-text">Deseja continuar?</p>
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn secondary" id="cancel-convert-btn">Cancelar</button>
-        <button type="button" class="btn" id="confirm-convert-btn">Confirmar conversão</button>
+        <button type="button" class="btn secondary" id="cancel-action-btn">Cancelar</button>
+        <button type="button" class="btn" id="confirm-action-btn">Confirmar</button>
       </div>
     </div>
   </div>
