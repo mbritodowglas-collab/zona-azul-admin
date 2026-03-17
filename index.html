@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zona Azul Admin</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
+
 <body>
+
+  <!-- ================= ADMIN ================= -->
   <div id="adminApp" class="app">
+    
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">ZA</div>
@@ -29,6 +35,8 @@
     </aside>
 
     <main class="main">
+
+      <!-- DASHBOARD -->
       <section id="dashboard" class="page">
         <div class="topbar">
           <div>
@@ -60,34 +68,38 @@
         <div class="card">
           <div class="card-body">
             <h3>Links do sistema</h3>
-            <p class="muted">Use estes links depois de publicar no GitHub Pages.</p>
+            <p class="muted">Use estes links depois de publicar.</p>
+
             <div class="grid grid-2">
               <div class="kpi-box">
-                <span>Pré-diagnóstico público</span>
-                <strong id="publicLinkBox">#public-pre</strong>
+                <span>Pré-diagnóstico</span>
+                <strong>#public-pre</strong>
               </div>
+
               <div class="kpi-box">
-                <span>Relatório de um lead</span>
-                <strong>#report/EMAIL_DO_LEAD</strong>
+                <span>Relatório</span>
+                <strong>#report/EMAIL</strong>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- LEADS -->
       <section id="leads" class="page hidden">
         <div class="topbar">
-          <div>
-            <h2>Leads</h2>
-            <p>Captados automaticamente pelo pré-diagnóstico.</p>
-          </div>
+          <h2>Leads</h2>
+          <p>Captados automaticamente.</p>
         </div>
 
         <div class="card">
           <div class="card-header">
             <h3>Lista de leads</h3>
-            <button class="btn secondary" id="clearLeadsBtn">Limpar leads locais</button>
+            <button class="btn secondary" id="clearLeadsBtn">
+              Limpar leads
+            </button>
           </div>
+
           <div class="card-body">
             <div class="table-wrap">
               <table>
@@ -95,240 +107,100 @@
                   <tr>
                     <th>Nome</th>
                     <th>Email</th>
-                    <th>Pilar mais baixo</th>
+                    <th>Pilar</th>
                     <th>Média</th>
                     <th>Status</th>
-                    <th>Por que parou</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody id="leadsTableBody"></tbody>
               </table>
             </div>
+
             <div id="noLeadsMessage" class="empty hidden">
-              Nenhum lead respondeu o pré-diagnóstico ainda.
+              Nenhum lead ainda.
             </div>
           </div>
         </div>
       </section>
 
+      <!-- CLIENTES -->
       <section id="alunos" class="page hidden">
         <div class="topbar">
           <h2>Clientes</h2>
-          <p>Área reservada para os clientes convertidos do lead.</p>
         </div>
         <div class="card">
           <div class="card-body">
-            <p class="muted">Placeholder até ligarmos a conversão completa.</p>
+            <p class="muted">Em breve.</p>
           </div>
         </div>
       </section>
 
-      <section id="diagnostico" class="page hidden">
-        <div class="topbar">
-          <h2>Diagnóstico</h2>
-          <p>Aqui entra a avaliação interna completa após o diagnóstico pago.</p>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="muted">Módulo reservado para a próxima etapa.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="planejamento" class="page hidden">
-        <div class="topbar">
-          <h2>Planejamento</h2>
-          <p>Direção estratégica do caso.</p>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="muted">Módulo reservado para a próxima etapa.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="periodizacao" class="page hidden">
-        <div class="topbar">
-          <h2>Periodização</h2>
-          <p>Estrutura dos ciclos e resumo operacional para o MFIT.</p>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="muted">Módulo reservado para a próxima etapa.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="relatorio-admin" class="page hidden">
-        <div class="topbar">
-          <h2>Relatório</h2>
-          <p>O relatório individual é acessado pela lista de leads.</p>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <p class="muted">Na tabela de leads, clique em “Relatório”.</p>
-          </div>
-        </div>
-      </section>
     </main>
   </div>
 
+  <!-- ================= PÚBLICO ================= -->
   <div id="publicPrePage" class="public-page hidden">
     <div class="public-wrap">
+
       <div class="hero">
-        <small>PROTOCOLO ZONA AZUL</small>
-        <h1>Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
-        <p>
-          Responda com sinceridade. Este questionário gera um mini relatório inicial
-          para identificar seus principais gaps e o pilar com maior potencial de alavanca.
-        </p>
+        <h1>Pré-diagnóstico Zona Azul</h1>
+        <p>Responda e receba seu relatório.</p>
       </div>
 
       <div class="card">
         <div class="card-body">
+
           <form id="preForm">
-            <div class="grid grid-2">
-              <div>
-                <div class="field">
-                  <label>Nome</label>
-                  <input id="nome" type="text" required>
-                </div>
 
-                <div class="field">
-                  <label>Email</label>
-                  <input id="email" type="email" required>
-                </div>
-
-                <div class="field">
-                  <label>Faixa etária</label>
-                  <select id="faixa_etaria" required>
-                    <option value="">Selecione</option>
-                    <option value="25-30">25-30</option>
-                    <option value="31-40">31-40</option>
-                    <option value="41-50">41-50</option>
-                    <option value="51-60">51-60</option>
-                    <option value="acima de 60">acima de 60</option>
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label>Origem</label>
-                  <select id="origem" required>
-                    <option value="">Selecione</option>
-                    <option value="indicacao">indicação</option>
-                    <option value="instagram">instagram</option>
-                    <option value="google">google</option>
-                    <option value="outro">outro</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <div class="field">
-                  <label>Já fez acompanhamento com personal ou nutricionista?</label>
-                  <select id="exp_personal" required>
-                    <option value="">Selecione</option>
-                    <option value="nunca">nunca</option>
-                    <option value="fez_nao_manteve">fez_nao_manteve</option>
-                    <option value="faz_atualmente">faz_atualmente</option>
-                    <option value="fez_manteve">fez_manteve</option>
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label>Já seguiu algum processo de emagrecimento ou reeducação alimentar?</label>
-                  <select id="exp_emagrecimento" required>
-                    <option value="">Selecione</option>
-                    <option value="nunca">nunca</option>
-                    <option value="nao_funcionou">nao_funcionou</option>
-                    <option value="funcionou_nao_manteve">funcionou_nao_manteve</option>
-                    <option value="em_processo">em_processo</option>
-                  </select>
-                </div>
-
-                <div class="field">
-                  <label>O que já funcionou para você? (opcional)</label>
-                  <textarea id="o_que_funcionou"></textarea>
-                </div>
-
-                <div class="field">
-                  <label>Por que você parou?</label>
-                  <textarea id="por_que_parou" required></textarea>
-                </div>
-              </div>
+            <div class="field">
+              <label>Nome</label>
+              <input id="nome" required>
             </div>
 
-            <div class="card" style="margin:8px 0 18px;">
-              <div class="card-body">
-                <h3 style="margin-top:0;">Radar Zona Azul</h3>
-                <p class="muted">Escala de 1 a 10, onde 1 é muito ruim/nunca e 10 é excelente/sempre.</p>
-
-                <div class="grid grid-2">
-                  <div class="field">
-                    <label>Movimento</label>
-                    <input id="score_movimento" type="number" min="1" max="10" required>
-                  </div>
-                  <div class="field">
-                    <label>Alimentação</label>
-                    <input id="score_alimentacao" type="number" min="1" max="10" required>
-                  </div>
-                  <div class="field">
-                    <label>Sono</label>
-                    <input id="score_sono" type="number" min="1" max="10" required>
-                  </div>
-                  <div class="field">
-                    <label>Propósito</label>
-                    <input id="score_proposito" type="number" min="1" max="10" required>
-                  </div>
-                  <div class="field">
-                    <label>Vida Social</label>
-                    <input id="score_social" type="number" min="1" max="10" required>
-                  </div>
-                  <div class="field">
-                    <label>Estresse</label>
-                    <input id="score_estresse" type="number" min="1" max="10" required>
-                  </div>
-                </div>
-              </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="email" type="email" required>
             </div>
 
-            <div class="grid grid-2">
-              <div class="field">
-                <label>Qual é o seu maior desafio hoje?</label>
-                <textarea id="desafio_atual" required></textarea>
-              </div>
-              <div class="field">
-                <label>O que te faria sentir sua vida mais saudável em 6 meses?</label>
-                <textarea id="meta_6_meses" required></textarea>
-              </div>
+            <div class="field">
+              <label>Movimento (1-10)</label>
+              <input id="score_movimento" type="number" min="1" max="10" required>
             </div>
 
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <button type="submit" class="btn">Gerar mini relatório</button>
-              <a href="./" class="btn secondary">Voltar ao painel</a>
-            </div>
+            <button class="btn">Gerar relatório</button>
+
           </form>
+
         </div>
       </div>
+
     </div>
   </div>
 
+  <!-- ================= RELATÓRIO ================= -->
   <div id="reportPage" class="report-shell hidden">
     <div class="report-wrap">
-      <div class="report-actions no-print" style="margin-bottom:18px;">
-        <a href="./" class="btn secondary">Voltar ao painel</a>
-        <button class="btn" id="printReportBtn">Baixar / imprimir PDF</button>
+
+      <div class="report-actions no-print">
+        <a href="./" class="btn secondary">Voltar</a>
+        <button class="btn" onclick="window.print()">
+          Baixar PDF
+        </button>
       </div>
-      <div class="report-card" id="reportContent"></div>
+
+      <div id="reportContent"></div>
+
     </div>
   </div>
 
-  <script src="assets/js/storage.js"></script>
-  <script src="assets/js/calculos.js"></script>
-  <script src="assets/js/admin.js"></script>
-  <script src="assets/js/publico.js"></script>
-  <script src="assets/js/relatorio.js"></script>
-  <script src="assets/js/app.js"></script>
+  <!-- JS -->
+  <script src="./assets/js/storage.js"></script>
+  <script src="./assets/js/calculos.js"></script>
+  <script src="./assets/js/admin.js"></script>
+  <script src="./assets/js/publico.js"></script>
+  <script src="./assets/js/relatorio.js"></script>
+  <script src="./assets/js/app.js"></script>
+
 </body>
 </html>
