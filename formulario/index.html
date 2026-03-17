@@ -48,9 +48,29 @@
               </div>
 
               <div class="field">
-                <label for="data_nascimento">Data de nascimento</label>
-                <input id="data_nascimento" type="date" required />
-              </div>
+  <label>Data de nascimento</label>
+  <div class="birth-grid">
+    <input id="nascimento_dia" type="number" min="1" max="31" placeholder="Dia" required />
+    
+    <select id="nascimento_mes" required>
+      <option value="">Mês</option>
+      <option value="1">Jan</option>
+      <option value="2">Fev</option>
+      <option value="3">Mar</option>
+      <option value="4">Abr</option>
+      <option value="5">Mai</option>
+      <option value="6">Jun</option>
+      <option value="7">Jul</option>
+      <option value="8">Ago</option>
+      <option value="9">Set</option>
+      <option value="10">Out</option>
+      <option value="11">Nov</option>
+      <option value="12">Dez</option>
+    </select>
+
+    <input id="nascimento_ano" type="number" min="1900" max="2100" placeholder="Ano" required />
+  </div>
+</div>
 
               <div class="field">
                 <label for="origem">Origem</label>
