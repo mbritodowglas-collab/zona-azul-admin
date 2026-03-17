@@ -561,3 +561,18 @@ th{color:var(--muted);font-weight:600}
     text-align:center;
   }
 }
+
+.actions .btn{
+  padding:10px 14px;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn.danger{
+  background:linear-gradient(135deg,#e05252,#ff7f7f);
+  box-shadow:none;
+}
