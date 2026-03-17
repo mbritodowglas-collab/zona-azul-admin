@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes | Zona Azul Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul Admin</h1>
+          <p>Operação do cliente</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a class="active" href="./index.html">Clientes</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2>Clientes</h2>
+          <p>Clientes convertidos a partir do pré-diagnóstico.</p>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="card-header">
+          <h3>Lista de clientes</h3>
+        </div>
+        <div class="card-body">
+          <div id="empty-clientes" class="empty-state hidden">Nenhum cliente convertido ainda.</div>
+
+          <div class="table-wrap" id="clientes-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Plano</th>
+                  <th>Fase atual</th>
+                  <th>Status</th>
+                  <th>Data de início</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clientes-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card hidden" id="cliente-detail-card">
+        <div class="card-header">
+          <h3>Dados do cliente</h3>
+        </div>
+        <div class="card-body" id="cliente-detail-body"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/clientes.js"></script>
+</body>
+</html>
