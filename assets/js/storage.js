@@ -1,44 +1,98 @@
 window.ZAStorage = (() => {
-  const LEADS_KEY = "zonaAzulLeadsV3";
+  const KEY = "zonaAzulSistemaV1";
 
-  function getLeads() {
-    const raw = localStorage.getItem(LEADS_KEY);
-    return raw ? JSON.parse(raw) : [];
+  function getData() {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw);
+
+    return {
+      leads: [],
+      clientes: []
+    };
   }
 
-  function saveLeads(leads) {
-    localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+  function saveData(data) {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function getLeads() {
+    return getData().leads || [];
+  }
+
+  function getClientes() {
+    return getData().clientes || [];
   }
 
   function upsertLead(lead) {
-    const leads = getLeads();
+    const data = getData();
     const email = lead.email.toLowerCase().trim();
-    const index = leads.findIndex(item => item.email === email);
+    const index = data.leads.findIndex(item => item.email === email);
 
     if (index >= 0) {
-      leads[index] = {
-        ...leads[index],
+      data.leads[index] = {
+        ...data.leads[index],
         ...lead,
-        email,
+        email
       };
     } else {
-      leads.unshift({
+      data.leads.unshift({
         ...lead,
-        email,
+        email
       });
     }
 
-    saveLeads(leads);
+    saveData(data);
   }
 
-  function clearLeads() {
-    localStorage.removeItem(LEADS_KEY);
+  function convertLeadToCliente(email) {
+    const data = getData();
+    const emailNormalized = email.toLowerCase().trim();
+    const leadIndex = data.leads.findIndex(item => item.email === emailNormalized);
+
+    if (leadIndex < 0) return false;
+
+    const lead = data.leads[leadIndex];
+    const clienteExists = data.clientes.find(item => item.email === emailNormalized);
+
+    if (clienteExists) return true;
+
+    const cliente = {
+      id: lead.id,
+      nome: lead.nome,
+      email: lead.email,
+      origem: lead.origem,
+      faixa_etaria: lead.faixa_etaria,
+      status: "ativo",
+      plano: "",
+      fase_atual: 1,
+      fase_nome: "Consciência e Reset",
+      data_inicio: new Date().toISOString(),
+      preDiagnostico: { ...lead },
+      diagnosticoCompleto: {},
+      relatorioCompleto: {},
+      planejamento: {},
+      periodizacao: [],
+      checkins: [],
+      historico: []
+    };
+
+    data.clientes.unshift(cliente);
+    data.leads[leadIndex].status = "convertido";
+    saveData(data);
+    return true;
+  }
+
+  function clearAll() {
+    localStorage.removeItem(KEY);
   }
 
   return {
+    getData,
+    saveData,
     getLeads,
-    saveLeads,
+    getClientes,
     upsertLead,
-    clearLeads,
+    convertLeadToCliente,
+    clearAll
   };
 })();
