@@ -1,15 +1,31 @@
 (() => {
   const tableBody = document.getElementById("leads-table-body");
   const emptyLeads = document.getElementById("empty-leads");
-  const detailCard = document.getElementById("lead-detail-card");
-  const detailBody = document.getElementById("lead-detail-body");
   const clearAllBtn = document.getElementById("clear-all-btn");
   const publicFormLinkBox = document.getElementById("public-form-link-box");
+
+  const convertModal = document.getElementById("convert-modal");
+  const convertModalText = document.getElementById("convert-modal-text");
+  const cancelConvertBtn = document.getElementById("cancel-convert-btn");
+  const confirmConvertBtn = document.getElementById("confirm-convert-btn");
+
+  let leadEmailToConvert = null;
 
   function statusClass(status) {
     if (status === "convertido") return "success";
     if (status === "perdido") return "danger";
     return "warning";
+  }
+
+  function openConvertModal(email, nome) {
+    leadEmailToConvert = email;
+    convertModalText.textContent = `Deseja converter ${nome} em cliente?`;
+    convertModal.classList.remove("hidden");
+  }
+
+  function closeConvertModal() {
+    leadEmailToConvert = null;
+    convertModal.classList.add("hidden");
   }
 
   function renderLeads() {
@@ -34,8 +50,8 @@
         <td><span class="chip ${statusClass(lead.status)}">${lead.status}</span></td>
         <td>
           <div class="actions">
-            <button class="btn secondary btn-view" data-email="${lead.email}">Ver</button>
-            ${lead.status !== "convertido" ? `<button class="btn btn-convert" data-email="${lead.email}">Converter</button>` : ""}
+            <a class="btn secondary" href="../relatorio/?email=${encodeURIComponent(lead.email)}">Relatório</a>
+            ${lead.status !== "convertido" ? `<button class="btn btn-convert" data-email="${lead.email}" data-nome="${lead.nome}">Converter</button>` : ""}
           </div>
         </td>
       `;
@@ -46,72 +62,30 @@
   }
 
   function bindLeadButtons() {
-    document.querySelectorAll(".btn-view").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const email = btn.dataset.email;
-        const lead = window.ZAStorage.getLeads().find(item => item.email === email);
-        if (!lead) return;
-        renderLeadDetail(lead);
-      });
-    });
-
     document.querySelectorAll(".btn-convert").forEach(btn => {
       btn.addEventListener("click", () => {
         const email = btn.dataset.email;
-        const ok = confirm("Converter este lead em cliente?");
-        if (!ok) return;
-
-        window.ZAStorage.convertLeadToCliente(email);
-        renderLeads();
-
-        const lead = window.ZAStorage.getLeads().find(item => item.email === email);
-        if (lead) renderLeadDetail(lead);
+        const nome = btn.dataset.nome;
+        openConvertModal(email, nome);
       });
     });
   }
 
-  function renderLeadDetail(lead) {
-    detailCard.classList.remove("hidden");
+  cancelConvertBtn?.addEventListener("click", closeConvertModal);
 
-    const gapsHtml = (lead.top_3_gaps || [])
-      .map(item => `<span class="chip warning">${window.ZACalculos.pillarLabels[item.key]} (${item.score})</span>`)
-      .join(" ");
+  confirmConvertBtn?.addEventListener("click", () => {
+    if (!leadEmailToConvert) return;
 
-    detailBody.innerHTML = `
-      <div class="detail-grid">
-        <div class="detail-box">
-          <h4>Identificação</h4>
-          <p><strong>Nome:</strong> ${lead.nome}</p>
-          <p><strong>Email:</strong> ${lead.email}</p>
-          <p><strong>Data de nascimento:</strong> ${new Date(lead.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR")}</p>
-          <p><strong>Idade:</strong> ${lead.idade}</p>
-          <p><strong>Origem:</strong> ${lead.origem}</p>
-        </div>
+    window.ZAStorage.convertLeadToCliente(leadEmailToConvert);
+    closeConvertModal();
+    renderLeads();
+  });
 
-        <div class="detail-box">
-          <h4>Resumo do Radar</h4>
-          <p><strong>Média geral:</strong> ${lead.media_geral}</p>
-          <p><strong>Pilar mais baixo:</strong> ${window.ZACalculos.pillarLabels[lead.pilar_mais_baixo] || "—"}</p>
-          <p><strong>Top 3 gaps:</strong><br>${gapsHtml || "Nenhum gap prioritário."}</p>
-        </div>
-
-        <div class="detail-box">
-          <h4>Histórico</h4>
-          <p><strong>Exp. com personal:</strong> ${lead.exp_personal}</p>
-          <p><strong>Exp. com emagrecimento:</strong> ${lead.exp_emagrecimento}</p>
-          <p><strong>O que funcionou:</strong> ${lead.o_que_funcionou || "-"}</p>
-          <p><strong>Por que parou:</strong> ${lead.por_que_parou}</p>
-        </div>
-
-        <div class="detail-box">
-          <h4>Contexto final</h4>
-          <p><strong>Desafio atual:</strong> ${lead.desafio_atual}</p>
-          <p><strong>Meta 6 meses:</strong> ${lead.meta_6_meses}</p>
-          <p><strong>Status:</strong> ${lead.status}</p>
-        </div>
-      </div>
-    `;
-  }
+  convertModal?.addEventListener("click", (event) => {
+    if (event.target === convertModal) {
+      closeConvertModal();
+    }
+  });
 
   clearAllBtn?.addEventListener("click", () => {
     const ok = confirm("Isso apaga leads e clientes locais. Deseja continuar?");
