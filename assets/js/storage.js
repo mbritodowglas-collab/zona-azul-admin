@@ -54,7 +54,11 @@ window.ZAStorage = (() => {
     const lead = data.leads[leadIndex];
     const clienteExists = data.clientes.find(item => item.email === emailNormalized);
 
-    if (clienteExists) return true;
+    if (clienteExists) {
+      data.leads.splice(leadIndex, 1);
+      saveData(data);
+      return true;
+    }
 
     const cliente = {
       id: lead.id,
@@ -78,7 +82,10 @@ window.ZAStorage = (() => {
     };
 
     data.clientes.unshift(cliente);
-    data.leads[leadIndex].status = "convertido";
+
+    // remove completamente o lead do pré-diagnóstico
+    data.leads.splice(leadIndex, 1);
+
     saveData(data);
     return true;
   }
