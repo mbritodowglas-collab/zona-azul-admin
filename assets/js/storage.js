@@ -1,39 +1,38 @@
 window.ZAStorage = (() => {
-  const leadsStorageKey = "zonaAzulLeadsV2";
+  const LEADS_KEY = "zonaAzulLeadsV3";
 
   function getLeads() {
-    const data = localStorage.getItem(leadsStorageKey);
-    return data ? JSON.parse(data) : [];
+    const raw = localStorage.getItem(LEADS_KEY);
+    return raw ? JSON.parse(raw) : [];
   }
 
   function saveLeads(leads) {
-    localStorage.setItem(leadsStorageKey, JSON.stringify(leads));
+    localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
   }
 
   function upsertLead(lead) {
     const leads = getLeads();
-    const existingIndex = leads.findIndex(item => item.email === lead.email);
+    const email = lead.email.toLowerCase().trim();
+    const index = leads.findIndex(item => item.email === email);
 
-    if (existingIndex >= 0) {
-      leads[existingIndex] = {
-        ...leads[existingIndex],
+    if (index >= 0) {
+      leads[index] = {
+        ...leads[index],
         ...lead,
-        id: leads[existingIndex].id,
-        created_at: leads[existingIndex].created_at
+        email,
       };
     } else {
-      leads.unshift(lead);
+      leads.unshift({
+        ...lead,
+        email,
+      });
     }
 
     saveLeads(leads);
   }
 
   function clearLeads() {
-    localStorage.removeItem(leadsStorageKey);
-  }
-
-  function findLeadByEmail(email) {
-    return getLeads().find(lead => lead.email === decodeURIComponent(email).toLowerCase());
+    localStorage.removeItem(LEADS_KEY);
   }
 
   return {
@@ -41,6 +40,5 @@ window.ZAStorage = (() => {
     saveLeads,
     upsertLead,
     clearLeads,
-    findLeadByEmail
   };
 })();
