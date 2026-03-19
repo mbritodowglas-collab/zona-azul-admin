@@ -1,6 +1,7 @@
 function getEmailFromURL() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("email");
+  const email = params.get("email");
+  return email ? decodeURIComponent(email).trim().toLowerCase() : null;
 }
 
 function formatPillarLabel(key) {
@@ -94,10 +95,10 @@ function loadLead() {
   }
 
   const leads = window.ZAStorage.getLeads();
-  const lead = leads.find((l) => l.email === email);
+  const lead = leads.find((l) => (l.email || "").trim().toLowerCase() === email);
 
   if (!lead) {
-    alert("Lead não encontrado.");
+    alert(`Lead não encontrado para o email: ${email}`);
     return;
   }
 
