@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("LEAD JS OK");
-
   const nomeEl = document.getElementById("lead-nome");
   const emailEl = document.getElementById("lead-email");
   const resumoEl = document.getElementById("lead-resumo");
@@ -12,77 +10,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getEmailFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("email");
+    const email = params.get("email");
+    return email ? decodeURIComponent(email).trim().toLowerCase() : null;
   }
 
-  function safeGetLeads() {
-    try {
-      if (!window.ZAStorage) throw new Error("ZAStorage não existe");
-      return window.ZAStorage.getLeads();
-    } catch (e) {
-      console.error("Erro ao acessar storage:", e);
-      return [];
-    }
+  function formatPillarLabel(key) {
+    if (!key) return "-";
+    return window.ZACalculos?.pillarLabels?.[key] || key;
   }
 
-  function loadLead() {
-    const email = getEmailFromURL();
-
-    console.log("EMAIL DA URL:", email);
-
-    if (!email) {
-      alert("Email não veio na URL");
-      return;
-    }
-
-    const leads = safeGetLeads();
-    console.log("LEADS:", leads);
-
-    const lead = leads.find(l => l.email === email);
-
-    if (!lead) {
-      alert("Lead não encontrado");
-      return;
-    }
-
-    console.log("LEAD ENCONTRADO:", lead);
-
-    nomeEl.textContent = lead.nome;
-    emailEl.textContent = lead.email;
-
-    resumoEl.innerHTML = `<p>Lead carregado com sucesso.</p>`;
-
-    setupActions(lead);
+  function formatDateBR(isoString) {
+    if (!isoString) return "-";
+    const date = new Date(isoString);
+    return date.toLocaleDateString("pt-BR");
   }
 
-  function setupActions(lead) {
-    console.log("SETUP ACTIONS");
+  function timeAgo(isoString) {
+    if (!isoString) return "-";
+    const now = new Date();
+    const date = new Date(isoString);
+    const diffMs = now - date;
 
-    if (relatorioBtn) {
-      relatorioBtn.href = `../relatorio/?email=${encodeURIComponent(lead.email)}`;
-      relatorioBtn.target = "_blank";
-    }
-
-    if (converterBtn) {
-      converterBtn.onclick = () => {
-        console.log("CLICOU CONVERTER");
-        window.ZAStorage.convertLeadToCliente(lead.email);
-        window.location.href = "../clientes/";
-      };
-    }
-
-    if (arquivarBtn) {
-      arquivarBtn.onclick = () => {
-        console.log("CLICOU ARQUIVAR");
-      };
-    }
-
-    if (excluirBtn) {
-      excluirBtn.onclick = () => {
-        console.log("CLICOU EXCLUIR");
-      };
-    }
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (days <= 0) return "hoje";
+    if (days === 1) return "há 1 dia";
+    return `há ${days} dias`;
   }
 
-  loadLead();
-});
+  function renderTopGaps(lead) {
+    const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
