@@ -3,6 +3,29 @@
   const emptyLeads = document.getElementById("empty-leads");
   const publicFormLinkBox = document.getElementById("public-form-link-box");
 
+  const actionModal = document.getElementById("action-modal");
+  const actionModalTitle = document.getElementById("action-modal-title");
+  const actionModalSubtitle = document.getElementById("action-modal-subtitle");
+  const actionModalText = document.getElementById("action-modal-text");
+  const cancelActionBtn = document.getElementById("cancel-action-btn");
+  const confirmActionBtn = document.getElementById("confirm-action-btn");
+
+  let pendingAction = null;
+
+  function openActionModal({ title, subtitle, text, confirmLabel = "Confirmar", onConfirm }) {
+    pendingAction = onConfirm;
+    actionModalTitle.textContent = title;
+    actionModalSubtitle.textContent = subtitle;
+    actionModalText.textContent = text;
+    confirmActionBtn.textContent = confirmLabel;
+    actionModal.classList.remove("hidden");
+  }
+
+  function closeActionModal() {
+    pendingAction = null;
+    actionModal.classList.add("hidden");
+  }
+
   function renderLeads() {
     if (!tableBody || !emptyLeads) return;
 
@@ -28,7 +51,11 @@
             <span class="lead-name">${lead.nome}</span>
 
             <div class="lead-actions-inline">
-              <a class="btn small secondary" href="../relatorio/index.html?id=${encodeURIComponent(lead.id)}" target="_blank">
+              <a
+                class="btn small secondary"
+                href="../relatorio/index.html?id=${encodeURIComponent(lead.id)}"
+                target="_blank"
+              >
                 Relatório
               </a>
 
@@ -39,15 +66,6 @@
                 type="button"
               >
                 Converter
-              </button>
-
-              <button
-                class="btn small secondary btn-archive"
-                data-email="${lead.email}"
-                data-nome="${lead.nome}"
-                type="button"
-              >
-                Arquivar
               </button>
 
               <button
@@ -77,36 +95,24 @@
         const email = btn.dataset.email;
         const nome = btn.dataset.nome;
 
-        const ok = confirm(`Converter ${nome} em cliente?`);
-        if (!ok) return;
+        openActionModal({
+          title: "Converter lead em cliente",
+          subtitle: "Esse lead sairá do pré-diagnóstico e entrará na área de clientes.",
+          text: `Deseja converter ${nome} em cliente?`,
+          confirmLabel: "Converter",
+          onConfirm: () => {
+            const converted = window.ZAStorage.convertLeadToCliente(email);
 
-        const converted = window.ZAStorage.convertLeadToCliente(email);
+            if (!converted) {
+              closeActionModal();
+              alert("Não foi possível converter este lead.");
+              return;
+            }
 
-        if (!converted) {
-          alert("Não foi possível converter este lead.");
-          return;
-        }
-
-        renderLeads();
-      });
-    });
-
-    document.querySelectorAll(".btn-archive").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const email = btn.dataset.email;
-        const nome = btn.dataset.nome;
-
-        const ok = confirm(`Arquivar ${nome}?`);
-        if (!ok) return;
-
-        const archived = window.ZAStorage.archiveLead(email);
-
-        if (!archived) {
-          alert("Não foi possível arquivar este lead.");
-          return;
-        }
-
-        renderLeads();
+            closeActionModal();
+            renderLeads();
+          }
+        });
       });
     });
 
@@ -115,17 +121,24 @@
         const email = btn.dataset.email;
         const nome = btn.dataset.nome;
 
-        const ok = confirm(`Deseja excluir ${nome}?`);
-        if (!ok) return;
+        openActionModal({
+          title: "Excluir lead",
+          subtitle: "Essa ação remove o lead permanentemente.",
+          text: `Deseja excluir ${nome}?`,
+          confirmLabel: "Excluir",
+          onConfirm: () => {
+            const removed = window.ZAStorage.removeLead(email);
 
-        const removed = window.ZAStorage.removeLead(email);
+            if (!removed) {
+              closeActionModal();
+              alert("Não foi possível excluir este lead.");
+              return;
+            }
 
-        if (!removed) {
-          alert("Não foi possível excluir este lead.");
-          return;
-        }
-
-        renderLeads();
+            closeActionModal();
+            renderLeads();
+          }
+        });
       });
     });
   }
@@ -138,6 +151,20 @@
 
     publicFormLinkBox.textContent = `${origin}${basePath}/formulario/`;
   }
+
+  cancelActionBtn?.addEventListener("click", closeActionModal);
+
+  confirmActionBtn?.addEventListener("click", () => {
+    if (typeof pendingAction === "function") {
+      pendingAction();
+    }
+  });
+
+  actionModal?.addEventListener("click", (event) => {
+    if (event.target === actionModal) {
+      closeActionModal();
+    }
+  });
 
   setPublicLink();
   renderLeads();
