@@ -8,6 +8,7 @@
 </head>
 <body class="lead-page-body">
   <main class="lead-page-wrap">
+
     <section class="lead-header-card">
       <div class="lead-header-top">
         <a href="../pre-diagnostico/" class="btn secondary small">← Voltar</a>
@@ -21,10 +22,23 @@
 
     <section class="lead-actions-card">
       <div class="lead-actions-grid">
-        <a class="btn secondary" id="btn-relatorio" target="_blank">Relatório</a>
-        <button class="btn" id="btn-converter">Converter</button>
-        <button class="btn secondary" id="btn-arquivar">Arquivar</button>
-        <button class="btn danger" id="btn-excluir">Excluir</button>
+
+        <a href="#" class="btn secondary" id="btn-relatorio" target="_blank">
+          Relatório
+        </a>
+
+        <button class="btn" id="btn-converter" type="button">
+          Converter
+        </button>
+
+        <button class="btn secondary" id="btn-arquivar" type="button">
+          Arquivar
+        </button>
+
+        <button class="btn danger" id="btn-excluir" type="button">
+          Excluir
+        </button>
+
       </div>
     </section>
 
@@ -34,10 +48,13 @@
       </div>
       <div class="card-body" id="lead-resumo"></div>
     </section>
+
   </main>
 
-  <script src="../assets/js/storage.js"></script>
-  <script src="../assets/js/calculos.js"></script>
-  <script src="./lead.js"></script>
+  <!-- Scripts com cache reset -->
+  <script src="../assets/js/storage.js?v=1"></script>
+  <script src="../assets/js/calculos.js?v=1"></script>
+  <script src="./lead.js?v=1"></script>
+
 </body>
 </html>
