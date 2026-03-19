@@ -3,13 +3,6 @@
   const emptyLeads = document.getElementById("empty-leads");
   const publicFormLinkBox = document.getElementById("public-form-link-box");
 
-  function statusClass(status) {
-    if (status === "convertido") return "success";
-    if (status === "arquivado") return "warning";
-    if (status === "perdido") return "danger";
-    return "warning";
-  }
-
   function renderLeads() {
     const leads = window.ZAStorage
       .getLeads()
@@ -28,34 +21,54 @@
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td>${lead.nome}</td>
-        <td>${lead.email}</td>
-        <td>${lead.origem || "-"}</td>
-        <td>${window.ZACalculos.pillarLabels[lead.pilar_mais_baixo] || "—"}</td>
-        <td>${lead.media_geral}</td>
         <td>
-          <span class="chip ${statusClass(lead.status)}">
-            ${lead.status || "novo"}
-          </span>
-        </td>
-        <td>
-          <a class="btn" href="../lead/?email=${encodeURIComponent(lead.email)}">
-            Abrir
-          </a>
+          <div class="lead-row">
+            <span class="lead-name">${lead.nome}</span>
+
+            <div class="lead-actions-inline">
+              <a class="btn small" href="../lead/?email=${encodeURIComponent(lead.email)}">
+                Abrir
+              </a>
+
+              <button
+                class="btn-icon danger btn-delete"
+                data-email="${lead.email}"
+                data-nome="${lead.nome}"
+                title="Excluir lead"
+                aria-label="Excluir lead"
+              >
+                🗑
+              </button>
+            </div>
+          </div>
         </td>
       `;
 
       tableBody.appendChild(tr);
     });
+
+    bindDeleteButtons();
   }
 
-  // 🔧 Correção do link público (resolve bug do index.htmlformulario)
+  function bindDeleteButtons() {
+    document.querySelectorAll(".btn-delete").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const email = btn.dataset.email;
+        const nome = btn.dataset.nome;
+
+        const ok = confirm(`Deseja excluir ${nome}?`);
+        if (!ok) return;
+
+        window.ZAStorage.removeLead(email);
+        renderLeads();
+      });
+    });
+  }
+
   function setPublicLink() {
     if (!publicFormLinkBox) return;
 
     const origin = window.location.origin;
-
-    // remove qualquer coisa depois de /pre-diagnostico/
     const basePath = window.location.pathname.split("/pre-diagnostico")[0];
 
     publicFormLinkBox.textContent = `${origin}${basePath}/formulario/`;
