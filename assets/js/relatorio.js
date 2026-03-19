@@ -1,4 +1,10 @@
 window.ZARelatorio = (() => {
+  function getIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    return id ? decodeURIComponent(id).trim() : null;
+  }
+
   function getLeadById(id) {
     const leads = window.ZAStorage.getLeads();
     return leads.find((lead) => String(lead.id).trim() === String(id).trim());
@@ -32,5 +38,3 @@ window.ZARelatorio = (() => {
   }
 
   function renderScoreBars(lead) {
-    const pillars = [
-      { key: "score_movimento",
