@@ -46,58 +46,6 @@ function renderTopGaps(lead) {
   `;
 }
 
-function loadLead() {
-  const email = getEmailFromURL();
-  if (!email) return;
-
-  const leads = window.ZAStorage.getLeads();
-  const lead = leads.find((l) => l.email === email);
-
-  if (!lead) {
-    alert("Lead não encontrado");
-    return;
-  }
-
-  document.getElementById("lead-nome").textContent = lead.nome;
-  document.getElementById("lead-email").textContent = lead.email;
-
-  document.getElementById("lead-resumo").innerHTML = `
-    <div class="lead-resumo-box">
-      <h4>Identificação</h4>
-      <p><strong>Nome:</strong> ${lead.nome}</p>
-      <p><strong>Email:</strong> ${lead.email}</p>
-      <p><strong>Origem:</strong> ${lead.origem || "-"}</p>
-      <p><strong>Idade:</strong> ${lead.idade || "-"}</p>
-      <p><strong>Data de preenchimento:</strong> ${formatDateBR(lead.created_at)}</p>
-      <p><strong>Enviado:</strong> ${timeAgo(lead.created_at)}</p>
-    </div>
-
-    <div class="lead-resumo-box">
-      <h4>Resumo do radar</h4>
-      <p><strong>Média geral:</strong> ${lead.media_geral ?? "-"}</p>
-      <p><strong>Pilar mais baixo:</strong> ${formatPillarLabel(lead.pilar_mais_baixo)}</p>
-      ${renderTopGaps(lead)}
-    </div>
-
-    <div class="lead-resumo-box">
-      <h4>Histórico</h4>
-      <p><strong>Experiência com personal:</strong> ${lead.exp_personal || "-"}</p>
-      <p><strong>Experiência com emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
-      <p><strong>O que já funcionou:</strong> ${lead.o_que_funcionou || "-"}</p>
-      <p><strong>Por que parou:</strong> ${lead.por_que_parou || "-"}</p>
-    </div>
-
-    <div class="lead-resumo-box">
-      <h4>Contexto final</h4>
-      <p><strong>Desafio atual:</strong> ${lead.desafio_atual || "-"}</p>
-      <p><strong>Meta para 6 meses:</strong> ${lead.meta_6_meses || "-"}</p>
-      <p><strong>Status:</strong> ${lead.status || "novo"}</p>
-    </div>
-  `;
-
-  setupActions(lead);
-}
-
 function setupActions(lead) {
   const relatorioBtn = document.getElementById("btn-relatorio");
   const converterBtn = document.getElementById("btn-converter");
@@ -106,6 +54,7 @@ function setupActions(lead) {
 
   if (relatorioBtn) {
     relatorioBtn.href = `../relatorio/?email=${encodeURIComponent(lead.email)}`;
+    relatorioBtn.target = "_blank";
   }
 
   if (converterBtn) {
@@ -134,6 +83,68 @@ function setupActions(lead) {
       window.location.href = "../pre-diagnostico/";
     };
   }
+}
+
+function loadLead() {
+  const email = getEmailFromURL();
+
+  if (!email) {
+    alert("Email do lead não informado na URL.");
+    return;
+  }
+
+  const leads = window.ZAStorage.getLeads();
+  const lead = leads.find((l) => l.email === email);
+
+  if (!lead) {
+    alert("Lead não encontrado.");
+    return;
+  }
+
+  const nomeEl = document.getElementById("lead-nome");
+  const emailEl = document.getElementById("lead-email");
+  const resumoEl = document.getElementById("lead-resumo");
+
+  if (nomeEl) nomeEl.textContent = lead.nome;
+  if (emailEl) emailEl.textContent = lead.email;
+
+  if (resumoEl) {
+    resumoEl.innerHTML = `
+      <div class="lead-resumo-box">
+        <h4>Identificação</h4>
+        <p><strong>Nome:</strong> ${lead.nome}</p>
+        <p><strong>Email:</strong> ${lead.email}</p>
+        <p><strong>Origem:</strong> ${lead.origem || "-"}</p>
+        <p><strong>Idade:</strong> ${lead.idade || "-"}</p>
+        <p><strong>Data de preenchimento:</strong> ${formatDateBR(lead.created_at)}</p>
+        <p><strong>Enviado:</strong> ${timeAgo(lead.created_at)}</p>
+      </div>
+
+      <div class="lead-resumo-box">
+        <h4>Resumo do radar</h4>
+        <p><strong>Média geral:</strong> ${lead.media_geral ?? "-"}</p>
+        <p><strong>Pilar mais baixo:</strong> ${formatPillarLabel(lead.pilar_mais_baixo)}</p>
+        ${renderTopGaps(lead)}
+      </div>
+
+      <div class="lead-resumo-box">
+        <h4>Histórico</h4>
+        <p><strong>Experiência com personal:</strong> ${lead.exp_personal || "-"}</p>
+        <p><strong>Experiência com emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
+        <p><strong>O que já funcionou:</strong> ${lead.o_que_funcionou || "-"}</p>
+        <p><strong>Por que parou:</strong> ${lead.por_que_parou || "-"}</p>
+      </div>
+
+      <div class="lead-resumo-box">
+        <h4>Contexto final</h4>
+        <p><strong>Desafio atual:</strong> ${lead.desafio_atual || "-"}</p>
+        <p><strong>Meta para 6 meses:</strong> ${lead.meta_6_meses || "-"}</p>
+        <p><strong>Status:</strong> ${lead.status || "novo"}</p>
+      </div>
+    `;
+  }
+
+  setupActions(lead);
 }
 
 loadLead();
