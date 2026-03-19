@@ -1,7 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const email = (params.get("email") || "").trim().toLowerCase();
-
+document.addEventListener("DOMContentLoaded", function () {
   const nomeEl = document.getElementById("lead-nome");
   const emailEl = document.getElementById("lead-email");
   const resumoEl = document.getElementById("lead-resumo");
@@ -11,8 +8,67 @@ document.addEventListener("DOMContentLoaded", () => {
   const arquivarBtn = document.getElementById("btn-arquivar");
   const excluirBtn = document.getElementById("btn-excluir");
 
+  function getEmailFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    return email ? decodeURIComponent(email).trim().toLowerCase() : null;
+  }
+
+  function formatPillarLabel(key) {
+    if (!key) return "-";
+    return window.ZACalculos?.pillarLabels?.[key] || key;
+  }
+
+  function formatDateBR(isoString) {
+    if (!isoString) return "-";
+    return new Date(isoString).toLocaleDateString("pt-BR");
+  }
+
+  function timeAgo(isoString) {
+    if (!isoString) return "-";
+    const now = new Date();
+    const date = new Date(isoString);
+    const diffMs = now - date;
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (days <= 0) return "hoje";
+    if (days === 1) return "há 1 dia";
+    return `há ${days} dias`;
+  }
+
+  function renderTopGaps(lead) {
+    const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
+    if (!gaps.length) {
+      return `<p><strong>Top 3 gaps:</strong> Nenhum gap prioritário.</p>`;
+    }
+
+    return `
+      <p><strong>Top 3 gaps:</strong></p>
+      <div class="actions">
+        ${gaps.map((gap) => {
+          const label = formatPillarLabel(gap.key || gap.pilar);
+          const score = gap.score ?? "-";
+          return `<span class="chip warning">${label} (${score})</span>`;
+        }).join(" ")}
+      </div>
+    `;
+  }
+
+  function renderError(message) {
+    if (nomeEl) nomeEl.textContent = "Lead";
+    if (emailEl) emailEl.textContent = "";
+    if (resumoEl) resumoEl.innerHTML = `<p class="muted">${message}</p>`;
+  }
+
+  const email = getEmailFromURL();
+
   if (!email) {
-    if (resumoEl) resumoEl.innerHTML = `<p class="muted">Lead não informado na URL.</p>`;
+    renderError('Email do lead não informado na URL.');
+    return;
+  }
+
+  if (!window.ZAStorage || typeof window.ZAStorage.getLeads !== "function") {
+    renderError("Storage não carregado.");
     return;
   }
 
@@ -20,15 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const lead = leads.find((item) => (item.email || "").trim().toLowerCase() === email);
 
   if (!lead) {
-    if (resumoEl) resumoEl.innerHTML = `<p class="muted">Lead não encontrado.</p>`;
+    renderError(`Lead não encontrado para: ${email}`);
     return;
   }
 
-  // preenche cabeçalho
   if (nomeEl) nomeEl.textContent = lead.nome || "Lead";
   if (emailEl) emailEl.textContent = lead.email || "";
 
-  // preenche resumo
   if (resumoEl) {
     resumoEl.innerHTML = `
       <div class="lead-resumo-box">
@@ -37,19 +91,30 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Email:</strong> ${lead.email}</p>
         <p><strong>Origem:</strong> ${lead.origem || "-"}</p>
         <p><strong>Idade:</strong> ${lead.idade || "-"}</p>
+        <p><strong>Data de preenchimento:</strong> ${formatDateBR(lead.created_at)}</p>
+        <p><strong>Enviado:</strong> ${timeAgo(lead.created_at)}</p>
       </div>
 
       <div class="lead-resumo-box">
-        <h4>Radar</h4>
+        <h4>Resumo do radar</h4>
         <p><strong>Média geral:</strong> ${lead.media_geral ?? "-"}</p>
-        <p><strong>Pilar mais baixo:</strong> ${window.ZACalculos?.pillarLabels?.[lead.pilar_mais_baixo] || "-"}</p>
+        <p><strong>Pilar mais baixo:</strong> ${formatPillarLabel(lead.pilar_mais_baixo)}</p>
+        ${renderTopGaps(lead)}
       </div>
 
       <div class="lead-resumo-box">
-        <h4>Contexto</h4>
+        <h4>Histórico</h4>
+        <p><strong>Experiência com personal:</strong> ${lead.exp_personal || "-"}</p>
+        <p><strong>Experiência com emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
+        <p><strong>O que já funcionou:</strong> ${lead.o_que_funcionou || "-"}</p>
         <p><strong>Por que parou:</strong> ${lead.por_que_parou || "-"}</p>
+      </div>
+
+      <div class="lead-resumo-box">
+        <h4>Contexto final</h4>
         <p><strong>Desafio atual:</strong> ${lead.desafio_atual || "-"}</p>
-        <p><strong>Meta 6 meses:</strong> ${lead.meta_6_meses || "-"}</p>
+        <p><strong>Meta para 6 meses:</strong> ${lead.meta_6_meses || "-"}</p>
+        <p><strong>Status:</strong> ${lead.status || "novo"}</p>
       </div>
     `;
   }
@@ -62,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // CONVERTER
   if (converterBtn) {
-    converterBtn.onclick = () => {
+    converterBtn.onclick = function () {
       const ok = confirm(`Converter ${lead.nome} em cliente?`);
       if (!ok) return;
 
@@ -73,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ARQUIVAR
   if (arquivarBtn) {
-    arquivarBtn.onclick = () => {
+    arquivarBtn.onclick = function () {
       const ok = confirm(`Arquivar ${lead.nome}?`);
       if (!ok) return;
 
@@ -84,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // EXCLUIR
   if (excluirBtn) {
-    excluirBtn.onclick = () => {
+    excluirBtn.onclick = function () {
       const ok = confirm(`Excluir ${lead.nome}?`);
       if (!ok) return;
 
