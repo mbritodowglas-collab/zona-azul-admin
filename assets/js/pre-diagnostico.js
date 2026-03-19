@@ -28,13 +28,31 @@
             <span class="lead-name">${lead.nome}</span>
 
             <div class="lead-actions-inline">
-              <a class="btn small" href="../lead/index.html?id=${encodeURIComponent(lead.id)}">
-                Abrir
+              <a class="btn small secondary" href="../relatorio/index.html?id=${encodeURIComponent(lead.id)}" target="_blank">
+                Relatório
               </a>
 
               <button
+                class="btn small btn-convert"
+                data-email="${lead.email}"
+                data-nome="${lead.nome}"
+                type="button"
+              >
+                Converter
+              </button>
+
+              <button
+                class="btn small secondary btn-archive"
+                data-email="${lead.email}"
+                data-nome="${lead.nome}"
+                type="button"
+              >
+                Arquivar
+              </button>
+
+              <button
                 class="btn-icon danger btn-delete"
-                data-id="${lead.id}"
+                data-email="${lead.email}"
                 data-nome="${lead.nome}"
                 title="Excluir lead"
                 aria-label="Excluir lead"
@@ -50,27 +68,63 @@
       tableBody.appendChild(tr);
     });
 
-    bindDeleteButtons();
+    bindActionButtons();
   }
 
-  function bindDeleteButtons() {
+  function bindActionButtons() {
+    document.querySelectorAll(".btn-convert").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const email = btn.dataset.email;
+        const nome = btn.dataset.nome;
+
+        const ok = confirm(`Converter ${nome} em cliente?`);
+        if (!ok) return;
+
+        const converted = window.ZAStorage.convertLeadToCliente(email);
+
+        if (!converted) {
+          alert("Não foi possível converter este lead.");
+          return;
+        }
+
+        renderLeads();
+      });
+    });
+
+    document.querySelectorAll(".btn-archive").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const email = btn.dataset.email;
+        const nome = btn.dataset.nome;
+
+        const ok = confirm(`Arquivar ${nome}?`);
+        if (!ok) return;
+
+        const archived = window.ZAStorage.archiveLead(email);
+
+        if (!archived) {
+          alert("Não foi possível arquivar este lead.");
+          return;
+        }
+
+        renderLeads();
+      });
+    });
+
     document.querySelectorAll(".btn-delete").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const id = btn.dataset.id;
+        const email = btn.dataset.email;
         const nome = btn.dataset.nome;
 
         const ok = confirm(`Deseja excluir ${nome}?`);
         if (!ok) return;
 
-        const leads = window.ZAStorage.getLeads();
-        const lead = leads.find((item) => String(item.id).trim() === String(id).trim());
+        const removed = window.ZAStorage.removeLead(email);
 
-        if (!lead) {
-          alert("Lead não encontrado para exclusão.");
+        if (!removed) {
+          alert("Não foi possível excluir este lead.");
           return;
         }
 
-        window.ZAStorage.removeLead(lead.email);
         renderLeads();
       });
     });
