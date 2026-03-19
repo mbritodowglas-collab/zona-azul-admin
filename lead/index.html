@@ -6,47 +6,35 @@
   <title>Lead | Metodologia Vida Azul</title>
   <link rel="stylesheet" href="../assets/css/global.css"/>
 </head>
-<body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">ZA</div>
-        <div>
-          <h1>Vida Azul</h1>
-          <p>Gestão de leads</p>
-        </div>
+<body class="lead-page-body">
+  <main class="lead-page-wrap">
+    <section class="lead-header-card">
+      <div class="lead-header-top">
+        <a href="../pre-diagnostico/" class="btn secondary">Voltar</a>
       </div>
 
-      <nav class="nav">
-        <a href="../index.html">Dashboard</a>
-        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="../clientes/">Clientes</a>
-      </nav>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2 id="lead-nome">Lead</h2>
-          <p id="lead-email" class="muted"></p>
-        </div>
-
-        <div class="actions">
-          <a class="btn secondary" id="btn-relatorio">Relatório</a>
-          <button class="btn" id="btn-converter">Converter</button>
-          <button class="btn secondary" id="btn-arquivar">Arquivar</button>
-          <button class="btn danger" id="btn-excluir">Excluir</button>
-        </div>
+      <div class="lead-header-content">
+        <h1 id="lead-nome">Lead</h1>
+        <p id="lead-email" class="muted"></p>
       </div>
+    </section>
 
-      <section class="card">
-        <div class="card-header">
-          <h3>Resumo do pré-diagnóstico</h3>
-        </div>
-        <div class="card-body" id="lead-resumo"></div>
-      </section>
-    </main>
-  </div>
+    <section class="lead-actions-card">
+      <div class="lead-actions-grid">
+        <a class="btn secondary" id="btn-relatorio">Relatório</a>
+        <button class="btn" id="btn-converter">Converter</button>
+        <button class="btn secondary" id="btn-arquivar">Arquivar</button>
+        <button class="btn danger" id="btn-excluir">Excluir</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>Resumo do pré-diagnóstico</h3>
+      </div>
+      <div class="card-body" id="lead-resumo"></div>
+    </section>
+  </main>
 
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/calculos.js"></script>
