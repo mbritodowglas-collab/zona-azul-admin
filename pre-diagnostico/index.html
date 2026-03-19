@@ -27,12 +27,17 @@
     <main class="main">
       <div class="topbar">
         <div>
-          <h2>Pré-diagnóstico</h2>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+            <a href="../index.html" class="btn secondary small">← Voltar</a>
+            <h2 style="margin:0;">Pré-diagnóstico</h2>
+          </div>
           <p>Leads captados pelo formulário público.</p>
         </div>
 
         <div class="actions">
-          <a class="btn secondary" href="../formulario/" target="_blank">Abrir formulário público</a>
+          <a class="btn secondary" href="../formulario/" target="_blank">
+            Abrir formulário público
+          </a>
         </div>
       </div>
 
@@ -51,7 +56,9 @@
           <h3>Leads recebidos</h3>
         </div>
         <div class="card-body">
-          <div id="empty-leads" class="empty-state hidden">Nenhum lead recebido ainda.</div>
+          <div id="empty-leads" class="empty-state hidden">
+            Nenhum lead recebido ainda.
+          </div>
 
           <div class="table-wrap" id="leads-table-wrap">
             <table>
