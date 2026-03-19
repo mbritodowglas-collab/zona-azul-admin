@@ -1,115 +1,129 @@
-function getEmailFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const email = params.get("email");
-  return email ? decodeURIComponent(email).trim().toLowerCase() : null;
-}
-
-function formatPillarLabel(key) {
-  if (!key) return "-";
-  return window.ZACalculos?.pillarLabels?.[key] || key;
-}
-
-function formatDateBR(isoString) {
-  if (!isoString) return "-";
-  const date = new Date(isoString);
-  return date.toLocaleDateString("pt-BR");
-}
-
-function timeAgo(isoString) {
-  if (!isoString) return "-";
-  const now = new Date();
-  const date = new Date(isoString);
-  const diffMs = now - date;
-
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (days <= 0) return "hoje";
-  if (days === 1) return "há 1 dia";
-  return `há ${days} dias`;
-}
-
-function renderTopGaps(lead) {
-  const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
-  if (!gaps.length) {
-    return `<p><strong>Top 3 gaps:</strong> Nenhum gap prioritário.</p>`;
+document.addEventListener("DOMContentLoaded", () => {
+  function getEmailFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    return email ? decodeURIComponent(email).trim().toLowerCase() : null;
   }
 
-  const chips = gaps
-    .map((gap) => {
-      const label = formatPillarLabel(gap.key || gap.pilar);
-      const score = gap.score ?? "-";
-      return `<span class="chip warning">${label} (${score})</span>`;
-    })
-    .join(" ");
-
-  return `
-    <p><strong>Top 3 gaps:</strong></p>
-    <div class="actions">${chips}</div>
-  `;
-}
-
-function setupActions(lead) {
-  const relatorioBtn = document.getElementById("btn-relatorio");
-  const converterBtn = document.getElementById("btn-converter");
-  const arquivarBtn = document.getElementById("btn-arquivar");
-  const excluirBtn = document.getElementById("btn-excluir");
-
-  if (relatorioBtn) {
-    relatorioBtn.href = `../relatorio/?email=${encodeURIComponent(lead.email)}`;
-    relatorioBtn.target = "_blank";
+  function formatPillarLabel(key) {
+    if (!key) return "-";
+    return window.ZACalculos?.pillarLabels?.[key] || key;
   }
 
-  if (converterBtn) {
-    converterBtn.onclick = () => {
-      window.ZAStorage.convertLeadToCliente(lead.email);
-      window.location.href = "../clientes/";
-    };
+  function formatDateBR(isoString) {
+    if (!isoString) return "-";
+    const date = new Date(isoString);
+    return date.toLocaleDateString("pt-BR");
   }
 
-  if (arquivarBtn) {
-    arquivarBtn.onclick = () => {
-      const ok = confirm(`Deseja arquivar ${lead.nome}?`);
-      if (!ok) return;
+  function timeAgo(isoString) {
+    if (!isoString) return "-";
+    const now = new Date();
+    const date = new Date(isoString);
+    const diffMs = now - date;
 
-      window.ZAStorage.archiveLead(lead.email);
-      window.location.href = "../pre-diagnostico/";
-    };
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (days <= 0) return "hoje";
+    if (days === 1) return "há 1 dia";
+    return `há ${days} dias`;
   }
 
-  if (excluirBtn) {
-    excluirBtn.onclick = () => {
-      const ok = confirm(`Deseja excluir ${lead.nome}?`);
-      if (!ok) return;
+  function renderTopGaps(lead) {
+    const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
+    if (!gaps.length) {
+      return `<p><strong>Top 3 gaps:</strong> Nenhum gap prioritário.</p>`;
+    }
 
-      window.ZAStorage.removeLead(lead.email);
-      window.location.href = "../pre-diagnostico/";
-    };
-  }
-}
+    const chips = gaps
+      .map((gap) => {
+        const label = formatPillarLabel(gap.key || gap.pilar);
+        const score = gap.score ?? "-";
+        return `<span class="chip warning">${label} (${score})</span>`;
+      })
+      .join(" ");
 
-function loadLead() {
-  const email = getEmailFromURL();
-
-  if (!email) {
-    alert("Email do lead não informado na URL.");
-    return;
-  }
-
-  const leads = window.ZAStorage.getLeads();
-  const lead = leads.find((l) => (l.email || "").trim().toLowerCase() === email);
-
-  if (!lead) {
-    alert(`Lead não encontrado para o email: ${email}`);
-    return;
+    return `
+      <p><strong>Top 3 gaps:</strong></p>
+      <div class="actions">${chips}</div>
+    `;
   }
 
-  const nomeEl = document.getElementById("lead-nome");
-  const emailEl = document.getElementById("lead-email");
-  const resumoEl = document.getElementById("lead-resumo");
+  function setupActions(lead) {
+    const relatorioBtn = document.getElementById("btn-relatorio");
+    const converterBtn = document.getElementById("btn-converter");
+    const arquivarBtn = document.getElementById("btn-arquivar");
+    const excluirBtn = document.getElementById("btn-excluir");
 
-  if (nomeEl) nomeEl.textContent = lead.nome;
-  if (emailEl) emailEl.textContent = lead.email;
+    if (relatorioBtn) {
+      relatorioBtn.href = `../relatorio/?email=${encodeURIComponent(lead.email)}`;
+      relatorioBtn.target = "_blank";
+    }
 
-  if (resumoEl) {
+    if (converterBtn) {
+      converterBtn.addEventListener("click", () => {
+        window.ZAStorage.convertLeadToCliente(lead.email);
+        window.location.href = "../clientes/";
+      });
+    }
+
+    if (arquivarBtn) {
+      arquivarBtn.addEventListener("click", () => {
+        const ok = confirm(`Deseja arquivar ${lead.nome}?`);
+        if (!ok) return;
+
+        window.ZAStorage.archiveLead(lead.email);
+        window.location.href = "../pre-diagnostico/";
+      });
+    }
+
+    if (excluirBtn) {
+      excluirBtn.addEventListener("click", () => {
+        const ok = confirm(`Deseja excluir ${lead.nome}?`);
+        if (!ok) return;
+
+        window.ZAStorage.removeLead(lead.email);
+        window.location.href = "../pre-diagnostico/";
+      });
+    }
+  }
+
+  function loadLead() {
+    const nomeEl = document.getElementById("lead-nome");
+    const emailEl = document.getElementById("lead-email");
+    const resumoEl = document.getElementById("lead-resumo");
+
+    if (!nomeEl || !emailEl || !resumoEl) {
+      alert("Elementos da página do lead não foram encontrados.");
+      return;
+    }
+
+    const email = getEmailFromURL();
+
+    if (!email) {
+      nomeEl.textContent = "Lead";
+      emailEl.textContent = "Email não informado na URL.";
+      resumoEl.innerHTML = `<p class="muted">Abra esta página a partir do botão "Abrir" no pré-diagnóstico.</p>`;
+      return;
+    }
+
+    if (!window.ZAStorage || typeof window.ZAStorage.getLeads !== "function") {
+      resumoEl.innerHTML = `<p class="muted">Storage não carregado.</p>`;
+      return;
+    }
+
+    const leads = window.ZAStorage.getLeads();
+    const lead = leads.find((l) => (l.email || "").trim().toLowerCase() === email);
+
+    if (!lead) {
+      nomeEl.textContent = "Lead não encontrado";
+      emailEl.textContent = email;
+      resumoEl.innerHTML = `<p class="muted">Nenhum lead foi encontrado para esse email.</p>`;
+      return;
+    }
+
+    nomeEl.textContent = lead.nome || "Lead";
+    emailEl.textContent = lead.email || "";
+
     resumoEl.innerHTML = `
       <div class="lead-resumo-box">
         <h4>Identificação</h4>
@@ -143,9 +157,9 @@ function loadLead() {
         <p><strong>Status:</strong> ${lead.status || "novo"}</p>
       </div>
     `;
+
+    setupActions(lead);
   }
 
-  setupActions(lead);
-}
-
-loadLead();
+  loadLead();
+});
