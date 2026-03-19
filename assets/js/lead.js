@@ -8,10 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const arquivarBtn = document.getElementById("btn-arquivar");
   const excluirBtn = document.getElementById("btn-excluir");
 
-  function getEmailFromURL() {
+  function getIdFromURL() {
     const params = new URLSearchParams(window.location.search);
-    const email = params.get("email");
-    return email ? decodeURIComponent(email).trim().toLowerCase() : null;
+    const id = params.get("id");
+    return id ? decodeURIComponent(id).trim() : null;
   }
 
   function formatPillarLabel(key) {
@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (resumoEl) resumoEl.innerHTML = `<p class="muted">${message}</p>`;
   }
 
-  const email = getEmailFromURL();
+  const id = getIdFromURL();
 
-  if (!email) {
-    renderError('Email do lead não informado na URL.');
+  if (!id) {
+    renderError("ID do lead não informado na URL.");
     return;
   }
 
@@ -73,10 +73,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const leads = window.ZAStorage.getLeads();
-  const lead = leads.find((item) => (item.email || "").trim().toLowerCase() === email);
+  const lead = leads.find((item) => String(item.id).trim() === String(id));
 
   if (!lead) {
-    renderError(`Lead não encontrado para: ${email}`);
+    renderError(`Lead não encontrado para o id: ${id}`);
     return;
   }
 
@@ -86,75 +86,4 @@ document.addEventListener("DOMContentLoaded", function () {
   if (resumoEl) {
     resumoEl.innerHTML = `
       <div class="lead-resumo-box">
-        <h4>Identificação</h4>
-        <p><strong>Nome:</strong> ${lead.nome}</p>
-        <p><strong>Email:</strong> ${lead.email}</p>
-        <p><strong>Origem:</strong> ${lead.origem || "-"}</p>
-        <p><strong>Idade:</strong> ${lead.idade || "-"}</p>
-        <p><strong>Data de preenchimento:</strong> ${formatDateBR(lead.created_at)}</p>
-        <p><strong>Enviado:</strong> ${timeAgo(lead.created_at)}</p>
-      </div>
-
-      <div class="lead-resumo-box">
-        <h4>Resumo do radar</h4>
-        <p><strong>Média geral:</strong> ${lead.media_geral ?? "-"}</p>
-        <p><strong>Pilar mais baixo:</strong> ${formatPillarLabel(lead.pilar_mais_baixo)}</p>
-        ${renderTopGaps(lead)}
-      </div>
-
-      <div class="lead-resumo-box">
-        <h4>Histórico</h4>
-        <p><strong>Experiência com personal:</strong> ${lead.exp_personal || "-"}</p>
-        <p><strong>Experiência com emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
-        <p><strong>O que já funcionou:</strong> ${lead.o_que_funcionou || "-"}</p>
-        <p><strong>Por que parou:</strong> ${lead.por_que_parou || "-"}</p>
-      </div>
-
-      <div class="lead-resumo-box">
-        <h4>Contexto final</h4>
-        <p><strong>Desafio atual:</strong> ${lead.desafio_atual || "-"}</p>
-        <p><strong>Meta para 6 meses:</strong> ${lead.meta_6_meses || "-"}</p>
-        <p><strong>Status:</strong> ${lead.status || "novo"}</p>
-      </div>
-    `;
-  }
-
-  // RELATÓRIO
-  if (relatorioBtn) {
-    relatorioBtn.href = `../relatorio/index.html?email=${encodeURIComponent(lead.email)}`;
-    relatorioBtn.target = "_blank";
-  }
-
-  // CONVERTER
-  if (converterBtn) {
-    converterBtn.onclick = function () {
-      const ok = confirm(`Converter ${lead.nome} em cliente?`);
-      if (!ok) return;
-
-      window.ZAStorage.convertLeadToCliente(lead.email);
-      window.location.href = "../clientes/";
-    };
-  }
-
-  // ARQUIVAR
-  if (arquivarBtn) {
-    arquivarBtn.onclick = function () {
-      const ok = confirm(`Arquivar ${lead.nome}?`);
-      if (!ok) return;
-
-      window.ZAStorage.archiveLead(lead.email);
-      window.location.href = "../pre-diagnostico/";
-    };
-  }
-
-  // EXCLUIR
-  if (excluirBtn) {
-    excluirBtn.onclick = function () {
-      const ok = confirm(`Excluir ${lead.nome}?`);
-      if (!ok) return;
-
-      window.ZAStorage.removeLead(lead.email);
-      window.location.href = "../pre-diagnostico/";
-    };
-  }
-});
+        <h4>Identificação</h
