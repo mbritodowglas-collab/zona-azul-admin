@@ -1,90 +1,62 @@
-(() => {
-  const tableBody = document.getElementById("clientes-table-body");
-  const emptyClientes = document.getElementById("empty-clientes");
-  const detailCard = document.getElementById("cliente-detail-card");
-  const detailBody = document.getElementById("cliente-detail-body");
+window.ZAClientes = (() => {
 
-  function statusClass(status) {
-    if (status === "ativo") return "success";
-    if (status === "cancelado") return "danger";
-    return "warning";
+  function getClientes() {
+    return window.ZAStorage?.getClientes?.() || [];
   }
 
-  function renderClientes() {
-    const clientes = window.ZAStorage.getClientes().sort((a, b) => new Date(b.data_inicio) - new Date(a.data_inicio));
-    tableBody.innerHTML = "";
+  function formatDateBR(value) {
+    if (!value) return "-";
+    return new Date(value).toLocaleDateString("pt-BR");
+  }
+
+  function renderTabela(clientes) {
+    const tbody = document.getElementById("clientes-tbody");
+    if (!tbody) return;
 
     if (!clientes.length) {
-      emptyClientes.classList.remove("hidden");
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7">Nenhum cliente encontrado.</td>
+        </tr>
+      `;
       return;
     }
 
-    emptyClientes.classList.add("hidden");
-
-    clientes.forEach((cliente) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${cliente.nome}</td>
-        <td>${cliente.email}</td>
+    tbody.innerHTML = clientes.map(cliente => `
+      <tr>
+        <td>${cliente.nome || "-"}</td>
+        <td>${cliente.email || "-"}</td>
         <td>${cliente.plano || "-"}</td>
         <td>${cliente.fase_nome || "-"}</td>
-        <td><span class="chip ${statusClass(cliente.status)}">${cliente.status}</span></td>
-        <td>${new Date(cliente.data_inicio).toLocaleDateString("pt-BR")}</td>
-        <td><button class="btn secondary btn-open-cliente" data-email="${cliente.email}">Ver</button></td>
-      `;
-      tableBody.appendChild(tr);
-    });
-
-    bindClienteButtons();
+        <td>
+          <span class="status-badge ${cliente.status || ""}">
+            ${cliente.status || "-"}
+          </span>
+        </td>
+        <td>${formatDateBR(cliente.data_inicio || cliente.created_at)}</td>
+        <td>
+          <a 
+            class="btn small"
+            href="../cliente/?id=${encodeURIComponent(cliente.id)}"
+          >
+            Abrir
+          </a>
+        </td>
+      </tr>
+    `).join("");
   }
 
-  function bindClienteButtons() {
-    document.querySelectorAll(".btn-open-cliente").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const email = btn.dataset.email;
-        const cliente = window.ZAStorage.getClientes().find(item => item.email === email);
-        if (!cliente) return;
-        renderClienteDetail(cliente);
-      });
-    });
+  function init() {
+    const clientes = getClientes();
+    renderTabela(clientes);
   }
 
-  function renderClienteDetail(cliente) {
-    detailCard.classList.remove("hidden");
+  return {
+    init
+  };
 
-    detailBody.innerHTML = `
-      <div class="detail-grid">
-        <div class="detail-box">
-          <h4>Resumo</h4>
-          <p><strong>Nome:</strong> ${cliente.nome}</p>
-          <p><strong>Email:</strong> ${cliente.email}</p>
-          <p><strong>Data de nascimento:</strong> ${new Date(cliente.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR")}</p>
-          <p><strong>Idade:</strong> ${cliente.idade}</p>
-          <p><strong>Status:</strong> ${cliente.status}</p>
-          <p><strong>Plano:</strong> ${cliente.plano || "-"}</p>
-          <p><strong>Fase atual:</strong> ${cliente.fase_nome}</p>
-        </div>
-
-        <div class="detail-box">
-          <h4>Dados herdados do pré-diagnóstico</h4>
-          <p><strong>Média geral:</strong> ${cliente.preDiagnostico.media_geral}</p>
-          <p><strong>Pilar mais baixo:</strong> ${window.ZACalculos ? window.ZACalculos.pillarLabels[cliente.preDiagnostico.pilar_mais_baixo] || "-" : cliente.preDiagnostico.pilar_mais_baixo}</p>
-          <p><strong>Desafio atual:</strong> ${cliente.preDiagnostico.desafio_atual}</p>
-          <p><strong>Meta 6 meses:</strong> ${cliente.preDiagnostico.meta_6_meses}</p>
-        </div>
-
-        <div class="detail-box">
-          <h4>Diagnóstico completo</h4>
-          <p>Em breve.</p>
-        </div>
-
-        <div class="detail-box">
-          <h4>Planejamento / Periodização / Check-ins / Histórico</h4>
-          <p>Em breve.</p>
-        </div>
-      </div>
-    `;
-  }
-
-  renderClientes();
 })();
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.ZAClientes.init();
+});
