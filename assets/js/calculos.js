@@ -105,6 +105,10 @@ window.ZACalculos = (() => {
       return "Preencha os dados de identificação.";
     }
 
+    if (!payload.genero || !payload.cidade) {
+      return "Preencha gênero e cidade.";
+    }
+
     if (!emailRegex.test(payload.email)) {
       return "Digite um email válido.";
     }
@@ -149,6 +153,8 @@ window.ZACalculos = (() => {
       email: payload.email.toLowerCase().trim(),
       data_nascimento: payload.data_nascimento,
       idade: calcularIdade(payload.data_nascimento),
+      genero: payload.genero,
+      cidade: payload.cidade.trim(),
       origem: payload.origem,
       exp_personal: payload.exp_personal,
       exp_emagrecimento: payload.exp_emagrecimento,
@@ -157,6 +163,8 @@ window.ZACalculos = (() => {
       por_que_parou: payload.por_que_parou.trim(),
       desafio_atual: payload.desafio_atual.trim(),
       meta_6_meses: payload.meta_6_meses.trim(),
+      peso: payload.peso ? Number(payload.peso) : null,
+      altura: payload.altura ? Number(payload.altura) : null,
       score_movimento: Number(payload.score_movimento),
       score_alimentacao: Number(payload.score_alimentacao),
       score_sono: Number(payload.score_sono),
