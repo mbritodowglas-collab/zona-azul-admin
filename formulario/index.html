@@ -91,39 +91,47 @@
           </div>
 
           <!-- ETAPA 2 -->
-          <div class="form-step hidden" data-step="2">
-            <div class="field">
-              <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
-              <select id="exp_personal" required>
-                <option value="">Selecione</option>
-                <option value="nunca">Nunca</option>
-                <option value="fez_nao_manteve">Já fiz, mas não mantive</option>
-                <option value="faz_atualmente">Faço atualmente</option>
-                <option value="fez_manteve">Já fiz e mantive</option>
-              </select>
-            </div>
+<div class="form-step hidden" data-step="2">
+  <div class="field">
+    <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
+    <select id="exp_personal" required>
+      <option value="">Selecione</option>
+      <option value="nunca">Nunca</option>
+      <option value="fez_nao_manteve">Já fiz, mas não mantive</option>
+      <option value="faz_atualmente">Faço atualmente</option>
+      <option value="fez_manteve">Já fiz e mantive</option>
+    </select>
+  </div>
 
-            <div class="field">
-              <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
-              <select id="exp_emagrecimento" required>
-                <option value="">Selecione</option>
-                <option value="nunca">Nunca</option>
-                <option value="nao_funcionou">Já tentei, mas não funcionou</option>
-                <option value="funcionou_nao_manteve">Funcionou, mas não mantive</option>
-                <option value="em_processo">Estou em processo</option>
-              </select>
-            </div>
+  <div class="field">
+    <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
+    <select id="exp_emagrecimento" required>
+      <option value="">Selecione</option>
+      <option value="nunca">Nunca</option>
+      <option value="nao_funcionou">Já tentei, mas não funcionou</option>
+      <option value="funcionou_nao_manteve">Funcionou, mas não mantive</option>
+      <option value="em_processo">Estou em processo</option>
+    </select>
+  </div>
 
-            <div class="field">
-              <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
-              <textarea id="o_que_funcionou"></textarea>
-            </div>
+  <div class="field">
+    <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
+    <textarea id="o_que_funcionou"></textarea>
+  </div>
 
-            <div class="field">
-              <label for="por_que_parou">Por que você parou?</label>
-              <textarea id="por_que_parou" required></textarea>
-            </div>
-          </div>
+  <div class="field">
+    <label for="limitacoes_atuais">Você tem alguma dor, lesão ou condição de saúde que impacta sua rotina hoje? (opcional)</label>
+    <textarea
+      id="limitacoes_atuais"
+      placeholder="Ex: dores lombares, joelho, hérnia, ansiedade, pressão alta, lesão antiga, etc."
+    ></textarea>
+  </div>
+
+  <div class="field">
+    <label for="por_que_parou">Por que você parou?</label>
+    <textarea id="por_que_parou" required></textarea>
+  </div>
+</div>
 
           <!-- ETAPA 3 -->
           <div class="form-step hidden" data-step="3">
