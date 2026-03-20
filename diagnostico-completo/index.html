@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico Completo | Metodologia Vida Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=18" />
+</head>
+<body class="public-body">
+  <main class="public-wrap">
+    <section class="hero-card hero-card-public">
+      <div class="hero-topline">
+        <span class="hero-badge">DIAGNÓSTICO COMPLETO</span>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-title">Mapeamento aprofundado do seu caso</h1>
+        <p class="hero-description" id="dc-subtitle">
+          Vamos aprofundar sua rotina, validar seu radar inicial e estruturar uma direção mais precisa para o seu processo.
+        </p>
+      </div>
+    </section>
+
+    <section class="card" id="dc-form-card">
+      <div class="card-header">
+        <div>
+          <h3 id="dc-step-title">Validação do Radar</h3>
+          <p class="muted" id="dc-step-subtitle">Vamos começar revisando a leitura inicial do pré-diagnóstico.</p>
+        </div>
+        <span class="step-indicator" id="dc-step-indicator">Etapa 1 de 5</span>
+      </div>
+
+      <div class="card-body">
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" id="dc-progress-fill" style="width: 20%;"></div>
+          </div>
+        </div>
+
+        <form id="dc-form">
+          <!-- ETAPA 1 -->
+          <div class="form-step" data-step="1">
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-header">
+                <h3>Radar do pré-diagnóstico</h3>
+              </div>
+              <div class="card-body">
+                <div id="dc-radar-base" class="report-grid two"></div>
+              </div>
+            </div>
+
+            <div class="report-grid two">
+              <div class="pillar-card">
+                <h4>Movimento</h4>
+                <label class="field-label" for="rev_movimento">Score revisado</label>
+                <input id="rev_movimento" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_movimento">Notas</label>
+                <textarea id="notas_movimento"></textarea>
+              </div>
+
+              <div class="pillar-card">
+                <h4>Alimentação</h4>
+                <label class="field-label" for="rev_alimentacao">Score revisado</label>
+                <input id="rev_alimentacao" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_alimentacao">Notas</label>
+                <textarea id="notas_alimentacao"></textarea>
+              </div>
+
+              <div class="pillar-card">
+                <h4>Sono</h4>
+                <label class="field-label" for="rev_sono">Score revisado</label>
+                <input id="rev_sono" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_sono">Notas</label>
+                <textarea id="notas_sono"></textarea>
+              </div>
+
+              <div class="pillar-card">
+                <h4>Propósito</h4>
+                <label class="field-label" for="rev_proposito">Score revisado</label>
+                <input id="rev_proposito" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_proposito">Notas</label>
+                <textarea id="notas_proposito"></textarea>
+              </div>
+
+              <div class="pillar-card">
+                <h4>Social</h4>
+                <label class="field-label" for="rev_social">Score revisado</label>
+                <input id="rev_social" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_social">Notas</label>
+                <textarea id="notas_social"></textarea>
+              </div>
+
+              <div class="pillar-card">
+                <h4>Estresse</h4>
+                <label class="field-label" for="rev_estresse">Score revisado</label>
+                <input id="rev_estresse" type="number" min="0" max="10" />
+                <label class="field-label" for="notas_estresse">Notas</label>
+                <textarea id="notas_estresse"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- ETAPA 2 -->
+          <div class="form-step hidden" data-step="2">
+            <div class="field">
+              <label for="rotina">Como é sua rotina hoje?</label>
+              <textarea id="rotina" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="trabalho">Como seu trabalho interfere na sua saúde, treino ou alimentação?</label>
+              <textarea id="trabalho"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="sono_detalhado">Como está seu sono na prática?</label>
+              <textarea id="sono_detalhado"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="alimentacao_detalhada">Como está sua alimentação no dia a dia?</label>
+              <textarea id="alimentacao_detalhada"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="historico_saude">Histórico de saúde, medicações ou exames relevantes</label>
+              <textarea id="historico_saude"></textarea>
+            </div>
+          </div>
+
+          <!-- ETAPA 3 -->
+          <div class="form-step hidden" data-step="3">
+            <div class="field">
+              <label for="adesao">Como você enxerga sua capacidade atual de adesão?</label>
+              <textarea id="adesao"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="recaidas">Quais recaídas ou padrões de repetição costumam acontecer?</label>
+              <textarea id="recaidas"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="gatilhos">Quais gatilhos mais te sabotam?</label>
+              <textarea id="gatilhos"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="ambiente">Seu ambiente favorece ou dificulta sua evolução?</label>
+              <textarea id="ambiente"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="apoio_social">Você sente apoio das pessoas ao seu redor?</label>
+              <textarea id="apoio_social"></textarea>
+            </div>
+          </div>
+
+          <!-- ETAPA 4 -->
+          <div class="form-step hidden" data-step="4">
+            <div class="field">
+              <label for="protocolo_fisico">Protocolo / tipo de avaliação física</label>
+              <input id="protocolo_fisico" type="text" />
+            </div>
+
+            <div class="grid grid-2">
+              <div class="field">
+                <label for="peso">Peso</label>
+                <input id="peso" type="number" step="0.1" />
+              </div>
+
+              <div class="field">
+                <label for="altura">Altura (cm)</label>
+                <input id="altura" type="number" step="1" />
+              </div>
+            </div>
+
+            <div class="grid grid-2">
+              <div class="field">
+                <label for="rcq">RCQ</label>
+                <input id="rcq" type="text" />
+              </div>
+
+              <div class="field">
+                <label for="rce">RCE</label>
+                <input id="rce" type="text" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="testes_funcionais">Testes funcionais / observações físicas</label>
+              <textarea id="testes_funcionais"></textarea>
+            </div>
+          </div>
+
+          <!-- ETAPA 5 -->
+          <div class="form-step hidden" data-step="5">
+            <div class="field">
+              <label for="prioridade1">Prioridade 1</label>
+              <input id="prioridade1" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="prioridade2">Prioridade 2</label>
+              <input id="prioridade2" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="prioridade3">Prioridade 3</label>
+              <input id="prioridade3" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="foco_mes1">Foco do mês 1</label>
+              <textarea id="foco_mes1" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="observacoes_professor">Observações do professor</label>
+              <textarea id="observacoes_professor"></textarea>
+            </div>
+          </div>
+
+          <div class="actions form-nav">
+            <button type="button" class="btn secondary hidden" id="dc-prev-btn">Voltar</button>
+            <button type="button" class="btn" id="dc-next-btn">Avançar</button>
+            <button type="submit" class="btn hidden" id="dc-submit-btn">Salvar diagnóstico</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="card hidden" id="dc-success-card">
+      <div class="card-header">
+        <h3>Diagnóstico salvo</h3>
+      </div>
+      <div class="card-body">
+        <p>Os dados do diagnóstico completo foram registrados com sucesso.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/storage.js?v=18"></script>
+  <script src="../assets/js/calculos.js?v=18"></script>
+  <script src="../assets/js/diagnostico-completo.js?v=18"></script>
+</body>
+</html>
