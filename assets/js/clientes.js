@@ -5,20 +5,56 @@ window.ZAClientes = (() => {
     return window.ZAStorage?.getClientes?.() || [];
   }
 
+  function getListElement() {
+    return (
+      document.getElementById("clientes-table-body") ||
+      document.getElementById("clientes-list")
+    );
+  }
+
   function getFilteredClientes(clientes) {
     if (currentFilter === "ativos") {
-      return clientes.filter(cliente => cliente.status !== "arquivado");
+      return clientes.filter((cliente) => cliente.status !== "arquivado");
     }
 
     if (currentFilter === "arquivados") {
-      return clientes.filter(cliente => cliente.status === "arquivado");
+      return clientes.filter((cliente) => cliente.status === "arquivado");
     }
 
     return clientes;
   }
 
+  function formatDate(dateValue) {
+    if (!dateValue) return "-";
+
+    try {
+      return new Date(dateValue).toLocaleDateString("pt-BR");
+    } catch (error) {
+      return dateValue;
+    }
+  }
+
+  function getStatusBadge(status) {
+    const safeStatus = status || "ativo";
+
+    const map = {
+      ativo: "bg-emerald-100 text-emerald-700",
+      arquivado: "bg-slate-200 text-slate-700",
+      pausado: "bg-amber-100 text-amber-700",
+      finalizado: "bg-blue-100 text-blue-700",
+    };
+
+    const classes = map[safeStatus] || "bg-slate-100 text-slate-700";
+
+    return `
+      <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${classes}">
+        ${safeStatus}
+      </span>
+    `;
+  }
+
   function renderLista(clientes) {
-    const list = document.getElementById("clientes-list");
+    const list = getListElement();
     const emptyState = document.getElementById("empty-clientes");
 
     if (!list) return;
@@ -38,53 +74,79 @@ window.ZAClientes = (() => {
         const isArchived = cliente.status === "arquivado";
 
         return `
-          <div class="card" style="margin-bottom:12px;">
-            <div class="card-body">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-                
-                <div style="font-weight:700; font-size:1rem;">
-                  ${cliente.nome || "-"}
-                </div>
+          <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition">
+            <td class="px-4 py-3 font-medium text-slate-800">
+              ${cliente.nome || "-"}
+            </td>
 
-                <div class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                  
-                  <a
-                    class="btn small"
-                    href="../cliente/?id=${encodeURIComponent(cliente.id)}"
-                  >
-                    Abrir
-                  </a>
+            <td class="px-4 py-3 text-slate-600">
+              ${cliente.email || "-"}
+            </td>
 
-                  ${
-                    isArchived
-                      ? `
-                        <button
-                          class="btn small secondary"
-                          type="button"
-                          onclick="window.ZAClientes.reactivate('${cliente.id}')"
-                        >
-                          Reativar
-                        </button>
-                      `
-                      : `
-                        <button
-                          class="btn small danger"
-                          type="button"
-                          onclick="window.ZAClientes.archive('${cliente.id}')"
-                        >
-                          Arquivar
-                        </button>
-                      `
-                  }
+            <td class="px-4 py-3 text-slate-600">
+              ${cliente.plano || "-"}
+            </td>
 
-                </div>
+            <td class="px-4 py-3 text-slate-600">
+              ${cliente.faseAtual || cliente.fase_atual || "-"}
+            </td>
 
+            <td class="px-4 py-3">
+              ${getStatusBadge(cliente.status)}
+            </td>
+
+            <td class="px-4 py-3 text-slate-600">
+              ${formatDate(cliente.dataInicio || cliente.data_inicio || cliente.createdAt || cliente.created_at)}
+            </td>
+
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap gap-2">
+                <a
+                  href="../cliente/?id=${cliente.id}"
+                  class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition"
+                >
+                  Abrir
+                </a>
+
+                ${
+                  isArchived
+                    ? `
+                      <button
+                        type="button"
+                        data-reactivate="${cliente.id}"
+                        class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                      >
+                        Reativar
+                      </button>
+                    `
+                    : `
+                      <button
+                        type="button"
+                        data-archive="${cliente.id}"
+                        class="inline-flex items-center rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 transition"
+                      >
+                        Arquivar
+                      </button>
+                    `
+                }
               </div>
-            </div>
-          </div>
+            </td>
+          </tr>
         `;
       })
       .join("");
+
+    list.querySelectorAll("[data-archive]").forEach((button) => {
+      button.addEventListener("click", () => {
+        archive(button.dataset.archive);
+      });
+    });
+
+    list.querySelectorAll("[data-reactivate]").forEach((button) => {
+      button.addEventListener("click", () => {
+        reactivate(button.dataset.reactivate);
+      });
+    });
   }
 
   function renderFilters() {
@@ -92,22 +154,48 @@ window.ZAClientes = (() => {
     if (!container) return;
 
     container.innerHTML = `
-      <div class="actions">
-        <button class="btn small ${currentFilter === "ativos" ? "" : "secondary"}" type="button" data-filter="ativos">
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          data-filter="ativos"
+          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
+            currentFilter === "ativos"
+              ? "bg-slate-900 text-white"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+          }"
+        >
           Ativos
         </button>
-        <button class="btn small ${currentFilter === "arquivados" ? "" : "secondary"}" type="button" data-filter="arquivados">
+
+        <button
+          type="button"
+          data-filter="arquivados"
+          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
+            currentFilter === "arquivados"
+              ? "bg-slate-900 text-white"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+          }"
+        >
           Arquivados
         </button>
-        <button class="btn small ${currentFilter === "todos" ? "" : "secondary"}" type="button" data-filter="todos">
+
+        <button
+          type="button"
+          data-filter="todos"
+          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
+            currentFilter === "todos"
+              ? "bg-slate-900 text-white"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+          }"
+        >
           Todos
         </button>
       </div>
     `;
 
-    container.querySelectorAll("[data-filter]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.filter;
+    container.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter;
         init();
       });
     });
@@ -117,10 +205,10 @@ window.ZAClientes = (() => {
     const ok = window.confirm("Deseja arquivar este cliente?");
     if (!ok) return;
 
-    const archived = window.ZAStorage.archiveCliente(id);
+    const archived = window.ZAStorage?.archiveCliente?.(id);
 
     if (!archived) {
-      alert("Erro ao arquivar cliente.");
+      window.alert("Erro ao arquivar cliente.");
       return;
     }
 
@@ -131,10 +219,10 @@ window.ZAClientes = (() => {
     const ok = window.confirm("Deseja reativar este cliente?");
     if (!ok) return;
 
-    const reactivated = window.ZAStorage.reactivateCliente(id);
+    const reactivated = window.ZAStorage?.reactivateCliente?.(id);
 
     if (!reactivated) {
-      alert("Erro ao reativar cliente.");
+      window.alert("Erro ao reativar cliente.");
       return;
     }
 
@@ -143,7 +231,6 @@ window.ZAClientes = (() => {
 
   function init() {
     const clientes = getClientes();
-
     renderFilters();
     renderLista(clientes);
   }
@@ -151,7 +238,7 @@ window.ZAClientes = (() => {
   return {
     init,
     archive,
-    reactivate
+    reactivate,
   };
 })();
 
