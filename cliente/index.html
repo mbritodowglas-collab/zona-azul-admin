@@ -1,15 +1,54 @@
-<div class="cliente-header">
-  <h1 id="cliente-nome">Cliente</h1>
-</div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cliente | Metodologia Vida Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=18" />
+</head>
+<body class="lead-page-body">
+  <main class="lead-page-wrap">
+    <section class="lead-header-card">
+      <div class="lead-header-top">
+        <a href="../clientes/" class="btn secondary small">← Voltar</a>
+      </div>
 
-<div class="cliente-tabs">
-  <button data-tab="visao">Visão Geral</button>
-  <button data-tab="diagnostico">Diagnóstico</button>
-  <button data-tab="fisico">Avaliação Física</button>
-  <button data-tab="planejamento">Planejamento</button>
-</div>
+      <div class="lead-header-content">
+        <h1 id="cliente-nome">Cliente</h1>
+        <p id="cliente-subtitulo" class="muted">Carregando...</p>
+      </div>
+    </section>
 
-<div id="tab-visao" class="tab-content"></div>
-<div id="tab-diagnostico" class="tab-content"></div>
-<div id="tab-fisico" class="tab-content"></div>
-<div id="tab-planejamento" class="tab-content"></div>
+    <section class="lead-actions-card">
+      <div class="lead-actions-grid">
+        <a class="btn secondary" id="btn-relatorio-pre" target="_blank">Relatório do Pré-diagnóstico</a>
+        <a class="btn" id="btn-dc-professor">Diagnóstico Completo</a>
+        <a class="btn secondary" id="btn-dc-cliente" target="_blank">Enviar Diagnóstico</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>Painel do cliente</h3>
+      </div>
+      <div class="card-body">
+        <div class="cliente-tabs">
+          <button class="btn small active" data-tab="visao" type="button">Visão Geral</button>
+          <button class="btn small secondary" data-tab="diagnostico" type="button">Diagnóstico Completo</button>
+          <button class="btn small secondary" data-tab="fisico" type="button">Avaliação Física</button>
+          <button class="btn small secondary" data-tab="planejamento" type="button">Planejamento</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-visao" class="tab-pane"></section>
+    <section id="tab-diagnostico" class="tab-pane hidden"></section>
+    <section id="tab-fisico" class="tab-pane hidden"></section>
+    <section id="tab-planejamento" class="tab-pane hidden"></section>
+  </main>
+
+  <script src="../assets/js/storage.js?v=18"></script>
+  <script src="../assets/js/calculos.js?v=18"></script>
+  <script src="../assets/js/cliente.js?v=18"></script>
+</body>
+</html>
