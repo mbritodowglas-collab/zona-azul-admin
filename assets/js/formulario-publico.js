@@ -22,7 +22,7 @@
     },
     2: {
       title: "Histórico",
-      subtitle: "Agora queremos entender sua jornada anterior."
+      subtitle: "Agora queremos entender sua jornada anterior e possíveis limitações atuais."
     },
     3: {
       title: "Radar Zona Azul — Parte 1",
@@ -141,6 +141,7 @@
       exp_personal: document.getElementById("exp_personal").value,
       exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
       o_que_funcionou: document.getElementById("o_que_funcionou").value,
+      limitacoes_atuais: document.getElementById("limitacoes_atuais").value,
       por_que_parou: document.getElementById("por_que_parou").value,
       desafio_atual: document.getElementById("desafio_atual").value,
       meta_6_meses: document.getElementById("meta_6_meses").value,
