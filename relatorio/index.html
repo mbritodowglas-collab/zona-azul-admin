@@ -6,26 +6,39 @@
   <title>Relatório | Metodologia Vida Azul</title>
   <link rel="stylesheet" href="../assets/css/global.css" />
 </head>
-<body class="report-shell">
-  <main class="report-wrap">
+<body class="report-shell report-premium-shell">
+  <main class="report-wrap report-premium-wrap">
     <div class="report-actions no-print">
       <a href="../pre-diagnostico/" class="btn secondary">Voltar</a>
       <button class="btn" id="print-report-btn" type="button">Baixar / Imprimir PDF</button>
     </div>
 
-    <article class="report-card" id="report-content">
-      <div class="report-head">
-        <small class="report-kicker">METODOLOGIA VIDA AZUL</small>
-        <h1>Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
-        <p id="report-subtitle">Carregando relatório...</p>
-      </div>
+    <article class="report-card premium-report-card" id="report-content">
+      <header class="premium-report-hero">
+        <div class="premium-report-kicker">◆ METODOLOGIA VIDA AZUL ◆</div>
+        <h1>SEU PERFIL DE LONGEVIDADE</h1>
+        <p class="premium-report-subtitle">
+          Baseado nos pilares centrais das Zonas Azuis — regiões do mundo onde as pessoas vivem mais e melhor.
+        </p>
 
-      <div class="report-body" id="report-body"></div>
+        <div class="premium-report-meta">
+          <div>
+            <span class="meta-label">Lead</span>
+            <strong id="report-lead-name">Carregando...</strong>
+          </div>
+          <div>
+            <span class="meta-label">Relatório gerado em</span>
+            <strong id="report-date">--/--/----</strong>
+          </div>
+        </div>
+      </header>
+
+      <div class="report-body premium-report-body" id="report-body"></div>
     </article>
   </main>
 
-  <script src="../assets/js/storage.js?v=7"></script>
-  <script src="../assets/js/calculos.js?v=7"></script>
-  <script src="../assets/js/relatorio.js?v=7"></script>
+  <script src="../assets/js/storage.js?v=10"></script>
+  <script src="../assets/js/calculos.js?v=10"></script>
+  <script src="../assets/js/relatorio.js?v=10"></script>
 </body>
 </html>
