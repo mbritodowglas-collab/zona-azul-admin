@@ -134,6 +134,15 @@ window.ZACalculos = (() => {
       }
     }
 
+    if (!payload.urgencia || payload.comprometimento === "" || !payload.investimento || !payload.sabotagem || !payload.objetivo_fisico) {
+      return "Preencha a etapa de perfil comportamental.";
+    }
+
+    const comprometimento = Number(payload.comprometimento);
+    if (Number.isNaN(comprometimento) || comprometimento < 0 || comprometimento > 10) {
+      return "O comprometimento deve estar entre 0 e 10.";
+    }
+
     if (!payload.por_que_parou || !payload.desafio_atual || !payload.meta_6_meses) {
       return "Preencha os campos qualitativos obrigatórios.";
     }
@@ -153,27 +162,40 @@ window.ZACalculos = (() => {
       email: payload.email.toLowerCase().trim(),
       data_nascimento: payload.data_nascimento,
       idade: calcularIdade(payload.data_nascimento),
+
       genero: payload.genero,
       cidade: payload.cidade.trim(),
       origem: payload.origem,
+
       exp_personal: payload.exp_personal,
       exp_emagrecimento: payload.exp_emagrecimento,
       o_que_funcionou: payload.o_que_funcionou?.trim() || "",
       limitacoes_atuais: payload.limitacoes_atuais?.trim() || "",
       por_que_parou: payload.por_que_parou.trim(),
+
+      urgencia: payload.urgencia,
+      comprometimento: Number(payload.comprometimento),
+      investimento: payload.investimento,
+      sabotagem: payload.sabotagem,
+      objetivo_fisico: payload.objetivo_fisico,
+
       desafio_atual: payload.desafio_atual.trim(),
       meta_6_meses: payload.meta_6_meses.trim(),
+
       peso: payload.peso ? Number(payload.peso) : null,
       altura: payload.altura ? Number(payload.altura) : null,
+
       score_movimento: Number(payload.score_movimento),
       score_alimentacao: Number(payload.score_alimentacao),
       score_sono: Number(payload.score_sono),
       score_proposito: Number(payload.score_proposito),
       score_social: Number(payload.score_social),
       score_estresse: Number(payload.score_estresse),
+
       media_geral: media,
       pilar_mais_baixo: pilar,
       top_3_gaps: gaps,
+
       status: "novo",
       historico_contato: []
     };
