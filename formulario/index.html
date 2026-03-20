@@ -28,13 +28,13 @@
           <h3 id="step-title">Identificação</h3>
           <p class="muted" id="step-subtitle">Vamos começar com seus dados básicos.</p>
         </div>
-        <span class="step-indicator" id="step-indicator">Etapa 1 de 6</span>
+        <span class="step-indicator" id="step-indicator">Etapa 1 de 7</span>
       </div>
 
       <div class="card-body">
         <div class="progress-wrap">
           <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill" style="width: 16.66%;"></div>
+            <div class="progress-fill" id="progress-fill" style="width: 14.28%;"></div>
           </div>
         </div>
 
@@ -263,6 +263,58 @@
           <!-- ETAPA 5 -->
           <div class="form-step hidden" data-step="5">
             <div class="field">
+              <label>Quão urgente é mudar sua situação atual?</label>
+              <select id="urgencia" required>
+                <option value="">Selecione</option>
+                <option value="alta">Quero começar agora</option>
+                <option value="media">Quero começar em breve</option>
+                <option value="baixa">Estou apenas avaliando</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="comprometimento">De 0 a 10, quanto você está disposto(a) a seguir um plano hoje?</label>
+              <input id="comprometimento" type="number" min="0" max="10" required />
+            </div>
+
+            <div class="field">
+              <label>Você investiria em acompanhamento para acelerar resultados?</label>
+              <select id="investimento" required>
+                <option value="">Selecione</option>
+                <option value="sim">Sim</option>
+                <option value="depende">Depende do valor</option>
+                <option value="nao">Prefiro tentar sozinho</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>O que mais te sabota hoje?</label>
+              <select id="sabotagem" required>
+                <option value="">Selecione</option>
+                <option value="tempo">Falta de tempo</option>
+                <option value="disciplina">Falta de disciplina</option>
+                <option value="emocional">Ansiedade/emocional</option>
+                <option value="cansaco">Cansaço</option>
+                <option value="direcao">Falta de direção</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Qual seu principal objetivo físico?</label>
+              <select id="objetivo_fisico" required>
+                <option value="">Selecione</option>
+                <option value="emagrecimento">Emagrecimento</option>
+                <option value="massa">Ganho de massa</option>
+                <option value="saude">Melhorar saúde</option>
+                <option value="energia">Mais energia/disposição</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ETAPA 6 -->
+          <div class="form-step hidden" data-step="6">
+            <div class="field">
               <label for="desafio_atual">Maior desafio atual</label>
               <textarea id="desafio_atual" required></textarea>
             </div>
@@ -273,8 +325,8 @@
             </div>
           </div>
 
-          <!-- ETAPA 6 -->
-          <div class="form-step hidden" data-step="6">
+          <!-- ETAPA 7 -->
+          <div class="form-step hidden" data-step="7">
             <div class="field">
               <label>Você sabe seu peso e altura atualmente? (opcional)</label>
               <p class="field-help">Essas informações ajudam a enriquecer a leitura inicial do seu contexto físico.</p>
@@ -313,8 +365,8 @@
     </section>
   </main>
 
-  <script src="../assets/js/storage.js?v=11"></script>
-  <script src="../assets/js/calculos.js?v=11"></script>
-  <script src="../assets/js/formulario-publico.js?v=11"></script>
+  <script src="../assets/js/storage.js?v=12"></script>
+  <script src="../assets/js/calculos.js?v=12"></script>
+  <script src="../assets/js/formulario-publico.js?v=12"></script>
 </body>
 </html>
