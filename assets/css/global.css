@@ -3006,3 +3006,18 @@ th{color:var(--muted);font-weight:600}
   align-items: center;
   gap: 8px;
 }
+
+/* Remove o padding direito da última coluna */
+.table-wrap table td:last-child {
+  padding-right: 8px !important;
+  text-align: right;
+}
+
+/* Empurra os botões até o limite */
+.cliente-acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-right: -8px; /* ESSA LINHA É O SEGREDO */
+}
