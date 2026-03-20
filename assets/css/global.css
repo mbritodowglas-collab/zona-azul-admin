@@ -2649,3 +2649,203 @@ th{color:var(--muted);font-weight:600}
     page-break-inside: avoid;
   }
 }
+
+/* =========================================================
+   RELATÓRIO — OFERTA / PLANOS (VERSÃO 2 PROGRAMAS)
+========================================================= */
+
+.premium-offer-box {
+  background: linear-gradient(180deg, #123a55 0%, #0f3048 100%);
+  color: #ffffff;
+  border: 1px solid rgba(201, 165, 70, 0.45);
+  border-radius: 24px;
+  padding: 26px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.premium-offer-text {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.78;
+  font-size: 1rem;
+}
+
+.premium-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0 18px;
+  align-items: stretch;
+}
+
+.premium-plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 22px 20px;
+  overflow: hidden;
+}
+
+.premium-plan-card::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  bottom: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.035);
+  pointer-events: none;
+}
+
+.premium-plan-card.highlight {
+  background: linear-gradient(180deg, rgba(216, 192, 111, 0.2) 0%, rgba(216, 192, 111, 0.08) 100%);
+  border: 1px solid rgba(216, 192, 111, 0.4);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+}
+
+.premium-plan-card.highlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.premium-plan-card h4 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.35;
+  padding-right: 84px;
+}
+
+.plan-price {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #d8c06f;
+  margin-bottom: 8px;
+}
+
+.plan-sub {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.premium-plan-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.72;
+  font-size: 0.98rem;
+  flex: 1;
+}
+
+.plan-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #d8c06f;
+  color: #123a55;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.premium-offer-note {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.84);
+  line-height: 1.74;
+  font-size: 0.98rem;
+}
+
+.premium-offer-cta {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d8c06f;
+  font-weight: 800;
+  line-height: 1.68;
+  font-size: 1rem;
+}
+
+/* =========================================================
+   RESPONSIVO DA OFERTA
+========================================================= */
+
+@media (max-width: 900px) {
+  .premium-plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .premium-plan-card h4 {
+    padding-right: 0;
+  }
+
+  .plan-badge {
+    position: static;
+    display: inline-flex;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .premium-offer-box {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .premium-plan-card {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .plan-price {
+    font-size: 1.7rem;
+  }
+
+  .premium-offer-text,
+  .premium-offer-note,
+  .premium-offer-cta,
+  .premium-plan-card p {
+    font-size: 0.96rem;
+  }
+}
+
+/* =========================================================
+   IMPRESSÃO
+========================================================= */
+
+@media print {
+  .premium-offer-box,
+  .premium-plan-card.highlight {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .premium-offer-box,
+  .premium-plan-card {
+    box-shadow: none !important;
+  }
+
+  .premium-plans-grid {
+    gap: 12px;
+  }
+}
