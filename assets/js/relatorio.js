@@ -193,22 +193,66 @@ window.ZARelatorio = (() => {
   function renderOfferSection() {
     return `
       <section class="report-section">
-        <div class="section-bar">■ PRÓXIMO PASSO</div>
+        <div class="section-bar">■ COMO CONTINUAR A PARTIR DAQUI</div>
 
         <div class="premium-offer-box">
-          <div class="premium-offer-kicker">Diagnóstico Vida Azul Completo</div>
-          <h3>Seu maior ponto de alavanca merece um plano claro.</h3>
 
-          <ul>
-            <li>Avaliação inicial mais aprofundada</li>
-            <li>Leitura personalizada dos pilares com prioridade prática</li>
-            <li>Plano inicial com direcionamento de rotina e estilo de vida</li>
-            <li>Base para iniciar sua evolução com mais clareza e consistência</li>
-          </ul>
+          <p class="premium-offer-text">
+            O seu diagnóstico mostra com clareza onde estão seus principais pontos de ajuste.
+            O próximo passo é transformar essa leitura em um plano estruturado, com direção prática,
+            acompanhamento e evolução progressiva ao longo dos próximos meses.
+          </p>
 
-          <div class="premium-offer-price">
-            R$ 350–500 · Sessão única
+          <div class="premium-plans-grid">
+
+            <div class="premium-plan-card">
+              <h4>Diagnóstico + Mês 1</h4>
+              <div class="plan-price">R$ 400</div>
+              <span class="plan-sub">Pagamento único</span>
+              <p>
+                Indicado para quem quer viver a experiência inicial da metodologia,
+                passar pela avaliação completa e entender como funciona o primeiro mês
+                antes de decidir por um ciclo mais longo.
+              </p>
+            </div>
+
+            <div class="premium-plan-card highlight">
+              <div class="plan-badge">Mais escolhido</div>
+              <h4>Protocolo Trimestral</h4>
+              <div class="plan-price">R$ 1.800</div>
+              <span class="plan-sub">3x de R$ 600</span>
+              <p>
+                Indicado para quem já decidiu mudar e quer continuidade com acompanhamento,
+                check-ins, ajustes e evolução consistente nos pilares ao longo de 3 meses.
+              </p>
+            </div>
+
+            <div class="premium-plan-card">
+              <h4>Protocolo Semestral</h4>
+              <div class="plan-price">R$ 3.000</div>
+              <span class="plan-sub">6x de R$ 500</span>
+              <p>
+                Indicado para quem busca uma transformação mais profunda, com melhor lógica
+                de investimento mensal e mais tempo para consolidar a mudança de estilo de vida.
+              </p>
+            </div>
+
           </div>
+
+          <div class="premium-offer-note">
+            Depois do Diagnóstico + Mês 1, a continuidade do processo acontece pelos ciclos
+            do protocolo — trimestral ou semestral — de acordo com a decisão e o momento do cliente.
+          </div>
+
+          <div class="premium-offer-note">
+            Clientes que concluem o protocolo e atingem os marcos de evolução entram na fase Vida Azul,
+            um modelo de acompanhamento de longo prazo com mais autonomia.
+          </div>
+
+          <div class="premium-offer-cta">
+            Responda esta mensagem ou utilize o link abaixo para agendar sua sessão de diagnóstico.
+          </div>
+
         </div>
       </section>
     `;
@@ -376,7 +420,7 @@ window.ZARelatorio = (() => {
       <section class="report-section">
         <div class="section-bar">■ SEU MAIOR PONTO DE ALAVANCA</div>
         <div class="premium-leverage-box">
-          <h4>Com base no seu radar, o pilar ${pilarMaisBaixo} é sua maior oportunidade.</h4>
+          <h4>Com base no seu radar, o ponto de maior alavanca hoje é ${pilarMaisBaixo}.</h4>
           <p>${getStrategicReading(lead)}</p>
         </div>
       </section>
