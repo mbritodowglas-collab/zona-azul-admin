@@ -1,5 +1,4 @@
 window.ZAClientes = (() => {
-
   function getClientes() {
     return window.ZAStorage?.getClientes?.() || [];
   }
@@ -10,40 +9,48 @@ window.ZAClientes = (() => {
   }
 
   function renderTabela(clientes) {
-    const tbody = document.getElementById("clientes-tbody");
+    const tbody = document.getElementById("clientes-table-body");
+    const emptyState = document.getElementById("empty-clientes");
+    const tableWrap = document.getElementById("clientes-table-wrap");
+
     if (!tbody) return;
 
     if (!clientes.length) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="7">Nenhum cliente encontrado.</td>
-        </tr>
-      `;
+      tbody.innerHTML = "";
+      emptyState?.classList.remove("hidden");
+      tableWrap?.classList.add("hidden");
       return;
     }
 
-    tbody.innerHTML = clientes.map(cliente => `
-      <tr>
-        <td>${cliente.nome || "-"}</td>
-        <td>${cliente.email || "-"}</td>
-        <td>${cliente.plano || "-"}</td>
-        <td>${cliente.fase_nome || "-"}</td>
-        <td>
-          <span class="status-badge ${cliente.status || ""}">
-            ${cliente.status || "-"}
-          </span>
-        </td>
-        <td>${formatDateBR(cliente.data_inicio || cliente.created_at)}</td>
-        <td>
-          <a 
-            class="btn small"
-            href="../cliente/?id=${encodeURIComponent(cliente.id)}"
-          >
-            Abrir
-          </a>
-        </td>
-      </tr>
-    `).join("");
+    emptyState?.classList.add("hidden");
+    tableWrap?.classList.remove("hidden");
+
+    tbody.innerHTML = clientes
+      .map(
+        (cliente) => `
+          <tr>
+            <td>${cliente.nome || "-"}</td>
+            <td>${cliente.email || "-"}</td>
+            <td>${cliente.plano || "-"}</td>
+            <td>${cliente.fase_nome || "-"}</td>
+            <td>
+              <span class="chip ${cliente.status === "ativo" ? "success" : "warning"}">
+                ${cliente.status || "-"}
+              </span>
+            </td>
+            <td>${formatDateBR(cliente.data_inicio || cliente.created_at)}</td>
+            <td>
+              <a
+                class="btn small"
+                href="../cliente/?id=${encodeURIComponent(cliente.id)}"
+              >
+                Abrir
+              </a>
+            </td>
+          </tr>
+        `
+      )
+      .join("");
   }
 
   function init() {
@@ -54,7 +61,6 @@ window.ZAClientes = (() => {
   return {
     init
   };
-
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
