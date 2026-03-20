@@ -82,11 +82,72 @@ window.ZARelatorio = (() => {
   }
 
   function formatGenero(value) {
-    if (!value) return "-";
-    if (value === "masculino") return "Masculino";
-    if (value === "feminino") return "Feminino";
-    if (value === "nao_informar") return "Prefere não informar";
-    return value;
+    const map = {
+      masculino: "Masculino",
+      feminino: "Feminino",
+      nao_informar: "Prefere não informar"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatExpPersonal(value) {
+    const map = {
+      nunca: "Nunca",
+      fez_nao_manteve: "Já fiz, mas não mantive",
+      faz_atualmente: "Faço atualmente",
+      fez_manteve: "Já fiz e mantive"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatExpEmagrecimento(value) {
+    const map = {
+      nunca: "Nunca",
+      nao_funcionou: "Já tentei, mas não funcionou",
+      funcionou_nao_manteve: "Funcionou, mas não mantive",
+      em_processo: "Estou em processo"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatUrgencia(value) {
+    const map = {
+      alta: "Alta — quer começar agora",
+      media: "Média — quer começar em breve",
+      baixa: "Baixa — está apenas avaliando"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatInvestimento(value) {
+    const map = {
+      sim: "Sim",
+      depende: "Depende do valor",
+      nao: "Prefere tentar sozinho"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatSabotagem(value) {
+    const map = {
+      tempo: "Falta de tempo",
+      disciplina: "Falta de disciplina",
+      emocional: "Ansiedade / emocional",
+      cansaco: "Cansaço",
+      direcao: "Falta de direção",
+      outro: "Outro"
+    };
+    return map[value] || value || "-";
+  }
+
+  function formatObjetivo(value) {
+    const map = {
+      emagrecimento: "Emagrecimento",
+      massa: "Ganho de massa",
+      saude: "Melhorar saúde",
+      energia: "Mais energia / disposição"
+    };
+    return map[value] || value || "-";
   }
 
   function getPillars(lead) {
@@ -213,6 +274,77 @@ window.ZARelatorio = (() => {
       .join("");
   }
 
+  function renderContextSection(lead) {
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ LEITURA DO SEU CONTEXTO</div>
+
+        <div class="report-grid two">
+          <div class="pillar-card">
+            <h4>Maior desafio atual</h4>
+            <p>${lead.desafio_atual || "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Meta para 6 meses</h4>
+            <p>${lead.meta_6_meses || "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Por que você parou antes?</h4>
+            <p>${lead.por_que_parou || "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>O que já funcionou</h4>
+            <p>${lead.o_que_funcionou || "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Experiência com acompanhamento</h4>
+            <p><strong>Personal/Nutricionista:</strong> ${formatExpPersonal(lead.exp_personal)}</p>
+            <p><strong>Processo de emagrecimento:</strong> ${formatExpEmagrecimento(lead.exp_emagrecimento)}</p>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderBehaviorSection(lead) {
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ PERFIL COMPORTAMENTAL</div>
+
+        <div class="report-grid two">
+          <div class="pillar-card">
+            <h4>Nível de urgência</h4>
+            <p>${formatUrgencia(lead.urgencia)}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Comprometimento</h4>
+            <p>${lead.comprometimento ?? "-"}/10</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Disponibilidade para investir</h4>
+            <p>${formatInvestimento(lead.investimento)}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Principal sabotador</h4>
+            <p>${formatSabotagem(lead.sabotagem)}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Objetivo físico</h4>
+            <p>${formatObjetivo(lead.objetivo_fisico)}</p>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
   function renderPhysicalSection(lead) {
     const analysis = getPhysicalAnalysis(lead);
 
@@ -252,49 +384,12 @@ window.ZARelatorio = (() => {
     `;
   }
 
-  function renderContextSection(lead) {
-    return `
-      <section class="report-section">
-        <div class="section-bar">■ LEITURA DO SEU CONTEXTO</div>
-
-        <div class="report-grid two">
-          <div class="pillar-card">
-            <h4>Maior desafio atual</h4>
-            <p>${lead.desafio_atual || "-"}</p>
-          </div>
-
-          <div class="pillar-card">
-            <h4>Meta para 6 meses</h4>
-            <p>${lead.meta_6_meses || "-"}</p>
-          </div>
-
-          <div class="pillar-card">
-            <h4>Por que você parou antes?</h4>
-            <p>${lead.por_que_parou || "-"}</p>
-          </div>
-
-          <div class="pillar-card">
-            <h4>O que já funcionou</h4>
-            <p>${lead.o_que_funcionou || "-"}</p>
-          </div>
-
-          <div class="pillar-card">
-            <h4>Experiência com acompanhamento</h4>
-            <p><strong>Personal/Nutricionista:</strong> ${lead.exp_personal || "-"}</p>
-            <p><strong>Processo de emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
-          </div>
-        </div>
-      </section>
-    `;
-  }
-
   function renderOfferSection() {
     return `
       <section class="report-section">
         <div class="section-bar">■ COMO CONTINUAR A PARTIR DAQUI</div>
 
         <div class="premium-offer-box">
-
           <p class="premium-offer-text">
             O seu diagnóstico mostra com clareza onde estão seus principais pontos de ajuste.
             O próximo passo é transformar essa leitura em um plano estruturado, com direção prática,
@@ -302,7 +397,6 @@ window.ZARelatorio = (() => {
           </p>
 
           <div class="premium-plans-grid">
-
             <div class="premium-plan-card">
               <h4>Diagnóstico + Mês 1</h4>
               <div class="plan-price">R$ 400</div>
@@ -334,7 +428,6 @@ window.ZARelatorio = (() => {
                 de investimento mensal e mais tempo para consolidar a mudança de estilo de vida.
               </p>
             </div>
-
           </div>
 
           <div class="premium-offer-note">
@@ -350,7 +443,6 @@ window.ZARelatorio = (() => {
           <div class="premium-offer-cta">
             Responda esta mensagem ou utilize o link abaixo para agendar sua sessão de diagnóstico.
           </div>
-
         </div>
       </section>
     `;
@@ -526,6 +618,7 @@ window.ZARelatorio = (() => {
       </section>
 
       ${renderContextSection(lead)}
+      ${renderBehaviorSection(lead)}
       ${renderPhysicalSection(lead)}
       ${renderOfferSection()}
     `;
