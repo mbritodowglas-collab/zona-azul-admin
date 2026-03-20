@@ -25,16 +25,20 @@
       subtitle: "Agora queremos entender sua jornada anterior e possíveis limitações atuais."
     },
     3: {
-      title: "Radar Zona Azul — Parte 1",
+      title: "Radar Vida Azul — Parte 1",
       subtitle: "Avalie movimento, alimentação e sono."
     },
     4: {
-      title: "Radar Zona Azul — Parte 2",
+      title: "Radar Vida Azul — Parte 2",
       subtitle: "Avalie propósito, vida social e estresse."
     },
     5: {
       title: "Contexto final",
       subtitle: "Conte seu maior desafio e sua meta para os próximos 6 meses."
+    },
+    6: {
+      title: "Contexto físico",
+      subtitle: "Essas informações são opcionais, mas ajudam a enriquecer sua leitura inicial."
     }
   };
 
@@ -137,6 +141,8 @@
       nome: document.getElementById("nome").value,
       email: document.getElementById("email").value,
       data_nascimento: dataNascimento,
+      genero: document.getElementById("genero").value,
+      cidade: document.getElementById("cidade").value,
       origem: document.getElementById("origem").value,
       exp_personal: document.getElementById("exp_personal").value,
       exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
@@ -145,6 +151,8 @@
       por_que_parou: document.getElementById("por_que_parou").value,
       desafio_atual: document.getElementById("desafio_atual").value,
       meta_6_meses: document.getElementById("meta_6_meses").value,
+      peso: document.getElementById("peso").value,
+      altura: document.getElementById("altura").value,
       score_movimento: document.getElementById("score_movimento").value,
       score_alimentacao: document.getElementById("score_alimentacao").value,
       score_sono: document.getElementById("score_sono").value,
