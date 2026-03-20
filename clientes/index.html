@@ -1,160 +1,68 @@
-window.ZAClientes = (() => {
-  let currentFilter = "ativos";
-
-  function getClientes() {
-    return window.ZAStorage?.getClientes?.() || [];
-  }
-
-  function getFilteredClientes(clientes) {
-    if (currentFilter === "ativos") {
-      return clientes.filter(cliente => cliente.status !== "arquivado");
-    }
-
-    if (currentFilter === "arquivados") {
-      return clientes.filter(cliente => cliente.status === "arquivado");
-    }
-
-    return clientes;
-  }
-
-  function renderLista(clientes) {
-    const list = document.getElementById("clientes-list");
-    const emptyState = document.getElementById("empty-clientes");
-
-    if (!list) return;
-
-    const lista = getFilteredClientes(clientes);
-
-    if (!lista.length) {
-      list.innerHTML = "";
-      emptyState?.classList.remove("hidden");
-      return;
-    }
-
-    emptyState?.classList.add("hidden");
-
-    list.innerHTML = lista
-      .map((cliente) => {
-        const isArchived = cliente.status === "arquivado";
-
-        return `
-          <div class="card" style="margin-bottom:12px;">
-            <div class="card-body">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-                
-                <div style="font-weight:700; font-size:1rem;">
-                  ${cliente.nome || "-"}
-                </div>
-
-                <div class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                  
-                  <a
-                    class="btn small"
-                    href="../cliente/?id=${encodeURIComponent(cliente.id)}"
-                  >
-                    Abrir
-                  </a>
-
-                  ${
-                    isArchived
-                      ? `
-                        <button
-                          class="btn small secondary"
-                          type="button"
-                          onclick="window.ZAClientes.reactivate('${cliente.id}')"
-                        >
-                          Reativar
-                        </button>
-                      `
-                      : `
-                        <button
-                          class="btn small danger"
-                          type="button"
-                          onclick="window.ZAClientes.archive('${cliente.id}')"
-                        >
-                          Arquivar
-                        </button>
-                      `
-                  }
-
-                </div>
-
-              </div>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  function renderFilters() {
-    const container = document.getElementById("clientes-filters");
-    if (!container) return;
-
-    container.innerHTML = `
-      <div class="actions">
-        <button class="btn small ${currentFilter === "ativos" ? "" : "secondary"}" type="button" data-filter="ativos">
-          Ativos
-        </button>
-        <button class="btn small ${currentFilter === "arquivados" ? "" : "secondary"}" type="button" data-filter="arquivados">
-          Arquivados
-        </button>
-        <button class="btn small ${currentFilter === "todos" ? "" : "secondary"}" type="button" data-filter="todos">
-          Todos
-        </button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes | Zona Azul Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=19" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul Admin</h1>
+          <p>Operação do cliente</p>
+        </div>
       </div>
-    `;
 
-    container.querySelectorAll("[data-filter]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.filter;
-        init();
-      });
-    });
-  }
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a class="active" href="./index.html">Clientes</a>
+      </nav>
+    </aside>
 
-  function archive(id) {
-    const ok = window.confirm("Deseja arquivar este cliente?");
-    if (!ok) return;
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2>Clientes</h2>
+          <p>Clientes convertidos a partir do pré-diagnóstico.</p>
+        </div>
+      </div>
 
-    const archived = window.ZAStorage.archiveCliente(id);
+      <section class="card">
+        <div class="card-header">
+          <h3>Lista de clientes</h3>
+        </div>
+        <div class="card-body">
+          <div id="clientes-filters" style="margin-bottom:16px;"></div>
 
-    if (!archived) {
-      alert("Erro ao arquivar cliente.");
-      return;
-    }
+          <div id="empty-clientes" class="empty-state hidden">Nenhum cliente encontrado nesse filtro.</div>
 
-    init();
-  }
+          <div class="table-wrap" id="clientes-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Plano</th>
+                  <th>Fase atual</th>
+                  <th>Status</th>
+                  <th>Data de início</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clientes-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 
-  function reactivate(id) {
-    const ok = window.confirm("Deseja reativar este cliente?");
-    if (!ok) return;
-
-    const reactivated = window.ZAStorage.reactivateCliente(id);
-
-    if (!reactivated) {
-      alert("Erro ao reativar cliente.");
-      return;
-    }
-
-    init();
-  }
-
-  function init() {
-    const clientes = getClientes();
-
-    renderFilters();
-    renderLista(clientes);
-  }
-
-  return {
-    init,
-    archive,
-    reactivate
-  };
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-  window.ZAClientes.init();
-});
+  <script src="../assets/js/storage.js?v=19"></script>
+  <script src="../assets/js/clientes.js?v=19"></script>
+</body>
+</html>
