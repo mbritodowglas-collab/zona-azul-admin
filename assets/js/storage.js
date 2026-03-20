@@ -25,8 +25,8 @@ window.ZAStorage = (() => {
 
   function upsertLead(lead) {
     const data = getData();
-    const email = lead.email.toLowerCase().trim();
-    const index = data.leads.findIndex(item => item.email === email);
+    const email = (lead.email || "").toLowerCase().trim();
+    const index = data.leads.findIndex(item => (item.email || "").toLowerCase().trim() === email);
 
     if (index >= 0) {
       data.leads[index] = {
@@ -46,13 +46,13 @@ window.ZAStorage = (() => {
 
   function convertLeadToCliente(email) {
     const data = getData();
-    const emailNormalized = email.toLowerCase().trim();
-    const leadIndex = data.leads.findIndex(item => item.email === emailNormalized);
+    const emailNormalized = (email || "").toLowerCase().trim();
+    const leadIndex = data.leads.findIndex(item => (item.email || "").toLowerCase().trim() === emailNormalized);
 
     if (leadIndex < 0) return false;
 
     const lead = data.leads[leadIndex];
-    const clienteExists = data.clientes.find(item => item.email === emailNormalized);
+    const clienteExists = data.clientes.find(item => (item.email || "").toLowerCase().trim() === emailNormalized);
 
     if (clienteExists) {
       data.leads.splice(leadIndex, 1);
@@ -67,10 +67,12 @@ window.ZAStorage = (() => {
       origem: lead.origem,
       data_nascimento: lead.data_nascimento,
       idade: lead.idade,
+      genero: lead.genero || "",
+      cidade: lead.cidade || "",
       status: "ativo",
       plano: "",
       fase_atual: 1,
-      fase_nome: "Consciência e Reset",
+      fase_nome: "Diagnóstico completo",
       data_inicio: new Date().toISOString(),
       preDiagnostico: { ...lead },
       diagnosticoCompleto: {},
@@ -78,7 +80,14 @@ window.ZAStorage = (() => {
       planejamento: {},
       periodizacao: [],
       checkins: [],
-      historico: []
+      historico: [],
+      timeline: [
+        {
+          tipo: "conversao",
+          data: new Date().toISOString(),
+          descricao: "Lead convertido em cliente."
+        }
+      ]
     };
 
     data.clientes.unshift(cliente);
@@ -89,8 +98,8 @@ window.ZAStorage = (() => {
 
   function archiveLead(email) {
     const data = getData();
-    const emailNormalized = email.toLowerCase().trim();
-    const leadIndex = data.leads.findIndex(item => item.email === emailNormalized);
+    const emailNormalized = (email || "").toLowerCase().trim();
+    const leadIndex = data.leads.findIndex(item => (item.email || "").toLowerCase().trim() === emailNormalized);
 
     if (leadIndex < 0) return false;
 
@@ -101,8 +110,63 @@ window.ZAStorage = (() => {
 
   function removeLead(email) {
     const data = getData();
-    const emailNormalized = email.toLowerCase().trim();
-    data.leads = data.leads.filter(item => item.email !== emailNormalized);
+    const emailNormalized = (email || "").toLowerCase().trim();
+    data.leads = data.leads.filter(item => (item.email || "").toLowerCase().trim() !== emailNormalized);
+    saveData(data);
+    return true;
+  }
+
+  function archiveCliente(id) {
+    const data = getData();
+    const cliente = (data.clientes || []).find(item => String(item.id) === String(id));
+
+    if (!cliente) return false;
+
+    cliente.status = "arquivado";
+
+    if (!Array.isArray(cliente.timeline)) {
+      cliente.timeline = [];
+    }
+
+    cliente.timeline.unshift({
+      tipo: "arquivamento",
+      data: new Date().toISOString(),
+      descricao: "Cliente arquivado."
+    });
+
+    saveData(data);
+    return true;
+  }
+
+  function reactivateCliente(id) {
+    const data = getData();
+    const cliente = (data.clientes || []).find(item => String(item.id) === String(id));
+
+    if (!cliente) return false;
+
+    cliente.status = "ativo";
+
+    if (!Array.isArray(cliente.timeline)) {
+      cliente.timeline = [];
+    }
+
+    cliente.timeline.unshift({
+      tipo: "reativacao",
+      data: new Date().toISOString(),
+      descricao: "Cliente reativado."
+    });
+
+    saveData(data);
+    return true;
+  }
+
+  function updateCliente(updatedCliente) {
+    const data = getData();
+    const index = (data.clientes || []).findIndex(item => String(item.id) === String(updatedCliente.id));
+
+    if (index < 0) return false;
+
+    data.clientes[index] = updatedCliente;
     saveData(data);
     return true;
   }
@@ -120,6 +184,9 @@ window.ZAStorage = (() => {
     convertLeadToCliente,
     archiveLead,
     removeLead,
+    archiveCliente,
+    reactivateCliente,
+    updateCliente,
     clearAll
   };
 })();
