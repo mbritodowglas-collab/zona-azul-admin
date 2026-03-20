@@ -13,7 +13,7 @@ window.ZACalculos = (() => {
     score_alimentacao: "ALIMENTAÇÃO",
     score_sono: "SONO",
     score_proposito: "PROPÓSITO",
-    score_social: "SOCIAL",
+    score_social: "ESTILO SOCIAL",
     score_estresse: "ESTRESSE"
   };
 
@@ -40,7 +40,7 @@ window.ZACalculos = (() => {
       Number(scores.score_sono),
       Number(scores.score_proposito),
       Number(scores.score_social),
-      Number(scores.score_estresse),
+      Number(scores.score_estresse)
     ];
 
     const media = values.reduce((acc, value) => acc + value, 0) / 6;
@@ -53,18 +53,22 @@ window.ZACalculos = (() => {
     return { label: "CRÍTICO", color: "#E05252", className: "danger" };
   }
 
-  function gerarGaps(scores) {
-    const pilares = [
+  function getPilares(scores) {
+    return [
       { key: "score_movimento", score: Number(scores.score_movimento) },
       { key: "score_alimentacao", score: Number(scores.score_alimentacao) },
       { key: "score_sono", score: Number(scores.score_sono) },
       { key: "score_proposito", score: Number(scores.score_proposito) },
       { key: "score_social", score: Number(scores.score_social) },
-      { key: "score_estresse", score: Number(scores.score_estresse) },
+      { key: "score_estresse", score: Number(scores.score_estresse) }
     ];
+  }
+
+  function gerarGaps(scores) {
+    const pilares = getPilares(scores);
 
     return pilares
-      .filter(item => item.score < 6)
+      .filter((item) => item.score < 6)
       .sort((a, b) => {
         if (a.score !== b.score) return a.score - b.score;
         return tiePriority.indexOf(a.key) - tiePriority.indexOf(b.key);
@@ -72,8 +76,30 @@ window.ZACalculos = (() => {
   }
 
   function pilarMaisBaixo(scores) {
+    const pilares = getPilares(scores);
+    const media = mediaGeral(scores);
+    const menor = Math.min(...pilares.map((item) => item.score));
+
+    // Cenário de base alta e equilibrada:
+    // não força um "pior pilar" se a pessoa está bem no geral
+    if (media >= 8 && menor >= 7) {
+      return null;
+    }
+
     const gaps = gerarGaps(scores);
-    return gaps.length ? gaps[0].key : null;
+
+    // Se não houver gap crítico (<6), ainda podemos destacar o menor
+    // apenas quando a pessoa não estiver em cenário de alta consistência
+    if (!gaps.length) {
+      const ordenados = [...pilares].sort((a, b) => {
+        if (a.score !== b.score) return a.score - b.score;
+        return tiePriority.indexOf(a.key) - tiePriority.indexOf(b.key);
+      });
+
+      return ordenados.length ? ordenados[0].key : null;
+    }
+
+    return gaps[0].key;
   }
 
   function validarFormulario(payload) {
@@ -98,7 +124,7 @@ window.ZACalculos = (() => {
       "score_sono",
       "score_proposito",
       "score_social",
-      "score_estresse",
+      "score_estresse"
     ];
 
     for (const field of scoreFields) {
