@@ -2993,3 +2993,16 @@ th{color:var(--muted);font-weight:600}
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
+
+/* Alinha a coluna de ações para a direita */
+.table-wrap table td:last-child {
+  text-align: right;
+}
+
+/* Faz os botões irem para a direita */
+.cliente-acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
