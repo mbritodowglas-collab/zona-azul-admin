@@ -24,16 +24,6 @@ window.ZAClientes = (() => {
     return clientes;
   }
 
-  function formatDate(dateValue) {
-    if (!dateValue) return "-";
-
-    try {
-      return new Date(dateValue).toLocaleDateString("pt-BR");
-    } catch (error) {
-      return dateValue;
-    }
-  }
-
   function getStatusBadge(status) {
     const safeStatus = status || "ativo";
 
@@ -79,36 +69,15 @@ window.ZAClientes = (() => {
               ${cliente.nome || "-"}
             </td>
 
-            <td class="px-4 py-3 text-slate-600">
-              ${cliente.email || "-"}
-            </td>
-
-            <td class="px-4 py-3 text-slate-600">
-              ${cliente.plano || "-"}
-            </td>
-
-            <td class="px-4 py-3 text-slate-600">
-              ${cliente.faseAtual || cliente.fase_atual || "-"}
-            </td>
-
             <td class="px-4 py-3">
               ${getStatusBadge(cliente.status)}
             </td>
 
-            <td class="px-4 py-3 text-slate-600">
-              ${formatDate(
-                cliente.dataInicio ||
-                cliente.data_inicio ||
-                cliente.createdAt ||
-                cliente.created_at
-              )}
-            </td>
-
             <td class="px-4 py-3">
-              <div class="flex flex-wrap gap-2">
+              <div class="cliente-acoes">
                 <a
                   href="../cliente/?id=${cliente.id}"
-                  class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 transition"
+                  class="cliente-btn cliente-btn-abrir"
                 >
                   Abrir
                 </a>
@@ -119,7 +88,7 @@ window.ZAClientes = (() => {
                       <button
                         type="button"
                         data-reactivate="${cliente.id}"
-                        class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                        class="cliente-btn cliente-btn-reativar"
                       >
                         Reativar
                       </button>
@@ -128,7 +97,7 @@ window.ZAClientes = (() => {
                       <button
                         type="button"
                         data-archive="${cliente.id}"
-                        class="inline-flex items-center rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 transition"
+                        class="cliente-btn cliente-btn-arquivar"
                       >
                         Arquivar
                       </button>
