@@ -392,56 +392,48 @@ window.ZARelatorio = (() => {
         <div class="premium-offer-box">
           <p class="premium-offer-text">
             O seu diagnóstico mostra com clareza onde estão seus principais pontos de ajuste.
-            O próximo passo é transformar essa leitura em um plano estruturado, com direção prática,
-            acompanhamento e evolução progressiva ao longo dos próximos meses.
+            A partir daqui, o ideal é transformar essa leitura em um processo estruturado, com direção prática, acompanhamento e evolução progressiva ao longo dos próximos meses.
+          </p>
+
+          <p class="premium-offer-text">
+            Os programas abaixo representam o caminho principal da metodologia. Eles foram desenhados para consolidar resultado, ajustar o percurso e sustentar a mudança de estilo de vida com mais consistência.
           </p>
 
           <div class="premium-plans-grid">
-            <div class="premium-plan-card">
-              <h4>Diagnóstico + Mês 1</h4>
-              <div class="plan-price">R$ 400</div>
-              <span class="plan-sub">Pagamento único</span>
-              <p>
-                Indicado para quem quer viver a experiência inicial da metodologia,
-                passar pela avaliação completa e entender como funciona o primeiro mês
-                antes de decidir por um ciclo mais longo.
-              </p>
-            </div>
-
             <div class="premium-plan-card highlight">
-              <div class="plan-badge">Mais escolhido</div>
+              <div class="plan-badge">Programa principal</div>
               <h4>Protocolo Trimestral</h4>
               <div class="plan-price">R$ 1.800</div>
-              <span class="plan-sub">3x de R$ 600</span>
+              <span class="plan-sub">Programa de 3 meses</span>
               <p>
-                Indicado para quem já decidiu mudar e quer continuidade com acompanhamento,
-                check-ins, ajustes e evolução consistente nos pilares ao longo de 3 meses.
+                Indicado para quem quer iniciar sua transformação com acompanhamento próximo, ajustes progressivos e evolução consistente nos pilares mais sensíveis da sua rotina.
               </p>
             </div>
 
             <div class="premium-plan-card">
               <h4>Protocolo Semestral</h4>
               <div class="plan-price">R$ 3.000</div>
-              <span class="plan-sub">6x de R$ 500</span>
+              <span class="plan-sub">Programa de 6 meses</span>
               <p>
-                Indicado para quem busca uma transformação mais profunda, com melhor lógica
-                de investimento mensal e mais tempo para consolidar a mudança de estilo de vida.
+                Indicado para quem busca uma mudança mais profunda, com mais tempo de consolidação, melhor custo por ciclo e maior potencial de transformação sustentável.
               </p>
             </div>
           </div>
 
           <div class="premium-offer-note">
-            Depois do Diagnóstico + Mês 1, a continuidade do processo acontece pelos ciclos
-            do protocolo — trimestral ou semestral — de acordo com a decisão e o momento do cliente.
+            O acompanhamento acontece em formato de programa, não como plano mensal isolado. A lógica da metodologia é construir resultado progressivo, e não apenas intervenções soltas.
           </div>
 
           <div class="premium-offer-note">
-            Clientes que concluem o protocolo e atingem os marcos de evolução entram na fase Vida Azul,
-            um modelo de acompanhamento de longo prazo com mais autonomia.
+            Em casos de maior insegurança na decisão, a entrada inicial pode ser apresentada em conversa, como uma fase estratégica de aproximação com o método.
+          </div>
+
+          <div class="premium-offer-note">
+            Clientes que concluem o protocolo e atingem os marcos de evolução entram na fase Vida Azul, um modelo de acompanhamento de longo prazo com mais autonomia.
           </div>
 
           <div class="premium-offer-cta">
-            Responda esta mensagem ou utilize o link abaixo para agendar sua sessão de diagnóstico.
+            Responda esta mensagem ou utilize o link abaixo para agendar sua entrada no protocolo.
           </div>
         </div>
       </section>
