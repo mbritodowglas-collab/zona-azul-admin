@@ -376,4 +376,336 @@ window.ZARelatorio = (() => {
           </div>
 
           <div class="pillar-card">
-            <h4>Dores, lesões ou condições atuais</
+            <h4>Dores, lesões ou condições atuais</h4>
+            <p>${lead.limitacoes_atuais || "-"}</p>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderDiagnosticCompleteSection() {
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ O QUE ACONTECE NO DIAGNÓSTICO COMPLETO</div>
+
+        <div class="premium-offer-box">
+          <p class="premium-offer-text">
+            Com base nas suas respostas, o próximo passo não é apenas te passar um treino.
+            É estruturar um plano que faça sentido pra sua realidade, respeitando seu momento atual e corrigindo os pontos que hoje estão travando seu progresso.
+          </p>
+
+          <div class="report-grid two">
+            <div class="premium-plan-card">
+              <h4>Análise estratégica do seu caso</h4>
+              <p>
+                Você recebe uma leitura mais aprofundada dos seus hábitos, padrões atuais e principais bloqueios de evolução.
+              </p>
+            </div>
+
+            <div class="premium-plan-card">
+              <h4>Avaliação física e contexto corporal</h4>
+              <p>
+                Entram em cena as limitações, dores, histórico físico e os pontos que precisam ser considerados com mais precisão.
+              </p>
+            </div>
+
+            <div class="premium-plan-card">
+              <h4>Direção clara de por onde começar</h4>
+              <p>
+                Em vez de tentativa e erro, o processo define prioridades práticas e organiza o início da sua evolução com mais lógica.
+              </p>
+            </div>
+
+            <div class="premium-plan-card">
+              <h4>Plano de treino personalizado no MFit</h4>
+              <p>
+                Seu treino é estruturado de forma individualizada e liberado no aplicativo, com acesso organizado, progressão e acompanhamento.
+              </p>
+            </div>
+          </div>
+
+          <div class="premium-leverage-box" style="margin-top:18px;">
+            <h4>Você não recebe apenas um treino.</h4>
+            <p>
+              Você recebe um plano estruturado com direção, clareza e lógica, pensado para tirar você do ciclo de começar e parar.
+            </p>
+          </div>
+
+          <div class="premium-offer-note">
+            Aqui não é sobre iniciar mais uma tentativa solta. É sobre começar um processo com mais clareza, consistência e estratégia.
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderOfferSection() {
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ COMO CONTINUAR A PARTIR DAQUI</div>
+
+        <div class="premium-offer-box">
+          <p class="premium-offer-text">
+            A partir dessa análise, o ideal é transformar essa leitura em um processo estruturado, com acompanhamento e evolução progressiva ao longo dos próximos meses.
+          </p>
+
+          <p class="premium-offer-text">
+            Os programas abaixo representam o caminho principal da metodologia. Eles foram desenhados para consolidar resultado, ajustar o percurso e sustentar a mudança de estilo de vida com mais consistência.
+          </p>
+
+          <div class="premium-plans-grid">
+            <div class="premium-plan-card highlight">
+              <div class="plan-badge">Programa principal</div>
+              <h4>Protocolo Trimestral</h4>
+              <div class="plan-price">R$ 1.800</div>
+              <span class="plan-sub">Programa de 3 meses</span>
+              <p>
+                Indicado para quem quer iniciar sua transformação com acompanhamento próximo, ajustes progressivos e evolução consistente nos pilares mais sensíveis da sua rotina.
+              </p>
+            </div>
+
+            <div class="premium-plan-card">
+              <h4>Protocolo Semestral</h4>
+              <div class="plan-price">R$ 3.000</div>
+              <span class="plan-sub">Programa de 6 meses</span>
+              <p>
+                Indicado para quem busca uma mudança mais profunda, com mais tempo de consolidação, melhor custo por ciclo e maior potencial de transformação sustentável.
+              </p>
+            </div>
+          </div>
+
+          <div class="premium-offer-note">
+            O acompanhamento acontece em formato de programa, não como plano mensal isolado. A lógica da metodologia é construir resultado progressivo, e não apenas intervenções soltas.
+          </div>
+
+          <div class="premium-offer-note">
+            O processo foi desenhado para gerar clareza no início, consistência na execução e evolução progressiva ao longo do acompanhamento.
+          </div>
+
+          <div class="premium-offer-note">
+            Clientes que concluem o protocolo e atingem os marcos de evolução entram na fase Vida Azul, um modelo de acompanhamento de longo prazo com mais autonomia.
+          </div>
+
+          <div class="premium-offer-cta">
+            Responda esta mensagem ou utilize o link abaixo para agendar sua entrada no protocolo.
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function drawRadar(canvasId, lead) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !lead) return;
+
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    ctx.clearRect(0, 0, width, height);
+
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) * 0.33;
+
+    const labels = ["MOVIMENTO", "ALIMENTAÇÃO", "SONO", "PROPÓSITO", "SOCIAL", "ESTRESSE"];
+    const values = [
+      Number(lead.score_movimento),
+      Number(lead.score_alimentacao),
+      Number(lead.score_sono),
+      Number(lead.score_proposito),
+      Number(lead.score_social),
+      Number(lead.score_estresse)
+    ];
+
+    const pointColors = values.map((v) => window.ZACalculos.statusPorScore(v).color);
+
+    const angles = [
+      -Math.PI / 2,
+      -Math.PI / 6,
+      Math.PI / 6,
+      Math.PI / 2,
+      (5 * Math.PI) / 6,
+      (-5 * Math.PI) / 6
+    ];
+
+    [3.3, 6.6, 10].forEach((level) => {
+      ctx.beginPath();
+      angles.forEach((angle, i) => {
+        const r = radius * (level / 10);
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.strokeStyle = "#d7d7d0";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    angles.forEach((angle, i) => {
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "#d7d7d0";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const lx = cx + Math.cos(angle) * (radius + 34);
+      const ly = cy + Math.sin(angle) * (radius + 34);
+
+      ctx.fillStyle = "#173c57";
+      ctx.font = "bold 12px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(labels[i], lx, ly);
+    });
+
+    ctx.beginPath();
+    values.forEach((value, i) => {
+      const r = radius * (value / 10);
+      const x = cx + Math.cos(angles[i]) * r;
+      const y = cy + Math.sin(angles[i]) * r;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = "rgba(70, 151, 190, 0.18)";
+    ctx.strokeStyle = "#3b89a8";
+    ctx.lineWidth = 3;
+    ctx.fill();
+    ctx.stroke();
+
+    values.forEach((value, i) => {
+      const r = radius * (value / 10);
+      const x = cx + Math.cos(angles[i]) * r;
+      const y = cy + Math.sin(angles[i]) * r;
+
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = pointColors[i];
+      ctx.fill();
+
+      ctx.fillStyle = pointColors[i];
+      ctx.font = "bold 12px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(String(value), x, y - 15);
+    });
+  }
+
+  function renderReportByLead(lead) {
+    const reportBody = document.getElementById("report-body");
+    const reportLeadName = document.getElementById("report-lead-name");
+    const reportDate = document.getElementById("report-date");
+
+    if (!reportBody || !reportLeadName || !reportDate) return;
+
+    const profile = getProfileByMedia(Number(lead.media_geral));
+    const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
+    const pilarMaisBaixo = lead.pilar_mais_baixo
+      ? window.ZACalculos.pillarLabels[lead.pilar_mais_baixo]
+      : "EQUILÍBRIO GERAL";
+
+    reportLeadName.textContent = lead.nome || "Lead";
+    reportDate.textContent = formatDateBR(new Date());
+
+    reportBody.innerHTML = `
+      <section class="report-section">
+        <p class="premium-intro-text">
+          Com base nas suas respostas, identificamos como você está hoje nos 6 pilares centrais do estilo de vida das Zonas Azuis. Este é o seu ponto de partida para construir saúde, consistência e longevidade com mais clareza.
+        </p>
+      </section>
+
+      ${renderPersonalSection(lead)}
+
+      <section class="report-section">
+        <div class="section-bar">■ SEU RADAR VIDA AZUL</div>
+
+        <div class="premium-radar-layout">
+          <div class="premium-radar-canvas-wrap">
+            <canvas id="reportRadarCanvas" width="460" height="420"></canvas>
+          </div>
+
+          <div class="premium-radar-side">
+            <h4>Pontuação por Pilar</h4>
+            <div class="premium-score-list">
+              ${renderScoreLegend(lead)}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      ${renderSummaryBox(lead, profile, gaps)}
+
+      <section class="report-section">
+        <div class="section-bar">■ O QUE SEUS NÚMEROS SIGNIFICAM</div>
+        <div class="highlight-box" style="margin-top:18px;">
+          <p>${profile.text}</p>
+        </div>
+      </section>
+
+      <section class="report-section">
+        <div class="section-bar">■ ANÁLISE DOS SEUS PILARES</div>
+        <div class="premium-pillar-grid">
+          ${renderPillarCards(lead)}
+        </div>
+      </section>
+
+      <section class="report-section">
+        <div class="section-bar">■ SEU MAIOR PONTO DE ALAVANCA</div>
+        <div class="premium-leverage-box">
+          <h4>Com base no seu radar, o ponto de maior alavanca hoje é ${pilarMaisBaixo}.</h4>
+          <p>${getStrategicReading(lead)}</p>
+        </div>
+      </section>
+
+      ${renderContextSection(lead)}
+      ${renderBehaviorSection(lead)}
+      ${renderPhysicalSection(lead)}
+      ${renderDiagnosticCompleteSection()}
+      ${renderOfferSection()}
+    `;
+
+    setTimeout(() => drawRadar("reportRadarCanvas", lead), 60);
+  }
+
+  function initReport() {
+    const reportBody = document.getElementById("report-body");
+    if (!reportBody) return;
+
+    const id = getIdFromURL();
+
+    if (!id) {
+      document.getElementById("report-lead-name").textContent = "Lead não informado";
+      reportBody.innerHTML = `<section class="report-section"><p>Lead não informado na URL.</p></section>`;
+      return;
+    }
+
+    const lead = getLeadById(id);
+
+    if (!lead) {
+      document.getElementById("report-lead-name").textContent = "Lead não encontrado";
+      reportBody.innerHTML = `<section class="report-section"><p>Lead não encontrado neste navegador.</p></section>`;
+      return;
+    }
+
+    renderReportByLead(lead);
+  }
+
+  return {
+    initReport,
+    renderReportByLead
+  };
+})();
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("print-report-btn")?.addEventListener("click", () => {
+    window.print();
+  });
+
+  window.ZARelatorio.initReport();
+});
