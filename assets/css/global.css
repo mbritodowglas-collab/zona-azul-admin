@@ -2849,3 +2849,52 @@ th{color:var(--muted);font-weight:600}
     gap: 12px;
   }
 }
+
+.cliente-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.cliente-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cliente-btn-abrir {
+  background: linear-gradient(135deg, #7c8cff, #6a7cff);
+  color: #fff;
+}
+
+.cliente-btn-abrir:hover {
+  filter: brightness(1.08);
+}
+
+.cliente-btn-arquivar {
+  background: linear-gradient(135deg, #ff6b81, #f2556d);
+  color: #fff;
+}
+
+.cliente-btn-arquivar:hover {
+  filter: brightness(1.08);
+}
+
+.cliente-btn-reativar {
+  background: linear-gradient(135deg, #21c97a, #18b86c);
+  color: #fff;
+}
+
+.cliente-btn-reativar:hover {
+  filter: brightness(1.08);
+}
