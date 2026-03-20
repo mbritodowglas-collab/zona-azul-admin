@@ -46,7 +46,7 @@ window.ZARelatorio = (() => {
       score_sono:
         "O sono é um dos maiores regeneradores do organismo. Quando ele está desalinhado, energia, humor, clareza mental e adesão aos hábitos tendem a cair em cadeia.",
       score_proposito:
-        "Ter um senso de propósito claro ajuda a organizar a direção da vida. Não precisa ser algo grandioso — precisa ser forte o bastante para orientar suas escolhas.",
+        "Ter clareza de propósito ajuda a organizar a direção da vida. Não precisa ser algo grandioso — precisa ser forte o bastante para orientar suas escolhas.",
       score_social:
         "Conexões humanas consistentes funcionam como fator protetor de saúde. Relações de apoio e pertencimento influenciam diretamente bem-estar e longevidade.",
       score_estresse:
@@ -57,7 +57,13 @@ window.ZARelatorio = (() => {
   function getStrategicReading(lead) {
     const media = Number(lead.media_geral || 0);
     const pilar = lead.pilar_mais_baixo;
-    const pilarLabel = window.ZACalculos?.pillarLabels?.[pilar] || "MANUTENÇÃO";
+    const pilarLabel = pilar
+      ? window.ZACalculos.pillarLabels[pilar] || "MANUTENÇÃO"
+      : "EQUILÍBRIO GERAL";
+
+    if (!pilar) {
+      return "Seu resultado mostra um nível alto de equilíbrio entre os pilares. O foco agora não está em corrigir um ponto crítico, mas em manter consistência, aprofundar hábitos saudáveis e evoluir de forma integrada.";
+    }
 
     if (media >= 8) {
       return `Seu cenário atual sugere uma base funcional. O ganho mais inteligente agora está em aprofundar o pilar ${pilarLabel}, porque ele provavelmente representa o principal limitador da sua evolução global neste momento.`;
@@ -321,7 +327,7 @@ window.ZARelatorio = (() => {
     const gaps = Array.isArray(lead.top_3_gaps) ? lead.top_3_gaps : [];
     const pilarMaisBaixo = lead.pilar_mais_baixo
       ? window.ZACalculos.pillarLabels[lead.pilar_mais_baixo]
-      : "MANUTENÇÃO";
+      : "EQUILÍBRIO GERAL";
 
     reportLeadName.textContent = lead.nome || "Lead";
     reportDate.textContent = formatDateBR(new Date());
