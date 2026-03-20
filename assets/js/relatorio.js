@@ -81,6 +81,14 @@ window.ZARelatorio = (() => {
     return new Date(value).toLocaleDateString("pt-BR");
   }
 
+  function formatGenero(value) {
+    if (!value) return "-";
+    if (value === "masculino") return "Masculino";
+    if (value === "feminino") return "Feminino";
+    if (value === "nao_informar") return "Prefere não informar";
+    return value;
+  }
+
   function getPillars(lead) {
     return [
       { key: "score_movimento", label: "MOVIMENTO", score: Number(lead.score_movimento) },
@@ -90,6 +98,51 @@ window.ZARelatorio = (() => {
       { key: "score_social", label: "SOCIAL", score: Number(lead.score_social) },
       { key: "score_estresse", label: "ESTRESSE", score: Number(lead.score_estresse) }
     ];
+  }
+
+  function getPhysicalAnalysis(lead) {
+    if (!lead.peso || !lead.altura) return null;
+
+    const alturaM = Number(lead.altura) / 100;
+    if (!alturaM || alturaM <= 0) return null;
+
+    const imc = Number(lead.peso) / (alturaM * alturaM);
+    const imcFormatado = imc.toFixed(1);
+
+    let classificacao = "";
+    if (imc < 18.5) classificacao = "abaixo do peso";
+    else if (imc < 25) classificacao = "dentro da faixa considerada saudável";
+    else if (imc < 30) classificacao = "em sobrepeso";
+    else classificacao = "em faixa de obesidade";
+
+    return {
+      imc: imcFormatado,
+      classificacao
+    };
+  }
+
+  function renderPersonalSection(lead) {
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ DADOS INICIAIS</div>
+
+        <div class="report-grid two">
+          <div class="pillar-card">
+            <h4>Identificação</h4>
+            <p><strong>Nome:</strong> ${lead.nome || "-"}</p>
+            <p><strong>Email:</strong> ${lead.email || "-"}</p>
+            <p><strong>Idade:</strong> ${lead.idade || "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Contexto</h4>
+            <p><strong>Gênero:</strong> ${formatGenero(lead.genero)}</p>
+            <p><strong>Cidade:</strong> ${lead.cidade || "-"}</p>
+            <p><strong>Origem:</strong> ${lead.origem || "-"}</p>
+          </div>
+        </div>
+      </section>
+    `;
   }
 
   function renderScoreLegend(lead) {
@@ -160,6 +213,45 @@ window.ZARelatorio = (() => {
       .join("");
   }
 
+  function renderPhysicalSection(lead) {
+    const analysis = getPhysicalAnalysis(lead);
+
+    if (!lead.peso && !lead.altura && !lead.limitacoes_atuais) {
+      return "";
+    }
+
+    return `
+      <section class="report-section">
+        <div class="section-bar">■ CONTEXTO FÍSICO</div>
+
+        <div class="report-grid two">
+          <div class="pillar-card">
+            <h4>Informações corporais</h4>
+            <p><strong>Peso:</strong> ${lead.peso ? `${lead.peso} kg` : "-"}</p>
+            <p><strong>Altura:</strong> ${lead.altura ? `${lead.altura} cm` : "-"}</p>
+            <p><strong>IMC estimado:</strong> ${analysis ? analysis.imc : "-"}</p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Leitura inicial</h4>
+            <p>
+              ${
+                analysis
+                  ? `Com base nas informações fornecidas, seu IMC estimado sugere que você está atualmente <strong>${analysis.classificacao}</strong>. Esse dado não define sozinho sua saúde, mas ajuda a compor a leitura inicial do seu contexto físico.`
+                  : "Você não informou peso e altura atuais, então essa leitura física inicial fica em aberto neste momento."
+              }
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <h4>Dores, lesões ou condições atuais</h4>
+            <p>${lead.limitacoes_atuais || "-"}</p>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
   function renderContextSection(lead) {
     return `
       <section class="report-section">
@@ -187,8 +279,9 @@ window.ZARelatorio = (() => {
           </div>
 
           <div class="pillar-card">
-            <h4>Dores, lesões ou condições atuais</h4>
-            <p>${lead.limitacoes_atuais || "-"}</p>
+            <h4>Experiência com acompanhamento</h4>
+            <p><strong>Personal/Nutricionista:</strong> ${lead.exp_personal || "-"}</p>
+            <p><strong>Processo de emagrecimento:</strong> ${lead.exp_emagrecimento || "-"}</p>
           </div>
         </div>
       </section>
@@ -389,6 +482,8 @@ window.ZARelatorio = (() => {
         </p>
       </section>
 
+      ${renderPersonalSection(lead)}
+
       <section class="report-section">
         <div class="section-bar">■ SEU RADAR VIDA AZUL</div>
 
@@ -431,6 +526,7 @@ window.ZARelatorio = (() => {
       </section>
 
       ${renderContextSection(lead)}
+      ${renderPhysicalSection(lead)}
       ${renderOfferSection()}
     `;
 
