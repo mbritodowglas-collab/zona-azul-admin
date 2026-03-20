@@ -80,16 +80,12 @@ window.ZACalculos = (() => {
     const media = mediaGeral(scores);
     const menor = Math.min(...pilares.map((item) => item.score));
 
-    // Cenário de base alta e equilibrada:
-    // não força um "pior pilar" se a pessoa está bem no geral
     if (media >= 8 && menor >= 7) {
       return null;
     }
 
     const gaps = gerarGaps(scores);
 
-    // Se não houver gap crítico (<6), ainda podemos destacar o menor
-    // apenas quando a pessoa não estiver em cenário de alta consistência
     if (!gaps.length) {
       const ordenados = [...pilares].sort((a, b) => {
         if (a.score !== b.score) return a.score - b.score;
@@ -157,6 +153,7 @@ window.ZACalculos = (() => {
       exp_personal: payload.exp_personal,
       exp_emagrecimento: payload.exp_emagrecimento,
       o_que_funcionou: payload.o_que_funcionou?.trim() || "",
+      limitacoes_atuais: payload.limitacoes_atuais?.trim() || "",
       por_que_parou: payload.por_que_parou.trim(),
       desafio_atual: payload.desafio_atual.trim(),
       meta_6_meses: payload.meta_6_meses.trim(),
