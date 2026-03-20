@@ -185,6 +185,11 @@ window.ZARelatorio = (() => {
             <h4>O que já funcionou</h4>
             <p>${lead.o_que_funcionou || "-"}</p>
           </div>
+
+          <div class="pillar-card">
+            <h4>Dores, lesões ou condições atuais</h4>
+            <p>${lead.limitacoes_atuais || "-"}</p>
+          </div>
         </div>
       </section>
     `;
