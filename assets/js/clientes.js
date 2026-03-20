@@ -96,7 +96,12 @@ window.ZAClientes = (() => {
             </td>
 
             <td class="px-4 py-3 text-slate-600">
-              ${formatDate(cliente.dataInicio || cliente.data_inicio || cliente.createdAt || cliente.created_at)}
+              ${formatDate(
+                cliente.dataInicio ||
+                cliente.data_inicio ||
+                cliente.createdAt ||
+                cliente.created_at
+              )}
             </td>
 
             <td class="px-4 py-3">
