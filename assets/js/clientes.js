@@ -24,25 +24,6 @@ window.ZAClientes = (() => {
     return clientes;
   }
 
-  function getStatusBadge(status) {
-    const safeStatus = status || "ativo";
-
-    const map = {
-      ativo: "bg-emerald-100 text-emerald-700",
-      arquivado: "bg-slate-200 text-slate-700",
-      pausado: "bg-amber-100 text-amber-700",
-      finalizado: "bg-blue-100 text-blue-700",
-    };
-
-    const classes = map[safeStatus] || "bg-slate-100 text-slate-700";
-
-    return `
-      <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${classes}">
-        ${safeStatus}
-      </span>
-    `;
-  }
-
   function renderLista(clientes) {
     const list = getListElement();
     const emptyState = document.getElementById("empty-clientes");
@@ -67,10 +48,6 @@ window.ZAClientes = (() => {
           <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition">
             <td class="px-4 py-3 font-medium text-slate-800">
               ${cliente.nome || "-"}
-            </td>
-
-            <td class="px-4 py-3">
-              ${getStatusBadge(cliente.status)}
             </td>
 
             <td class="px-4 py-3">
@@ -128,41 +105,32 @@ window.ZAClientes = (() => {
     if (!container) return;
 
     container.innerHTML = `
-      <div class="flex flex-wrap gap-2">
+      <div class="clientes-filtros">
         <button
           type="button"
           data-filter="ativos"
-          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
-            currentFilter === "ativos"
-              ? "bg-slate-900 text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }"
+          class="cliente-filtro-btn ${currentFilter === "ativos" ? "is-active" : ""}"
         >
-          Ativos
+          <span class="cliente-filtro-icone">●</span>
+          <span>Ativos</span>
         </button>
 
         <button
           type="button"
           data-filter="arquivados"
-          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
-            currentFilter === "arquivados"
-              ? "bg-slate-900 text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }"
+          class="cliente-filtro-btn ${currentFilter === "arquivados" ? "is-active" : ""}"
         >
-          Arquivados
+          <span class="cliente-filtro-icone">●</span>
+          <span>Arquivados</span>
         </button>
 
         <button
           type="button"
           data-filter="todos"
-          class="rounded-lg px-3 py-2 text-sm font-medium transition ${
-            currentFilter === "todos"
-              ? "bg-slate-900 text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-          }"
+          class="cliente-filtro-btn ${currentFilter === "todos" ? "is-active" : ""}"
         >
-          Todos
+          <span class="cliente-filtro-icone">●</span>
+          <span>Todos</span>
         </button>
       </div>
     `;
