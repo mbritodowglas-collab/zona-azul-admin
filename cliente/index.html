@@ -3,52 +3,232 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cliente | Metodologia Vida Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=18" />
+  <title>Cliente | Zona Azul Admin</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=23" />
 </head>
-<body class="lead-page-body">
-  <main class="lead-page-wrap">
-    <section class="lead-header-card">
-      <div class="lead-header-top">
-        <a href="../clientes/" class="btn secondary small">← Voltar</a>
-      </div>
-
-      <div class="lead-header-content">
-        <h1 id="cliente-nome">Cliente</h1>
-        <p id="cliente-subtitulo" class="muted">Carregando...</p>
-      </div>
-    </section>
-
-    <section class="lead-actions-card">
-      <div class="lead-actions-grid">
-        <a class="btn secondary" id="btn-relatorio-pre" target="_blank">Relatório do Pré-diagnóstico</a>
-        <a class="btn" id="btn-dc-professor">Diagnóstico Completo</a>
-        <a class="btn secondary" id="btn-dc-cliente" target="_blank">Enviar Diagnóstico</a>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-header">
-        <h3>Painel do cliente</h3>
-      </div>
-      <div class="card-body">
-        <div class="cliente-tabs">
-          <button class="btn small active" data-tab="visao" type="button">Visão Geral</button>
-          <button class="btn small secondary" data-tab="diagnostico" type="button">Diagnóstico Completo</button>
-          <button class="btn small secondary" data-tab="fisico" type="button">Avaliação Física</button>
-          <button class="btn small secondary" data-tab="planejamento" type="button">Planejamento</button>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul Admin</h1>
+          <p>Painel do cliente</p>
         </div>
       </div>
-    </section>
 
-    <section id="tab-visao" class="tab-pane"></section>
-    <section id="tab-diagnostico" class="tab-pane hidden"></section>
-    <section id="tab-fisico" class="tab-pane hidden"></section>
-    <section id="tab-planejamento" class="tab-pane hidden"></section>
-  </main>
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/index.html" class="active">Clientes</a>
+      </nav>
+    </aside>
 
-  <script src="../assets/js/storage.js?v=18"></script>
-  <script src="../assets/js/calculos.js?v=18"></script>
-  <script src="../assets/js/cliente.js?v=18"></script>
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome-topo">Cliente</h2>
+          <p id="cliente-subtitulo">Painel individual do cliente.</p>
+        </div>
+
+        <div class="cliente-topo-acoes">
+          <a href="../clientes/index.html" class="cliente-btn cliente-btn-secundario">Voltar</a>
+          <button type="button" class="cliente-btn cliente-btn-abrir" id="gerar-relatorio-btn">
+            Gerar relatório
+          </button>
+        </div>
+      </div>
+
+      <div id="cliente-not-found" class="card hidden">
+        <div class="card-body">
+          <div class="empty-state">Cliente não encontrado.</div>
+        </div>
+      </div>
+
+      <div id="cliente-page">
+        <!-- HERO -->
+        <section class="card cliente-hero-card">
+          <div class="card-body cliente-hero">
+            <div class="cliente-hero-left">
+              <div class="cliente-avatar" id="cliente-avatar">C</div>
+              <div>
+                <h3 id="cliente-nome">Cliente</h3>
+                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+              </div>
+            </div>
+
+            <div class="cliente-hero-right">
+              <div class="cliente-status-wrap">
+                <span class="cliente-label-mini">Status</span>
+                <div id="cliente-status-badge"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="cliente-grid">
+          <!-- COLUNA PRINCIPAL -->
+          <div class="cliente-col-main">
+            <!-- 1. DADOS PESSOAIS -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Dados pessoais do cliente</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-resumo-grid">
+                  <div class="cliente-info-box">
+                    <span>Nome</span>
+                    <strong id="info-nome">-</strong>
+                  </div>
+                  <div class="cliente-info-box">
+                    <span>E-mail</span>
+                    <strong id="info-email">-</strong>
+                  </div>
+                  <div class="cliente-info-box">
+                    <span>Telefone</span>
+                    <strong id="info-telefone">-</strong>
+                  </div>
+                  <div class="cliente-info-box">
+                    <span>Plano</span>
+                    <strong id="info-plano">-</strong>
+                  </div>
+                  <div class="cliente-info-box">
+                    <span>Fase atual</span>
+                    <strong id="info-fase">-</strong>
+                  </div>
+                  <div class="cliente-info-box">
+                    <span>Data de início</span>
+                    <strong id="info-data-inicio">-</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 2. PRÉ-DIAGNÓSTICO -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Pré-diagnóstico inicial</h3>
+              </div>
+              <div class="card-body">
+                <div id="cliente-pre-diagnostico" class="cliente-pre-box">
+                  Sem dados de pré-diagnóstico vinculados.
+                </div>
+              </div>
+            </section>
+
+            <!-- 3. DIAGNÓSTICO COMPLETO -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Diagnóstico completo</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-subsection-list">
+                  <div class="cliente-subsection-item">
+                    <strong>Triagem física</strong>
+                    <p>Área destinada à avaliação física e à leitura inicial corporal do cliente.</p>
+                  </div>
+
+                  <div class="cliente-subsection-item">
+                    <strong>Pilares / aprofundamento</strong>
+                    <p>Área destinada ao aprofundamento dos pilares a partir do pré-diagnóstico inicial.</p>
+                  </div>
+
+                  <div class="cliente-subsection-item">
+                    <strong>Síntese diagnóstica</strong>
+                    <p>Área destinada à leitura técnica consolidada do caso.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 4. ACOMPANHAMENTO -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Formulário de acompanhamento</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-placeholder-box">
+                  Aqui ficarão os lançamentos de acompanhamento para evolução do caso.
+                </div>
+              </div>
+            </section>
+
+            <!-- 5. PLANEJAMENTO GERAL -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Planejamento geral</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-placeholder-box">
+                  Área destinada ao planejamento de atividades comportamentais e direcionamento estratégico.
+                </div>
+              </div>
+            </section>
+
+            <!-- 6. PROGRAMAÇÃO DE TREINOS -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Programação de treinos</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-placeholder-box">
+                  Área destinada à elaboração de periodização e treinos a serem lançados no MFIT.
+                </div>
+              </div>
+            </section>
+
+            <!-- 7. RELATÓRIO FINAL -->
+            <section class="card">
+              <div class="card-header">
+                <h3>Relatório final</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-placeholder-box">
+                  O relatório final consolidará a última atualização de cada seção do cliente.
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- COLUNA LATERAL -->
+          <div class="cliente-col-side">
+            <section class="card">
+              <div class="card-header">
+                <h3>Ações rápidas</h3>
+              </div>
+              <div class="card-body">
+                <div class="cliente-quick-actions">
+                  <button id="arquivar-cliente" class="cliente-btn cliente-btn-arquivar">Arquivar</button>
+                  <button id="reativar-cliente" class="cliente-btn cliente-btn-reativar hidden">Reativar</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Observações</h3>
+              </div>
+              <div class="card-body">
+                <div class="field">
+                  <label for="cliente-observacoes">Notas do caso</label>
+                  <textarea id="cliente-observacoes" placeholder="Observações gerais do cliente..."></textarea>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <button id="salvar-observacoes" class="cliente-btn cliente-btn-secundario">
+                    Salvar observações
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/storage.js?v=23"></script>
+  <script src="../assets/js/cliente.js?v=23"></script>
 </body>
 </html>
