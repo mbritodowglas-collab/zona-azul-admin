@@ -33,10 +33,14 @@
       subtitle: "Avalie propósito, vida social e estresse."
     },
     5: {
+      title: "Perfil comportamental",
+      subtitle: "Queremos entender seu momento de decisão, sabotagem e objetivo."
+    },
+    6: {
       title: "Contexto final",
       subtitle: "Conte seu maior desafio e sua meta para os próximos 6 meses."
     },
-    6: {
+    7: {
       title: "Contexto físico",
       subtitle: "Essas informações são opcionais, mas ajudam a enriquecer sua leitura inicial."
     }
@@ -144,21 +148,31 @@
       genero: document.getElementById("genero").value,
       cidade: document.getElementById("cidade").value,
       origem: document.getElementById("origem").value,
+
       exp_personal: document.getElementById("exp_personal").value,
       exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
       o_que_funcionou: document.getElementById("o_que_funcionou").value,
       limitacoes_atuais: document.getElementById("limitacoes_atuais").value,
       por_que_parou: document.getElementById("por_que_parou").value,
-      desafio_atual: document.getElementById("desafio_atual").value,
-      meta_6_meses: document.getElementById("meta_6_meses").value,
-      peso: document.getElementById("peso").value,
-      altura: document.getElementById("altura").value,
+
       score_movimento: document.getElementById("score_movimento").value,
       score_alimentacao: document.getElementById("score_alimentacao").value,
       score_sono: document.getElementById("score_sono").value,
       score_proposito: document.getElementById("score_proposito").value,
       score_social: document.getElementById("score_social").value,
-      score_estresse: document.getElementById("score_estresse").value
+      score_estresse: document.getElementById("score_estresse").value,
+
+      urgencia: document.getElementById("urgencia").value,
+      comprometimento: document.getElementById("comprometimento").value,
+      investimento: document.getElementById("investimento").value,
+      sabotagem: document.getElementById("sabotagem").value,
+      objetivo_fisico: document.getElementById("objetivo_fisico").value,
+
+      desafio_atual: document.getElementById("desafio_atual").value,
+      meta_6_meses: document.getElementById("meta_6_meses").value,
+
+      peso: document.getElementById("peso").value,
+      altura: document.getElementById("altura").value
     };
 
     const erro = window.ZACalculos.validarFormulario(payload);
