@@ -1,287 +1,40 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pré-diagnóstico | Metodologia Vida Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css" />
-</head>
-<body class="public-body">
-  <main class="public-wrap">
-    <section class="hero-card hero-card-public">
-      <div class="hero-topline">
-        <span class="hero-badge">METODOLOGIA VIDA AZUL</span>
-      </div>
-
-      <div class="hero-content">
-        <h1 class="hero-title">Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
-        <p class="hero-description">
-          Responda com sinceridade. Suas respostas ajudam a identificar padrões,
-          desafios e oportunidades para melhorar sua saúde e qualidade de vida.
-        </p>
-      </div>
-    </section>
-
-    <section class="card" id="form-card">
-      <div class="card-header">
-        <div>
-          <h3 id="step-title">Identificação</h3>
-          <p class="muted" id="step-subtitle">Vamos começar com seus dados básicos.</p>
-        </div>
-        <span class="step-indicator" id="step-indicator">Etapa 1 de 5</span>
-      </div>
-
-      <div class="card-body">
-        <div class="progress-wrap">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill" style="width: 20%;"></div>
-          </div>
-        </div>
-
-        <form id="public-pre-form">
-          <!-- ETAPA 1 -->
-          <div class="form-step" data-step="1">
-            <div class="grid grid-2">
-              <div class="field">
-                <label for="nome">Nome</label>
-                <input id="nome" type="text" required />
-              </div>
-
-              <div class="field">
-                <label for="email">Email</label>
-                <input id="email" type="email" required />
-              </div>
-
-              <div class="field">
-                <label>Data de nascimento</label>
-                <div class="birth-grid">
-                  <input id="nascimento_dia" type="number" min="1" max="31" placeholder="Dia" required />
-
-                  <select id="nascimento_mes" required>
-                    <option value="">Mês</option>
-                    <option value="1">Jan</option>
-                    <option value="2">Fev</option>
-                    <option value="3">Mar</option>
-                    <option value="4">Abr</option>
-                    <option value="5">Mai</option>
-                    <option value="6">Jun</option>
-                    <option value="7">Jul</option>
-                    <option value="8">Ago</option>
-                    <option value="9">Set</option>
-                    <option value="10">Out</option>
-                    <option value="11">Nov</option>
-                    <option value="12">Dez</option>
-                  </select>
-
-                  <input id="nascimento_ano" type="number" min="1900" max="2100" placeholder="Ano" required />
-                </div>
-              </div>
-
-              <div class="field">
-                <label for="origem">Origem</label>
-                <select id="origem" required>
-                  <option value="">Selecione</option>
-                  <option value="indicacao">Indicação</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="google">Google</option>
-                  <option value="outro">Outro</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- ETAPA 2 -->
-<div class="form-step hidden" data-step="2">
+<div class="form-step" data-step="1">
   <div class="field">
-    <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
-    <select id="exp_personal" required>
+    <label for="nome">Nome completo</label>
+    <input type="text" id="nome" required />
+  </div>
+
+  <div class="field">
+    <label for="email">Email</label>
+    <input type="email" id="email" required />
+  </div>
+
+  <div class="field">
+    <label>Data de nascimento</label>
+    <div style="display:flex; gap:8px;">
+      <input type="number" id="nascimento_dia" placeholder="Dia" required />
+      <input type="number" id="nascimento_mes" placeholder="Mês" required />
+      <input type="number" id="nascimento_ano" placeholder="Ano" required />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="genero">Gênero</label>
+    <select id="genero" required>
       <option value="">Selecione</option>
-      <option value="nunca">Nunca</option>
-      <option value="fez_nao_manteve">Já fiz, mas não mantive</option>
-      <option value="faz_atualmente">Faço atualmente</option>
-      <option value="fez_manteve">Já fiz e mantive</option>
+      <option value="masculino">Masculino</option>
+      <option value="feminino">Feminino</option>
+      <option value="nao_informar">Prefiro não informar</option>
     </select>
   </div>
 
   <div class="field">
-    <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
-    <select id="exp_emagrecimento" required>
-      <option value="">Selecione</option>
-      <option value="nunca">Nunca</option>
-      <option value="nao_funcionou">Já tentei, mas não funcionou</option>
-      <option value="funcionou_nao_manteve">Funcionou, mas não mantive</option>
-      <option value="em_processo">Estou em processo</option>
-    </select>
+    <label for="cidade">Cidade</label>
+    <input type="text" id="cidade" required />
   </div>
 
   <div class="field">
-    <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
-    <textarea id="o_que_funcionou"></textarea>
-  </div>
-
-  <div class="field">
-    <label for="limitacoes_atuais">Você tem alguma dor, lesão ou condição de saúde que impacta sua rotina hoje? (opcional)</label>
-    <textarea
-      id="limitacoes_atuais"
-      placeholder="Ex: dores lombares, joelho, hérnia, ansiedade, pressão alta, lesão antiga, etc."
-    ></textarea>
-  </div>
-
-  <div class="field">
-    <label for="por_que_parou">Por que você parou?</label>
-    <textarea id="por_que_parou" required></textarea>
+    <label for="origem">Como nos conheceu?</label>
+    <input type="text" id="origem" required />
   </div>
 </div>
-
-          <!-- ETAPA 3 -->
-          <div class="form-step hidden" data-step="3">
-            <div class="field">
-              <label>Movimento</label>
-              <p class="field-help">Como você avalia sua frequência e qualidade de movimento físico atualmente?</p>
-              <div class="score-group" data-target="score_movimento">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_movimento" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Alimentação</label>
-              <p class="field-help">Como você avalia a qualidade da sua alimentação no dia a dia?</p>
-              <div class="score-group" data-target="score_alimentacao">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_alimentacao" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Sono</label>
-              <p class="field-help">Como você avalia a qualidade do seu sono?</p>
-              <div class="score-group" data-target="score_sono">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_sono" type="hidden" required />
-            </div>
-          </div>
-
-          <!-- ETAPA 4 -->
-          <div class="form-step hidden" data-step="4">
-            <div class="field">
-              <label>Propósito</label>
-              <p class="field-help">Você sente que tem clareza sobre o que te motiva e dá sentido à sua vida?</p>
-              <div class="score-group" data-target="score_proposito">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_proposito" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Vida social</label>
-              <p class="field-help">Como você avalia a qualidade das suas relações sociais e senso de comunidade?</p>
-              <div class="score-group" data-target="score_social">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_social" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Estresse</label>
-              <p class="field-help">Como você avalia seu nível de estresse e sua capacidade de gerenciá-lo?</p>
-              <div class="score-group" data-target="score_estresse">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_estresse" type="hidden" required />
-            </div>
-          </div>
-
-          <!-- ETAPA 5 -->
-          <div class="form-step hidden" data-step="5">
-            <div class="field">
-              <label for="desafio_atual">Maior desafio atual</label>
-              <textarea id="desafio_atual" required></textarea>
-            </div>
-
-            <div class="field">
-              <label for="meta_6_meses">Meta para 6 meses</label>
-              <textarea id="meta_6_meses" required></textarea>
-            </div>
-          </div>
-
-          <div class="actions form-nav">
-            <button type="button" class="btn secondary hidden" id="prev-step-btn">Voltar</button>
-            <button type="button" class="btn" id="next-step-btn">Avançar</button>
-            <button type="submit" class="btn hidden" id="submit-btn">Enviar respostas</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <section class="card hidden" id="success-card">
-      <div class="card-header">
-        <h3>Recebido com sucesso</h3>
-      </div>
-      <div class="card-body">
-        <p>Obrigado por responder o pré-diagnóstico.</p>
-        <p class="muted">Recebemos suas respostas e em breve entraremos em contato.</p>
-      </div>
-    </section>
-  </main>
-
-  <script src="../assets/js/storage.js"></script>
-  <script src="../assets/js/calculos.js"></script>
-  <script src="../assets/js/formulario-publico.js"></script>
-</body>
-</html>
