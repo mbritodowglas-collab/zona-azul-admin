@@ -1932,3 +1932,31 @@ th{color:var(--muted);font-weight:600}
     print-color-adjust: exact;
   }
 }
+
+/* ========================================
+   JUSTIFICAÇÃO DE TEXTO (ESTILO RELATÓRIO)
+======================================== */
+
+/* Blocos principais de leitura */
+.pillar-card p,
+.premium-pillar-card p,
+.highlight-box p,
+.premium-leverage-box p,
+.premium-offer-text,
+.premium-offer-note,
+.premium-offer-cta {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Contexto e análise */
+.report-section p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Evita quebra feia em palavras grandes */
+.pillar-card p,
+.premium-pillar-card p {
+  hyphens: auto;
+}
