@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliente | Zona Azul Admin</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=24" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=25" />
 </head>
 <body>
   <div class="app-shell">
@@ -126,9 +126,12 @@
                 </div>
                 <span class="cliente-hub-status" id="status-pre-diagnostico">Sem atualização</span>
               </div>
-              <div class="cliente-hub-footer">
+              <div class="cliente-hub-footer cliente-hub-footer-multi">
                 <span class="cliente-hub-updated" id="updated-pre-diagnostico">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="pre-diagnostico">Abrir</button>
+                <div class="cliente-card-actions">
+                  <button class="cliente-btn cliente-btn-secundario" data-copy-link="pre">Copiar link</button>
+                  <button class="cliente-btn cliente-btn-abrir" data-open-section="pre-diagnostico">Abrir</button>
+                </div>
               </div>
             </div>
           </article>
@@ -158,9 +161,12 @@
                 </div>
                 <span class="cliente-hub-status" id="status-acompanhamento">Sem atualização</span>
               </div>
-              <div class="cliente-hub-footer">
+              <div class="cliente-hub-footer cliente-hub-footer-multi">
                 <span class="cliente-hub-updated" id="updated-acompanhamento">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="acompanhamento">Abrir</button>
+                <div class="cliente-card-actions">
+                  <button class="cliente-btn cliente-btn-secundario" data-copy-link="acompanhamento">Copiar link</button>
+                  <button class="cliente-btn cliente-btn-abrir" data-open-section="acompanhamento">Abrir</button>
+                </div>
               </div>
             </div>
           </article>
@@ -247,7 +253,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=24"></script>
-  <script src="../assets/js/cliente.js?v=24"></script>
+  <script src="../assets/js/storage.js?v=25"></script>
+  <script src="../assets/js/cliente.js?v=25"></script>
 </body>
 </html>
