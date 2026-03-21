@@ -3375,3 +3375,29 @@ th{color:var(--muted);font-weight:600}
     align-items: stretch;
   }
 }
+
+.cliente-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cliente-hub-footer-multi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .cliente-card-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .cliente-hub-footer-multi {
+    align-items: stretch;
+  }
+}
