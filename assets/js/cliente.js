@@ -2,6 +2,7 @@ window.ZACliente = (() => {
   let clienteId = null;
   let cliente = null;
   let dadosPessoaisOpen = false;
+  let preDiagnosticoOpen = false;
 
   function getQueryParam(name) {
     const url = new URL(window.location.href);
@@ -17,13 +18,13 @@ window.ZACliente = (() => {
   }
 
   function getClienteById(id) {
-    return getClientes().find((item) => item.id === id) || null;
+    return getClientes().find((item) => String(item.id) === String(id)) || null;
   }
 
   function getLeadById(id) {
     const data = window.ZAStorage?.getData?.() || {};
     const leads = data.leads || [];
-    return leads.find((item) => item.id === id) || null;
+    return leads.find((item) => String(item.id) === String(id)) || null;
   }
 
   function getStatusBadge(status) {
@@ -98,7 +99,7 @@ window.ZACliente = (() => {
   }
 
   function getPreDiagnosticoLink() {
-    return `${window.location.origin}/zona-azul-admin/pre-diagnostico/?cliente=${clienteId}`;
+    return `${window.location.origin}/zona-azul-admin/formulario/?cliente=${clienteId}`;
   }
 
   function getAcompanhamentoLink() {
@@ -131,6 +132,16 @@ window.ZACliente = (() => {
     });
   }
 
+  function updateDadosPessoaisUI() {
+    const wrap = document.getElementById("dados-pessoais-form-wrap");
+    const toggleBtn = document.getElementById("toggle-dados-pessoais-btn");
+
+    if (!wrap || !toggleBtn) return;
+
+    wrap.classList.toggle("hidden", !dadosPessoaisOpen);
+    toggleBtn.textContent = dadosPessoaisOpen ? "Fechar" : "Editar";
+  }
+
   function renderDadosPessoaisCard() {
     setText("dp-nome-view", cliente.nome || "—");
     setText("dp-email-view", cliente.email || "—");
@@ -141,16 +152,6 @@ window.ZACliente = (() => {
 
     fillDadosPessoaisForm();
     updateDadosPessoaisUI();
-  }
-
-  function updateDadosPessoaisUI() {
-    const wrap = document.getElementById("dados-pessoais-form-wrap");
-    const toggleBtn = document.getElementById("toggle-dados-pessoais-btn");
-
-    if (!wrap || !toggleBtn) return;
-
-    wrap.classList.toggle("hidden", !dadosPessoaisOpen);
-    toggleBtn.textContent = dadosPessoaisOpen ? "Fechar" : "Editar";
   }
 
   function toggleDadosPessoais() {
@@ -166,7 +167,7 @@ window.ZACliente = (() => {
 
   function saveDadosPessoais() {
     const clientes = getClientes();
-    const index = clientes.findIndex((item) => item.id === clienteId);
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
     const nome = document.getElementById("dp-nome")?.value.trim() || "";
@@ -198,89 +199,114 @@ window.ZACliente = (() => {
     renderCliente();
   }
 
-  function renderCliente() {
-    if (!cliente) return;
+  function updatePreDiagnosticoUI() {
+    const wrap = document.getElementById("pre-diagnostico-expand");
+    const toggleBtn = document.getElementById("toggle-pre-btn");
 
-    const nome = cliente.nome || "Cliente";
-    const email = cliente.email || "email@cliente.com";
-    const objetivo = cliente.objetivo || cliente.objetivo_principal || "Objetivo principal";
-    const status = cliente.status || "ativo";
+    if (!wrap || !toggleBtn) return;
 
-    setText("cliente-nome-topo", nome);
-    setText("cliente-subtitulo", "Hub operacional do caso.");
-    setText("cliente-nome", nome);
-    setText("cliente-email", email);
-    setText("cliente-objetivo", objetivo);
+    wrap.classList.toggle("hidden", !preDiagnosticoOpen);
+    toggleBtn.textContent = preDiagnosticoOpen ? "Fechar" : "Abrir";
+  }
 
-    const avatar = document.getElementById("cliente-avatar");
-    if (avatar) avatar.textContent = getInitials(nome);
+  function togglePreDiagnostico() {
+    preDiagnosticoOpen = !preDiagnosticoOpen;
+    updatePreDiagnosticoUI();
+  }
 
-    const badge = document.getElementById("cliente-status-badge");
-    if (badge) badge.innerHTML = getStatusBadge(status);
+  function closePreDiagnostico() {
+    preDiagnosticoOpen = false;
+    updatePreDiagnosticoUI();
+  }
 
-    const lead = cliente.leadId ? getLeadById(cliente.leadId) : null;
+  function getPreDataFromCliente(clienteAtual) {
+    if (!clienteAtual) return null;
 
-    renderHubStatus(
-      "dados-pessoais",
-      cliente.dadosPessoaisUpdatedAt || cliente.updatedAt || cliente.updated_at,
-      hasValue(cliente.nome || cliente.email || cliente.telefone)
-    );
-
-    renderHubStatus(
-      "pre-diagnostico",
-      lead?.updatedAt || lead?.updated_at || lead?.createdAt || lead?.created_at,
-      !!lead
-    );
-
-    renderHubStatus(
-      "diagnostico",
-      cliente.diagnosticoUpdatedAt,
-      hasValue(cliente.diagnostico || cliente.condutaInicial)
-    );
-
-    renderHubStatus(
-      "acompanhamento",
-      cliente.acompanhamentoUpdatedAt,
-      Array.isArray(cliente.acompanhamentos) && cliente.acompanhamentos.length > 0
-    );
-
-    renderHubStatus(
-      "planejamento",
-      cliente.planejamentoUpdatedAt,
-      hasValue(cliente.objetivoCentral || cliente.direcaoComportamental || cliente.direcaoFisica)
-    );
-
-    renderHubStatus(
-      "treinos",
-      cliente.treinosUpdatedAt,
-      Array.isArray(cliente.periodizacoes) && cliente.periodizacoes.length > 0
-    );
-
-    const relatorioUpdatedEl = document.getElementById("updated-relatorio");
-    if (relatorioUpdatedEl) {
-      relatorioUpdatedEl.textContent = `Última geração: ${cliente.relatorioUpdatedAt ? formatDate(cliente.relatorioUpdatedAt) : "—"}`;
+    if (clienteAtual.preDiagnostico && typeof clienteAtual.preDiagnostico === "object") {
+      return clienteAtual.preDiagnostico;
     }
 
-    const observacoes = document.getElementById("cliente-observacoes");
-    if (observacoes) observacoes.value = cliente.observacoes || "";
-
-    renderDadosPessoaisCard();
-
-    const arquivarBtn = document.getElementById("arquivar-cliente");
-    const reativarBtn = document.getElementById("reativar-cliente");
-
-    if (cliente.status === "arquivado") {
-      arquivarBtn?.classList.add("hidden");
-      reativarBtn?.classList.remove("hidden");
-    } else {
-      arquivarBtn?.classList.remove("hidden");
-      reativarBtn?.classList.add("hidden");
+    if (clienteAtual.leadId) {
+      const lead = getLeadById(clienteAtual.leadId);
+      if (lead) return lead;
     }
+
+    return null;
+  }
+
+  function getRadarResumo(pre) {
+    if (!pre) return "Sem radar disponível.";
+
+    const radar =
+      pre.radar ||
+      pre.radarInicial ||
+      pre.scores ||
+      pre.pilares ||
+      null;
+
+    if (!radar || typeof radar !== "object") {
+      return "Sem radar disponível.";
+    }
+
+    const entries = Object.entries(radar)
+      .filter(([, value]) => value !== null && value !== undefined && value !== "")
+      .map(([key, value]) => `${key}: ${value}`);
+
+    return entries.length ? entries.join(" | ") : "Sem radar disponível.";
+  }
+
+  function renderPreDiagnosticoCard() {
+    const pre = getPreDataFromCliente(cliente);
+
+    setText("pre-nome-view", pre?.nome || cliente?.nome || "—");
+    setText("pre-email-view", pre?.email || cliente?.email || "—");
+    setText("pre-telefone-view", pre?.telefone || cliente?.telefone || "—");
+
+    const objetivoEl = document.getElementById("pre-objetivo");
+    const resumoEl = document.getElementById("pre-resumo");
+    const updatedEl = document.getElementById("pre-updated-readonly");
+    const linkEl = document.getElementById("pre-link-readonly");
+
+    if (objetivoEl) {
+      objetivoEl.value =
+        pre?.objetivo ||
+        pre?.objetivo_principal ||
+        cliente?.objetivo ||
+        cliente?.objetivo_principal ||
+        "";
+    }
+
+    if (resumoEl) {
+      const resumoBase =
+        pre?.resumoPrediagnostico ||
+        pre?.resumo_pre_diagnostico ||
+        pre?.rotina ||
+        pre?.maior_dificuldade ||
+        "Sem resumo registrado no momento.";
+
+      resumoEl.value = `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`;
+    }
+
+    if (updatedEl) {
+      const dt =
+        pre?.updatedAt ||
+        pre?.updated_at ||
+        pre?.createdAt ||
+        pre?.created_at;
+
+      updatedEl.value = dt ? formatDate(dt) : "—";
+    }
+
+    if (linkEl) {
+      linkEl.value = getPreDiagnosticoLink();
+    }
+
+    updatePreDiagnosticoUI();
   }
 
   function saveObservacoes() {
     const clientes = getClientes();
-    const index = clientes.findIndex((item) => item.id === clienteId);
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
     clientes[index] = {
@@ -324,8 +350,12 @@ window.ZACliente = (() => {
   }
 
   function openSection(section) {
+    if (section === "pre-diagnostico") {
+      togglePreDiagnostico();
+      return;
+    }
+
     const map = {
-      "pre-diagnostico": "Aqui vamos abrir a seção de Pré-diagnóstico inicial.",
       "diagnostico": "Aqui vamos abrir a seção de Diagnóstico completo.",
       "acompanhamento": "Aqui vamos abrir a seção de Acompanhamento.",
       "planejamento": "Aqui vamos abrir a seção de Planejamento geral.",
@@ -338,7 +368,7 @@ window.ZACliente = (() => {
 
   function generateReport() {
     const clientes = getClientes();
-    const index = clientes.findIndex((item) => item.id === clienteId);
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
     clientes[index] = {
@@ -352,6 +382,92 @@ window.ZACliente = (() => {
     renderCliente();
   }
 
+  function renderCliente() {
+    if (!cliente) return;
+
+    const nome = cliente.nome || "Cliente";
+    const email = cliente.email || "email@cliente.com";
+    const objetivo = cliente.objetivo || cliente.objetivo_principal || "Objetivo principal";
+    const status = cliente.status || "ativo";
+
+    setText("cliente-nome-topo", nome);
+    setText("cliente-subtitulo", "Hub operacional do caso.");
+    setText("cliente-nome", nome);
+    setText("cliente-email", email);
+    setText("cliente-objetivo", objetivo);
+
+    const avatar = document.getElementById("cliente-avatar");
+    if (avatar) avatar.textContent = getInitials(nome);
+
+    const badge = document.getElementById("cliente-status-badge");
+    if (badge) badge.innerHTML = getStatusBadge(status);
+
+    const lead = cliente.leadId ? getLeadById(cliente.leadId) : null;
+
+    renderHubStatus(
+      "dados-pessoais",
+      cliente.dadosPessoaisUpdatedAt || cliente.updatedAt || cliente.updated_at,
+      hasValue(cliente.nome || cliente.email || cliente.telefone)
+    );
+
+    renderHubStatus(
+      "pre-diagnostico",
+      lead?.updatedAt ||
+        lead?.updated_at ||
+        lead?.createdAt ||
+        lead?.created_at ||
+        cliente?.preDiagnostico?.updatedAt ||
+        cliente?.preDiagnostico?.updated_at,
+      !!getPreDataFromCliente(cliente)
+    );
+
+    renderHubStatus(
+      "diagnostico",
+      cliente.diagnosticoUpdatedAt,
+      hasValue(cliente.diagnostico || cliente.condutaInicial)
+    );
+
+    renderHubStatus(
+      "acompanhamento",
+      cliente.acompanhamentoUpdatedAt,
+      Array.isArray(cliente.acompanhamentos) && cliente.acompanhamentos.length > 0
+    );
+
+    renderHubStatus(
+      "planejamento",
+      cliente.planejamentoUpdatedAt,
+      hasValue(cliente.objetivoCentral || cliente.direcaoComportamental || cliente.direcaoFisica)
+    );
+
+    renderHubStatus(
+      "treinos",
+      cliente.treinosUpdatedAt,
+      Array.isArray(cliente.periodizacoes) && cliente.periodizacoes.length > 0
+    );
+
+    const relatorioUpdatedEl = document.getElementById("updated-relatorio");
+    if (relatorioUpdatedEl) {
+      relatorioUpdatedEl.textContent = `Última geração: ${cliente.relatorioUpdatedAt ? formatDate(cliente.relatorioUpdatedAt) : "—"}`;
+    }
+
+    const observacoes = document.getElementById("cliente-observacoes");
+    if (observacoes) observacoes.value = cliente.observacoes || "";
+
+    renderDadosPessoaisCard();
+    renderPreDiagnosticoCard();
+
+    const arquivarBtn = document.getElementById("arquivar-cliente");
+    const reativarBtn = document.getElementById("reativar-cliente");
+
+    if (cliente.status === "arquivado") {
+      arquivarBtn?.classList.add("hidden");
+      reativarBtn?.classList.remove("hidden");
+    } else {
+      arquivarBtn?.classList.remove("hidden");
+      reativarBtn?.classList.add("hidden");
+    }
+  }
+
   function bindEvents() {
     document.getElementById("salvar-observacoes")?.addEventListener("click", saveObservacoes);
     document.getElementById("arquivar-cliente")?.addEventListener("click", archiveCliente);
@@ -361,6 +477,9 @@ window.ZACliente = (() => {
     document.getElementById("toggle-dados-pessoais-btn")?.addEventListener("click", toggleDadosPessoais);
     document.getElementById("cancelar-dados-pessoais-btn")?.addEventListener("click", cancelDadosPessoais);
     document.getElementById("salvar-dados-pessoais-btn")?.addEventListener("click", saveDadosPessoais);
+
+    document.getElementById("toggle-pre-btn")?.addEventListener("click", togglePreDiagnostico);
+    document.getElementById("fechar-pre-btn")?.addEventListener("click", closePreDiagnostico);
 
     document.querySelectorAll("[data-open-section]").forEach((button) => {
       button.addEventListener("click", () => {
