@@ -83,6 +83,23 @@ window.ZACliente = (() => {
     return !!value;
   }
 
+  function getPreDiagnosticoLink() {
+    return `${window.location.origin}/zona-azul-admin/pre-diagnostico/?cliente=${clienteId}`;
+  }
+
+  function getAcompanhamentoLink() {
+    return `${window.location.origin}/zona-azul-admin/acompanhamento/?cliente=${clienteId}`;
+  }
+
+  async function copyText(text, successMessage) {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert(successMessage);
+    } catch (error) {
+      prompt("Copie o link abaixo:", text);
+    }
+  }
+
   function renderCliente() {
     if (!cliente) return;
 
@@ -252,6 +269,21 @@ window.ZACliente = (() => {
     document.querySelectorAll("[data-open-section]").forEach((button) => {
       button.addEventListener("click", () => {
         openSection(button.dataset.openSection);
+      });
+    });
+
+    document.querySelectorAll("[data-copy-link]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const type = button.dataset.copyLink;
+
+        if (type === "pre") {
+          copyText(getPreDiagnosticoLink(), "Link do pré-diagnóstico copiado.");
+          return;
+        }
+
+        if (type === "acompanhamento") {
+          copyText(getAcompanhamentoLink(), "Link do acompanhamento copiado.");
+        }
       });
     });
   }
