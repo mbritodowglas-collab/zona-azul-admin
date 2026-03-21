@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliente | Zona Azul Admin</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=25" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=26" />
 </head>
 <body>
   <div class="app-shell">
@@ -66,42 +66,9 @@
           </div>
         </section>
 
-        <section class="card">
-          <div class="card-header">
-            <h3>Resumo rápido</h3>
-          </div>
-          <div class="card-body">
-            <div class="cliente-resumo-grid">
-              <div class="cliente-info-box">
-                <span>Nome</span>
-                <strong id="info-nome">-</strong>
-              </div>
-              <div class="cliente-info-box">
-                <span>E-mail</span>
-                <strong id="info-email">-</strong>
-              </div>
-              <div class="cliente-info-box">
-                <span>Telefone</span>
-                <strong id="info-telefone">-</strong>
-              </div>
-              <div class="cliente-info-box">
-                <span>Plano</span>
-                <strong id="info-plano">-</strong>
-              </div>
-              <div class="cliente-info-box">
-                <span>Fase atual</span>
-                <strong id="info-fase">-</strong>
-              </div>
-              <div class="cliente-info-box">
-                <span>Data de início</span>
-                <strong id="info-data-inicio">-</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section class="cliente-hub-grid">
-          <article class="card cliente-hub-card">
+          <!-- DADOS PESSOAIS FUNCIONAL -->
+          <article class="card cliente-hub-card cliente-hub-card-wide">
             <div class="card-body">
               <div class="cliente-hub-top">
                 <div>
@@ -110,9 +77,85 @@
                 </div>
                 <span class="cliente-hub-status" id="status-dados-pessoais">Sem atualização</span>
               </div>
+
+              <div class="cliente-mini-grid">
+                <div class="cliente-mini-item">
+                  <span>Nome</span>
+                  <strong id="dp-nome-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>E-mail</span>
+                  <strong id="dp-email-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Telefone</span>
+                  <strong id="dp-telefone-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Plano</span>
+                  <strong id="dp-plano-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Fase atual</span>
+                  <strong id="dp-fase-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Data de início</span>
+                  <strong id="dp-data-view">—</strong>
+                </div>
+              </div>
+
               <div class="cliente-hub-footer">
                 <span class="cliente-hub-updated" id="updated-dados-pessoais">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="dados-pessoais">Abrir</button>
+                <div class="cliente-card-actions">
+                  <button class="cliente-btn cliente-btn-secundario" id="toggle-dados-pessoais-btn">Editar</button>
+                </div>
+              </div>
+
+              <div id="dados-pessoais-form-wrap" class="cliente-expand-form hidden">
+                <div class="cliente-expand-divider"></div>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="dp-nome">Nome</label>
+                    <input id="dp-nome" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="dp-email">E-mail</label>
+                    <input id="dp-email" type="email" />
+                  </div>
+
+                  <div class="field">
+                    <label for="dp-telefone">Telefone</label>
+                    <input id="dp-telefone" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="dp-plano">Plano</label>
+                    <input id="dp-plano" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="dp-fase">Fase atual</label>
+                    <input id="dp-fase" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="dp-data">Data de início</label>
+                    <input id="dp-data" type="date" />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="dp-objetivo">Objetivo principal</label>
+                    <textarea id="dp-objetivo" placeholder="Objetivo principal do cliente..."></textarea>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <button class="cliente-btn cliente-btn-secundario" id="cancelar-dados-pessoais-btn">Cancelar</button>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-dados-pessoais-btn">Salvar dados</button>
+                </div>
               </div>
             </div>
           </article>
@@ -253,7 +296,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=25"></script>
-  <script src="../assets/js/cliente.js?v=25"></script>
+  <script src="../assets/js/storage.js?v=26"></script>
+  <script src="../assets/js/cliente.js?v=26"></script>
 </body>
 </html>
