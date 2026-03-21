@@ -3,352 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cliente | Zona Azul Admin</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=27" />
+  <title>Cliente | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=30" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">ZA</div>
-        <div>
-          <h1>Zona Azul Admin</h1>
-          <p>Painel do cliente</p>
-        </div>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <h1>Zona Azul</h1>
+    <nav>
+      <a href="../index.html">Dashboard</a>
+      <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+      <a href="../clientes/">Clientes</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+    <!-- TOPO -->
+    <div class="topbar">
+      <div>
+        <h2 id="cliente-nome">Cliente</h2>
+        <p id="cliente-objetivo">Objetivo</p>
       </div>
 
-      <nav class="nav">
-        <a href="../index.html">Dashboard</a>
-        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="../clientes/index.html" class="active">Clientes</a>
-      </nav>
-    </aside>
+      <div>
+        <button id="voltar-btn">Voltar</button>
+      </div>
+    </div>
 
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2 id="cliente-nome-topo">Cliente</h2>
-          <p id="cliente-subtitulo">Hub operacional do caso.</p>
-        </div>
+    <!-- CARDS PRINCIPAIS -->
+    <section class="grid-3">
 
-        <div class="cliente-topo-acoes">
-          <a href="../clientes/index.html" class="cliente-btn cliente-btn-secundario">Voltar</a>
-          <button type="button" class="cliente-btn cliente-btn-abrir" id="gerar-relatorio-btn">
-            Gerar relatório
-          </button>
-        </div>
+      <!-- LANÇAMENTOS -->
+      <div class="card card-main">
+        <h3>🧩 Lançamentos</h3>
+        <p>Registrar diagnóstico, evolução e dados do cliente.</p>
+
+        <button data-open="lancamentos">Abrir</button>
       </div>
 
-      <div id="cliente-not-found" class="card hidden">
-        <div class="card-body">
-          <div class="empty-state">Cliente não encontrado.</div>
-        </div>
+      <!-- RELATÓRIO -->
+      <div class="card card-main">
+        <h3>📊 Relatório completo</h3>
+        <p>Visualizar análise consolidada do cliente.</p>
+
+        <button data-open="relatorio">Abrir relatório</button>
       </div>
 
-      <div id="cliente-page">
-        <section class="card cliente-hero-card">
-          <div class="card-body cliente-hero">
-            <div class="cliente-hero-left">
-              <div class="cliente-avatar" id="cliente-avatar">C</div>
-              <div>
-                <h3 id="cliente-nome">Cliente</h3>
-                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
-                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
-              </div>
-            </div>
+      <!-- PLANEJAMENTO -->
+      <div class="card card-main">
+        <h3>🧠 Planejamento do treinador</h3>
+        <p>Definir estratégia, comportamento e treino.</p>
 
-            <div class="cliente-hero-right">
-              <div class="cliente-status-wrap">
-                <span class="cliente-label-mini">Status</span>
-                <div id="cliente-status-badge"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="cliente-hub-grid">
-          <!-- DADOS PESSOAIS -->
-          <article class="card cliente-hub-card cliente-hub-card-wide">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Dados pessoais</h3>
-                  <p>Informações principais do cliente.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-dados-pessoais">Sem atualização</span>
-              </div>
-
-              <div class="cliente-mini-grid">
-                <div class="cliente-mini-item">
-                  <span>Nome</span>
-                  <strong id="dp-nome-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>E-mail</span>
-                  <strong id="dp-email-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Telefone</span>
-                  <strong id="dp-telefone-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Plano</span>
-                  <strong id="dp-plano-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Fase atual</span>
-                  <strong id="dp-fase-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Data de início</span>
-                  <strong id="dp-data-view">—</strong>
-                </div>
-              </div>
-
-              <div class="cliente-hub-footer">
-                <span class="cliente-hub-updated" id="updated-dados-pessoais">Última atualização: —</span>
-                <div class="cliente-card-actions">
-                  <button class="cliente-btn cliente-btn-secundario" id="toggle-dados-pessoais-btn">Editar</button>
-                </div>
-              </div>
-
-              <div id="dados-pessoais-form-wrap" class="cliente-expand-form hidden">
-                <div class="cliente-expand-divider"></div>
-
-                <div class="grid cols-2">
-                  <div class="field">
-                    <label for="dp-nome">Nome</label>
-                    <input id="dp-nome" type="text" />
-                  </div>
-
-                  <div class="field">
-                    <label for="dp-email">E-mail</label>
-                    <input id="dp-email" type="email" />
-                  </div>
-
-                  <div class="field">
-                    <label for="dp-telefone">Telefone</label>
-                    <input id="dp-telefone" type="text" />
-                  </div>
-
-                  <div class="field">
-                    <label for="dp-plano">Plano</label>
-                    <input id="dp-plano" type="text" />
-                  </div>
-
-                  <div class="field">
-                    <label for="dp-fase">Fase atual</label>
-                    <input id="dp-fase" type="text" />
-                  </div>
-
-                  <div class="field">
-                    <label for="dp-data">Data de início</label>
-                    <input id="dp-data" type="date" />
-                  </div>
-
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label for="dp-objetivo">Objetivo principal</label>
-                    <textarea id="dp-objetivo" placeholder="Objetivo principal do cliente..."></textarea>
-                  </div>
-                </div>
-
-                <div class="cliente-section-actions">
-                  <button class="cliente-btn cliente-btn-secundario" id="cancelar-dados-pessoais-btn">Cancelar</button>
-                  <button class="cliente-btn cliente-btn-abrir" id="salvar-dados-pessoais-btn">Salvar dados</button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- PRÉ-DIAGNÓSTICO -->
-          <article class="card cliente-hub-card cliente-hub-card-wide">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Pré-diagnóstico inicial</h3>
-                  <p>Base inicial do caso e respostas já registradas.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-pre-diagnostico">Sem atualização</span>
-              </div>
-
-              <div class="cliente-mini-grid">
-                <div class="cliente-mini-item">
-                  <span>Nome de origem</span>
-                  <strong id="pre-nome-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>E-mail</span>
-                  <strong id="pre-email-view">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Telefone</span>
-                  <strong id="pre-telefone-view">—</strong>
-                </div>
-              </div>
-
-              <div class="cliente-hub-footer cliente-hub-footer-multi">
-                <span class="cliente-hub-updated" id="updated-pre-diagnostico">Última atualização: —</span>
-                <div class="cliente-card-actions">
-                  <button class="cliente-btn cliente-btn-secundario" data-copy-link="pre">Copiar link</button>
-                  <button class="cliente-btn cliente-btn-abrir" id="toggle-pre-btn">Abrir</button>
-                </div>
-              </div>
-
-              <div id="pre-diagnostico-expand" class="cliente-expand-form hidden">
-                <div class="cliente-expand-divider"></div>
-
-                <div class="grid cols-2">
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label for="pre-objetivo">Objetivo inicial</label>
-                    <textarea id="pre-objetivo" readonly></textarea>
-                  </div>
-
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label for="pre-resumo">Resumo do pré-diagnóstico</label>
-                    <textarea id="pre-resumo" readonly></textarea>
-                  </div>
-
-                  <div class="field">
-                    <label for="pre-updated-readonly">Última atualização</label>
-                    <input id="pre-updated-readonly" type="text" readonly />
-                  </div>
-
-                  <div class="field">
-                    <label for="pre-link-readonly">Link do pré-diagnóstico</label>
-                    <input id="pre-link-readonly" type="text" readonly />
-                  </div>
-                </div>
-
-                <div class="cliente-section-actions">
-                  <button class="cliente-btn cliente-btn-secundario" id="fechar-pre-btn">Fechar</button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- DIAGNÓSTICO -->
-          <article class="card cliente-hub-card">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Diagnóstico completo</h3>
-                  <p>Triagem física, pilares e síntese diagnóstica.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-diagnostico">Sem atualização</span>
-              </div>
-              <div class="cliente-hub-footer">
-                <span class="cliente-hub-updated" id="updated-diagnostico">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="diagnostico">Abrir</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- ACOMPANHAMENTO -->
-          <article class="card cliente-hub-card">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Formulário de acompanhamento</h3>
-                  <p>Lançamentos evolutivos do caso.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-acompanhamento">Sem atualização</span>
-              </div>
-              <div class="cliente-hub-footer cliente-hub-footer-multi">
-                <span class="cliente-hub-updated" id="updated-acompanhamento">Última atualização: —</span>
-                <div class="cliente-card-actions">
-                  <button class="cliente-btn cliente-btn-secundario" data-copy-link="acompanhamento">Copiar link</button>
-                  <button class="cliente-btn cliente-btn-abrir" data-open-section="acompanhamento">Abrir</button>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- PLANEJAMENTO -->
-          <article class="card cliente-hub-card">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Planejamento geral</h3>
-                  <p>Planejamento de atividades comportamentais.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-planejamento">Sem atualização</span>
-              </div>
-              <div class="cliente-hub-footer">
-                <span class="cliente-hub-updated" id="updated-planejamento">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="planejamento">Abrir</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- TREINOS -->
-          <article class="card cliente-hub-card">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Programação de treinos</h3>
-                  <p>Periodização e estrutura para lançamento no MFIT.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-treinos">Sem atualização</span>
-              </div>
-              <div class="cliente-hub-footer">
-                <span class="cliente-hub-updated" id="updated-treinos">Última atualização: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="treinos">Abrir</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- RELATÓRIO -->
-          <article class="card cliente-hub-card cliente-hub-card-highlight">
-            <div class="card-body">
-              <div class="cliente-hub-top">
-                <div>
-                  <h3>Relatório final</h3>
-                  <p>Consolidação da última atualização de cada seção.</p>
-                </div>
-                <span class="cliente-hub-status" id="status-relatorio">Pronto para gerar</span>
-              </div>
-              <div class="cliente-hub-footer">
-                <span class="cliente-hub-updated" id="updated-relatorio">Última geração: —</span>
-                <button class="cliente-btn cliente-btn-abrir" data-open-section="relatorio">Abrir</button>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <h3>Ações rápidas</h3>
-          </div>
-          <div class="card-body">
-            <div class="cliente-quick-actions">
-              <button id="arquivar-cliente" class="cliente-btn cliente-btn-arquivar">Arquivar</button>
-              <button id="reativar-cliente" class="cliente-btn cliente-btn-reativar hidden">Reativar</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <h3>Observações</h3>
-          </div>
-          <div class="card-body">
-            <div class="field">
-              <label for="cliente-observacoes">Notas do caso</label>
-              <textarea id="cliente-observacoes" placeholder="Observações gerais do cliente..."></textarea>
-            </div>
-
-            <div class="cliente-section-actions">
-              <button id="salvar-observacoes" class="cliente-btn cliente-btn-secundario">
-                Salvar observações
-              </button>
-            </div>
-          </div>
-        </section>
+        <button data-open="planejamento">Abrir planejamento</button>
       </div>
-    </main>
-  </div>
 
-  <script src="../assets/js/storage.js?v=27"></script>
-  <script src="../assets/js/cliente.js?v=27"></script>
+    </section>
+
+  </main>
+
+</div>
+
+<script src="../assets/js/storage.js"></script>
+<script src="../assets/js/cliente.js"></script>
+
 </body>
 </html>
