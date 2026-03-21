@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliente | Zona Azul Admin</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=26" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=27" />
 </head>
 <body>
   <div class="app-shell">
@@ -67,7 +67,7 @@
         </section>
 
         <section class="cliente-hub-grid">
-          <!-- DADOS PESSOAIS FUNCIONAL -->
+          <!-- DADOS PESSOAIS -->
           <article class="card cliente-hub-card cliente-hub-card-wide">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -160,7 +160,8 @@
             </div>
           </article>
 
-          <article class="card cliente-hub-card">
+          <!-- PRÉ-DIAGNÓSTICO -->
+          <article class="card cliente-hub-card cliente-hub-card-wide">
             <div class="card-body">
               <div class="cliente-hub-top">
                 <div>
@@ -169,16 +170,63 @@
                 </div>
                 <span class="cliente-hub-status" id="status-pre-diagnostico">Sem atualização</span>
               </div>
+
+              <div class="cliente-mini-grid">
+                <div class="cliente-mini-item">
+                  <span>Nome de origem</span>
+                  <strong id="pre-nome-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>E-mail</span>
+                  <strong id="pre-email-view">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Telefone</span>
+                  <strong id="pre-telefone-view">—</strong>
+                </div>
+              </div>
+
               <div class="cliente-hub-footer cliente-hub-footer-multi">
                 <span class="cliente-hub-updated" id="updated-pre-diagnostico">Última atualização: —</span>
                 <div class="cliente-card-actions">
                   <button class="cliente-btn cliente-btn-secundario" data-copy-link="pre">Copiar link</button>
-                  <button class="cliente-btn cliente-btn-abrir" data-open-section="pre-diagnostico">Abrir</button>
+                  <button class="cliente-btn cliente-btn-abrir" id="toggle-pre-btn">Abrir</button>
+                </div>
+              </div>
+
+              <div id="pre-diagnostico-expand" class="cliente-expand-form hidden">
+                <div class="cliente-expand-divider"></div>
+
+                <div class="grid cols-2">
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="pre-objetivo">Objetivo inicial</label>
+                    <textarea id="pre-objetivo" readonly></textarea>
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="pre-resumo">Resumo do pré-diagnóstico</label>
+                    <textarea id="pre-resumo" readonly></textarea>
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-updated-readonly">Última atualização</label>
+                    <input id="pre-updated-readonly" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-link-readonly">Link do pré-diagnóstico</label>
+                    <input id="pre-link-readonly" type="text" readonly />
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <button class="cliente-btn cliente-btn-secundario" id="fechar-pre-btn">Fechar</button>
                 </div>
               </div>
             </div>
           </article>
 
+          <!-- DIAGNÓSTICO -->
           <article class="card cliente-hub-card">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -195,6 +243,7 @@
             </div>
           </article>
 
+          <!-- ACOMPANHAMENTO -->
           <article class="card cliente-hub-card">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -214,6 +263,7 @@
             </div>
           </article>
 
+          <!-- PLANEJAMENTO -->
           <article class="card cliente-hub-card">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -230,6 +280,7 @@
             </div>
           </article>
 
+          <!-- TREINOS -->
           <article class="card cliente-hub-card">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -246,6 +297,7 @@
             </div>
           </article>
 
+          <!-- RELATÓRIO -->
           <article class="card cliente-hub-card cliente-hub-card-highlight">
             <div class="card-body">
               <div class="cliente-hub-top">
@@ -296,7 +348,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=26"></script>
-  <script src="../assets/js/cliente.js?v=26"></script>
+  <script src="../assets/js/storage.js?v=27"></script>
+  <script src="../assets/js/cliente.js?v=27"></script>
 </body>
 </html>
