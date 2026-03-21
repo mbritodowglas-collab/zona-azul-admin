@@ -3700,3 +3700,45 @@ th{color:var(--muted);font-weight:600}
     justify-content: flex-end;
   }
 }
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.card-main {
+  padding: 24px;
+  border-radius: 16px;
+  background: #111827;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card-main h3 {
+  font-size: 18px;
+}
+
+.card-main p {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.card-main button {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
