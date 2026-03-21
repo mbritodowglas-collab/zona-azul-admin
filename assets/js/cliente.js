@@ -1,6 +1,7 @@
 window.ZACliente = (() => {
   let clienteId = null;
   let cliente = null;
+  let dadosPessoaisOpen = false;
 
   function getQueryParam(name) {
     const url = new URL(window.location.href);
@@ -53,6 +54,19 @@ window.ZACliente = (() => {
     }
   }
 
+  function formatDateForInput(dateValue) {
+    if (!dateValue) return "";
+    try {
+      const d = new Date(dateValue);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    } catch {
+      return "";
+    }
+  }
+
   function getInitials(nome) {
     if (!nome) return "C";
     const parts = nome.trim().split(" ").filter(Boolean);
@@ -100,6 +114,90 @@ window.ZACliente = (() => {
     }
   }
 
+  function fillDadosPessoaisForm() {
+    const map = {
+      "dp-nome": cliente.nome || "",
+      "dp-email": cliente.email || "",
+      "dp-telefone": cliente.telefone || "",
+      "dp-plano": cliente.plano || "",
+      "dp-fase": cliente.faseAtual || cliente.fase_atual || "",
+      "dp-data": formatDateForInput(cliente.dataInicio || cliente.createdAt || cliente.created_at),
+      "dp-objetivo": cliente.objetivo || cliente.objetivo_principal || "",
+    };
+
+    Object.entries(map).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    });
+  }
+
+  function renderDadosPessoaisCard() {
+    setText("dp-nome-view", cliente.nome || "—");
+    setText("dp-email-view", cliente.email || "—");
+    setText("dp-telefone-view", cliente.telefone || "—");
+    setText("dp-plano-view", cliente.plano || "—");
+    setText("dp-fase-view", cliente.faseAtual || cliente.fase_atual || "—");
+    setText("dp-data-view", formatDate(cliente.dataInicio || cliente.createdAt || cliente.created_at));
+
+    fillDadosPessoaisForm();
+    updateDadosPessoaisUI();
+  }
+
+  function updateDadosPessoaisUI() {
+    const wrap = document.getElementById("dados-pessoais-form-wrap");
+    const toggleBtn = document.getElementById("toggle-dados-pessoais-btn");
+
+    if (!wrap || !toggleBtn) return;
+
+    wrap.classList.toggle("hidden", !dadosPessoaisOpen);
+    toggleBtn.textContent = dadosPessoaisOpen ? "Fechar" : "Editar";
+  }
+
+  function toggleDadosPessoais() {
+    dadosPessoaisOpen = !dadosPessoaisOpen;
+    updateDadosPessoaisUI();
+  }
+
+  function cancelDadosPessoais() {
+    fillDadosPessoaisForm();
+    dadosPessoaisOpen = false;
+    updateDadosPessoaisUI();
+  }
+
+  function saveDadosPessoais() {
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => item.id === clienteId);
+    if (index === -1) return;
+
+    const nome = document.getElementById("dp-nome")?.value.trim() || "";
+    const email = document.getElementById("dp-email")?.value.trim() || "";
+    const telefone = document.getElementById("dp-telefone")?.value.trim() || "";
+    const plano = document.getElementById("dp-plano")?.value.trim() || "";
+    const fase = document.getElementById("dp-fase")?.value.trim() || "";
+    const dataInicio = document.getElementById("dp-data")?.value || "";
+    const objetivo = document.getElementById("dp-objetivo")?.value.trim() || "";
+
+    clientes[index] = {
+      ...clientes[index],
+      nome,
+      email,
+      telefone,
+      plano,
+      faseAtual: fase,
+      dataInicio: dataInicio || clientes[index].dataInicio || "",
+      objetivo_principal: objetivo,
+      objetivo,
+      updatedAt: new Date().toISOString(),
+      dadosPessoaisUpdatedAt: new Date().toISOString(),
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    dadosPessoaisOpen = false;
+    alert("Dados pessoais salvos.");
+    renderCliente();
+  }
+
   function renderCliente() {
     if (!cliente) return;
 
@@ -120,18 +218,11 @@ window.ZACliente = (() => {
     const badge = document.getElementById("cliente-status-badge");
     if (badge) badge.innerHTML = getStatusBadge(status);
 
-    setText("info-nome", nome);
-    setText("info-email", email);
-    setText("info-telefone", cliente.telefone || "-");
-    setText("info-plano", cliente.plano || "-");
-    setText("info-fase", cliente.faseAtual || cliente.fase_atual || "-");
-    setText("info-data-inicio", formatDate(cliente.dataInicio || cliente.createdAt || cliente.created_at));
-
     const lead = cliente.leadId ? getLeadById(cliente.leadId) : null;
 
     renderHubStatus(
       "dados-pessoais",
-      cliente.updatedAt || cliente.updated_at,
+      cliente.dadosPessoaisUpdatedAt || cliente.updatedAt || cliente.updated_at,
       hasValue(cliente.nome || cliente.email || cliente.telefone)
     );
 
@@ -172,6 +263,8 @@ window.ZACliente = (() => {
 
     const observacoes = document.getElementById("cliente-observacoes");
     if (observacoes) observacoes.value = cliente.observacoes || "";
+
+    renderDadosPessoaisCard();
 
     const arquivarBtn = document.getElementById("arquivar-cliente");
     const reativarBtn = document.getElementById("reativar-cliente");
@@ -232,7 +325,6 @@ window.ZACliente = (() => {
 
   function openSection(section) {
     const map = {
-      "dados-pessoais": "Aqui vamos abrir a seção de Dados pessoais.",
       "pre-diagnostico": "Aqui vamos abrir a seção de Pré-diagnóstico inicial.",
       "diagnostico": "Aqui vamos abrir a seção de Diagnóstico completo.",
       "acompanhamento": "Aqui vamos abrir a seção de Acompanhamento.",
@@ -265,6 +357,10 @@ window.ZACliente = (() => {
     document.getElementById("arquivar-cliente")?.addEventListener("click", archiveCliente);
     document.getElementById("reativar-cliente")?.addEventListener("click", reactivateCliente);
     document.getElementById("gerar-relatorio-btn")?.addEventListener("click", generateReport);
+
+    document.getElementById("toggle-dados-pessoais-btn")?.addEventListener("click", toggleDadosPessoais);
+    document.getElementById("cancelar-dados-pessoais-btn")?.addEventListener("click", cancelDadosPessoais);
+    document.getElementById("salvar-dados-pessoais-btn")?.addEventListener("click", saveDadosPessoais);
 
     document.querySelectorAll("[data-open-section]").forEach((button) => {
       button.addEventListener("click", () => {
