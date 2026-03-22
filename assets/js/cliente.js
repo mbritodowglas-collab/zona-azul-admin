@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (tipo === "planejamento") {
-        alert("Área de planejamento do treinador em construção.");
+        window.location.href = `../cliente/planejamento.html?id=${encodeURIComponent(clienteId)}`;
       }
     });
   });
