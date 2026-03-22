@@ -1,38 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+  const clienteId = params.get("id");
 
-  const clientes = ZAStorage.getClientes();
-  const cliente = clientes.find(c => String(c.id) === String(id));
+  function getClientes() {
+    return window.ZAStorage?.getClientes?.() || [];
+  }
+
+  function getClienteById(id) {
+    return getClientes().find((cliente) => String(cliente.id) === String(id)) || null;
+  }
+
+  const cliente = getClienteById(clienteId);
 
   if (!cliente) {
-    alert("Cliente não encontrado");
+    alert("Cliente não encontrado.");
+    window.location.href = "../clientes/";
     return;
   }
 
-  document.getElementById("cliente-nome").textContent = cliente.nome;
-  document.getElementById("cliente-objetivo").textContent =
-    cliente.objetivo || "Sem objetivo definido";
+  const nomeEl = document.getElementById("cliente-nome");
+  const objetivoEl = document.getElementById("cliente-objetivo");
+  const voltarBtn = document.getElementById("voltar-btn");
 
-  document.querySelectorAll("[data-open]").forEach(btn => {
+  if (nomeEl) {
+    nomeEl.textContent = cliente.nome || "Cliente";
+  }
+
+  if (objetivoEl) {
+    objetivoEl.textContent =
+      cliente.objetivo ||
+      cliente.objetivo_principal ||
+      "Sem objetivo definido";
+  }
+
+  if (voltarBtn) {
+    voltarBtn.addEventListener("click", () => {
+      window.location.href = "../clientes/";
+    });
+  }
+
+  document.querySelectorAll("[data-open]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const tipo = btn.dataset.open;
 
       if (tipo === "lancamentos") {
-        alert("Abrir área de lançamentos");
+        window.location.href = `../cliente/lancamentos.html?id=${encodeURIComponent(clienteId)}`;
+        return;
       }
 
       if (tipo === "relatorio") {
-        alert("Abrir relatório completo");
+        alert("Área de relatório completo em construção.");
+        return;
       }
 
       if (tipo === "planejamento") {
-        alert("Abrir planejamento do treinador");
+        alert("Área de planejamento do treinador em construção.");
       }
     });
   });
-
-  document.getElementById("voltar-btn").onclick = () => {
-    window.location.href = "../clientes/";
-  };
 });
