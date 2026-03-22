@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=36" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=37" />
 </head>
 <body>
   <div class="app-shell">
@@ -88,6 +88,89 @@
                     <label for="pre-resumo">Resumo do pré-diagnóstico</label>
                     <textarea id="pre-resumo" readonly></textarea>
                   </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Estrutura da sessão</h3>
+              </div>
+              <div class="card-body">
+                <div class="grid cols-3">
+                  <div class="field">
+                    <label for="sessao-data">Data da sessão</label>
+                    <input id="sessao-data" type="date" />
+                  </div>
+
+                  <div class="field">
+                    <label for="sessao-tipo">Tipo</label>
+                    <select id="sessao-tipo">
+                      <option value="">Selecionar</option>
+                      <option value="online">Online</option>
+                      <option value="presencial">Presencial</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="sessao-protocolo">Protocolo</label>
+                    <select id="sessao-protocolo">
+                      <option value="">Selecionar</option>
+                      <option value="A">A - Online</option>
+                      <option value="B">B - Presencial</option>
+                      <option value="C">C - Presencial avançado</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="sessao-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-sessao-btn">Salvar sessão</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Avaliação física</h3>
+              </div>
+              <div class="card-body">
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="peso">Peso (kg)</label>
+                    <input id="peso" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="altura">Altura (m)</label>
+                    <input id="altura" type="number" step="0.01" />
+                  </div>
+
+                  <div class="field">
+                    <label for="cintura">Cintura (cm)</label>
+                    <input id="cintura" type="number" />
+                  </div>
+
+                  <div class="field">
+                    <label for="quadril">Quadril (cm)</label>
+                    <input id="quadril" type="number" />
+                  </div>
+
+                  <div class="field">
+                    <label for="imc">IMC</label>
+                    <input id="imc" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="rcq">RCQ</label>
+                    <input id="rcq" type="text" readonly />
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="avaliacao-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-secundario" id="calcular-btn">Calcular</button>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-avaliacao-btn">Salvar avaliação</button>
                 </div>
               </div>
             </section>
@@ -310,7 +393,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=36"></script>
-  <script src="../assets/js/lancamentos.js?v=36"></script>
+  <script src="../assets/js/storage.js?v=37"></script>
+  <script src="../assets/js/lancamentos.js?v=37"></script>
 </body>
 </html>
