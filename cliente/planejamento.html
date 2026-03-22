@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planejamento do treinador | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=32" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul</h1>
+          <p>Planejamento do treinador</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome-topo">Planejamento</h2>
+          <p id="cliente-subtitulo">Estratégia comportamental e programação de treino.</p>
+        </div>
+
+        <div class="cliente-topo-acoes">
+          <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+        </div>
+      </div>
+
+      <div id="cliente-not-found" class="card hidden">
+        <div class="card-body">
+          <div class="empty-state">Cliente não encontrado.</div>
+        </div>
+      </div>
+
+      <div id="planejamento-page">
+        <section class="card cliente-hero-card">
+          <div class="card-body cliente-hero">
+            <div class="cliente-hero-left">
+              <div class="cliente-avatar" id="cliente-avatar">C</div>
+              <div>
+                <h3 id="cliente-nome">Cliente</h3>
+                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h3>Planejamento geral</h3>
+          </div>
+          <div class="card-body">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="plan-objetivo-central">Objetivo central</label>
+                <input id="plan-objetivo-central" type="text" placeholder="Ex.: emagrecimento com constância" />
+              </div>
+
+              <div class="field">
+                <label for="plan-foco-mes">Foco do mês</label>
+                <input id="plan-foco-mes" type="text" placeholder="Ex.: organizar rotina e treinar 3x" />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="plan-direcao-comportamental">Direção comportamental</label>
+                <textarea id="plan-direcao-comportamental" placeholder="Estratégia de comportamento, ambiente e hábitos..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="plan-habitos-chave">Hábitos-chave</label>
+                <textarea id="plan-habitos-chave" placeholder="Ex.: dormir antes de 23h, caminhar 3x, preparar refeições..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="plan-observacoes">Observações do planejamento</label>
+                <textarea id="plan-observacoes" placeholder="Observações estratégicas do treinador..."></textarea>
+              </div>
+            </div>
+
+            <div class="cliente-section-actions">
+              <span class="cliente-hub-updated" id="plan-updated">Última atualização: —</span>
+              <button class="cliente-btn cliente-btn-abrir" id="salvar-planejamento-btn">Salvar planejamento</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h3>Programação de treinos</h3>
+          </div>
+          <div class="card-body">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="treino-fase">Fase atual</label>
+                <input id="treino-fase" type="text" placeholder="Ex.: Consciência e Reset" />
+              </div>
+
+              <div class="field">
+                <label for="treino-frequencia">Frequência semanal</label>
+                <input id="treino-frequencia" type="text" placeholder="Ex.: 3x semana" />
+              </div>
+
+              <div class="field">
+                <label for="treino-divisao">Divisão</label>
+                <input id="treino-divisao" type="text" placeholder="Ex.: AB, ABC, Full Body" />
+              </div>
+
+              <div class="field">
+                <label for="treino-objetivo-ciclo">Objetivo do ciclo</label>
+                <input id="treino-objetivo-ciclo" type="text" placeholder="Ex.: aderência + base física" />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="treino-resumo">Resumo técnico</label>
+                <textarea id="treino-resumo" placeholder="Resumo da lógica do treino e do ciclo..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="treino-orientacoes-mfit">Orientações para MFIT</label>
+                <textarea id="treino-orientacoes-mfit" placeholder="Notas para lançar no MFIT..."></textarea>
+              </div>
+            </div>
+
+            <div class="cliente-section-actions">
+              <span class="cliente-hub-updated" id="treino-updated">Última atualização: —</span>
+              <button class="cliente-btn cliente-btn-abrir" id="salvar-treino-btn">Salvar programação</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/storage.js?v=32"></script>
+  <script src="../assets/js/planejamento.js?v=32"></script>
+</body>
+</html>
