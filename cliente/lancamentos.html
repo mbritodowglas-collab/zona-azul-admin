@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=35" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=36" />
 </head>
 <body>
   <div class="app-shell">
@@ -80,14 +80,128 @@
 
                 <div class="grid cols-2" style="margin-top:16px;">
                   <div class="field" style="grid-column: 1 / -1;">
-                    <label>Objetivo inicial</label>
+                    <label for="pre-objetivo">Objetivo inicial</label>
                     <textarea id="pre-objetivo" readonly></textarea>
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
-                    <label>Resumo do pré-diagnóstico</label>
+                    <label for="pre-resumo">Resumo do pré-diagnóstico</label>
                     <textarea id="pre-resumo" readonly></textarea>
                   </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Radar revisado</h3>
+              </div>
+              <div class="card-body">
+                <p class="cliente-hero-meta" style="margin-bottom: 16px;">
+                  Compare o score original do cliente com a sua leitura revisada da sessão.
+                </p>
+
+                <div class="radar-grid">
+                  <div class="radar-card radar-movimento">
+                    <div class="radar-card-head">
+                      <strong>Movimento</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-movimento">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-movimento">Revisado</label>
+                        <input id="radar-revisado-movimento" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-alimentacao">
+                    <div class="radar-card-head">
+                      <strong>Alimentação</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-alimentacao">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-alimentacao">Revisado</label>
+                        <input id="radar-revisado-alimentacao" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-sono">
+                    <div class="radar-card-head">
+                      <strong>Sono</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-sono">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-sono">Revisado</label>
+                        <input id="radar-revisado-sono" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-proposito">
+                    <div class="radar-card-head">
+                      <strong>Propósito</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-proposito">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-proposito">Revisado</label>
+                        <input id="radar-revisado-proposito" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-social">
+                    <div class="radar-card-head">
+                      <strong>Social</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-social">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-social">Revisado</label>
+                        <input id="radar-revisado-social" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-estresse">
+                    <div class="radar-card-head">
+                      <strong>Estresse</strong>
+                    </div>
+                    <div class="radar-values">
+                      <div class="radar-pre">
+                        <span>Pré</span>
+                        <strong id="radar-pre-estresse">—</strong>
+                      </div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-estresse">Revisado</label>
+                        <input id="radar-revisado-estresse" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="radar-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-radar-btn">Salvar radar revisado</button>
                 </div>
               </div>
             </section>
@@ -196,7 +310,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=35"></script>
-  <script src="../assets/js/lancamentos.js?v=35"></script>
+  <script src="../assets/js/storage.js?v=36"></script>
+  <script src="../assets/js/lancamentos.js?v=36"></script>
 </body>
 </html>
