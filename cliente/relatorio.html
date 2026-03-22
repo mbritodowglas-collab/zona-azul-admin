@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório completo | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=33" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul</h1>
+          <p>Relatório completo</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome-topo">Relatório</h2>
+          <p id="cliente-subtitulo">Consolidação do caso do cliente.</p>
+        </div>
+
+        <div class="cliente-topo-acoes">
+          <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+          <button class="cliente-btn cliente-btn-abrir" id="imprimir-relatorio-btn">Imprimir / PDF</button>
+        </div>
+      </div>
+
+      <div id="cliente-not-found" class="card hidden">
+        <div class="card-body">
+          <div class="empty-state">Cliente não encontrado.</div>
+        </div>
+      </div>
+
+      <div id="relatorio-page">
+        <section class="card cliente-hero-card">
+          <div class="card-body cliente-hero">
+            <div class="cliente-hero-left">
+              <div class="cliente-avatar" id="cliente-avatar">C</div>
+              <div>
+                <h3 id="cliente-nome">Cliente</h3>
+                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div id="relatorio-print-area">
+          <section class="card">
+            <div class="card-header">
+              <h3>Dados do cliente</h3>
+            </div>
+            <div class="card-body">
+              <div class="cliente-mini-grid">
+                <div class="cliente-mini-item">
+                  <span>Nome</span>
+                  <strong id="dados-nome">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>E-mail</span>
+                  <strong id="dados-email">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Telefone</span>
+                  <strong id="dados-telefone">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Plano</span>
+                  <strong id="dados-plano">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Fase atual</span>
+                  <strong id="dados-fase">—</strong>
+                </div>
+                <div class="cliente-mini-item">
+                  <span>Data de início</span>
+                  <strong id="dados-data-inicio">—</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h3>Base do pré-diagnóstico</h3>
+            </div>
+            <div class="card-body">
+              <div class="relatorio-bloco">
+                <h4>Objetivo inicial</h4>
+                <p id="pre-objetivo">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Resumo do pré-diagnóstico</h4>
+                <p id="pre-resumo">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Radar inicial</h4>
+                <p id="pre-radar">—</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h3>Diagnóstico completo</h3>
+            </div>
+            <div class="card-body">
+              <div class="relatorio-bloco">
+                <h4>Gargalo principal</h4>
+                <p id="diag-gargalo">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Triagem física</h4>
+                <p id="diag-triagem">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Leitura do caso</h4>
+                <p id="diag-leitura">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Síntese diagnóstica</h4>
+                <p id="diag-sintese">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Conduta inicial</h4>
+                <p id="diag-conduta">—</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h3>Último acompanhamento</h3>
+            </div>
+            <div class="card-body">
+              <div class="relatorio-bloco">
+                <h4>Data</h4>
+                <p id="acomp-data">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Aderência</h4>
+                <p id="acomp-aderencia">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Evolução</h4>
+                <p id="acomp-evolucao">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Dificuldades</h4>
+                <p id="acomp-dificuldades">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Ajustes realizados</h4>
+                <p id="acomp-ajustes">—</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h3>Planejamento do treinador</h3>
+            </div>
+            <div class="card-body">
+              <div class="relatorio-bloco">
+                <h4>Objetivo central</h4>
+                <p id="plan-objetivo-central">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Foco do mês</h4>
+                <p id="plan-foco-mes">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Direção comportamental</h4>
+                <p id="plan-direcao">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Hábitos-chave</h4>
+                <p id="plan-habitos">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Observações do planejamento</h4>
+                <p id="plan-observacoes">—</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-header">
+              <h3>Programação de treinos</h3>
+            </div>
+            <div class="card-body">
+              <div class="relatorio-bloco">
+                <h4>Fase atual</h4>
+                <p id="treino-fase">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Frequência semanal</h4>
+                <p id="treino-frequencia">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Divisão</h4>
+                <p id="treino-divisao">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Objetivo do ciclo</h4>
+                <p id="treino-objetivo-ciclo">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Resumo técnico</h4>
+                <p id="treino-resumo">—</p>
+              </div>
+
+              <div class="relatorio-bloco">
+                <h4>Orientações para MFIT</h4>
+                <p id="treino-orientacoes">—</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/storage.js?v=33"></script>
+  <script src="../assets/js/relatorio.js?v=33"></script>
+</body>
+</html>
