@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (tipo === "relatorio") {
-        alert("Área de relatório completo em construção.");
+        window.location.href = `../cliente/relatorio.html?id=${encodeURIComponent(clienteId)}`;
         return;
       }
 
