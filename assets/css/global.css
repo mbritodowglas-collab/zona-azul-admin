@@ -3742,3 +3742,47 @@ th{color:var(--muted);font-weight:600}
     grid-template-columns: 1fr;
   }
 }
+
+.acompanhamentos-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.acomp-item {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.acomp-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.acomp-item-top strong {
+  color: #fff;
+}
+
+.acomp-item-top span {
+  color: #8fa0cb;
+  font-size: 13px;
+}
+
+.acomp-item p {
+  margin: 6px 0 0;
+  color: #dce4ff;
+  line-height: 1.5;
+}
+
+.cliente-placeholder-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #dce4ff;
+  line-height: 1.6;
+}
