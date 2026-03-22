@@ -143,7 +143,9 @@ window.ZALancamentos = (() => {
 
   function renderDiagnostico() {
     document.getElementById("diag-gargalo").value = cliente?.diagnosticoGargalo || "";
+    document.getElementById("diag-perfil").value = cliente?.diagnosticoPerfil || "";
     document.getElementById("diag-triagem").value = cliente?.diagnosticoTriagem || "";
+    document.getElementById("diag-prioridade").value = cliente?.diagnosticoPrioridade || "";
     document.getElementById("diag-leitura").value = cliente?.diagnosticoLeitura || "";
     document.getElementById("diag-sintese").value = cliente?.diagnosticoSintese || "";
     document.getElementById("diag-conduta").value = cliente?.condutaInicial || "";
@@ -189,7 +191,7 @@ window.ZALancamentos = (() => {
       .join("");
   }
 
-  function renderFormAcompanhamento() {
+  function resetFormAcompanhamento() {
     const hoje = new Date();
     document.getElementById("acomp-data").value = formatDateForInput(hoje);
     document.getElementById("acomp-aderencia").value = "";
@@ -206,7 +208,9 @@ window.ZALancamentos = (() => {
     clientes[index] = {
       ...clientes[index],
       diagnosticoGargalo: document.getElementById("diag-gargalo")?.value.trim() || "",
+      diagnosticoPerfil: document.getElementById("diag-perfil")?.value.trim() || "",
       diagnosticoTriagem: document.getElementById("diag-triagem")?.value.trim() || "",
+      diagnosticoPrioridade: document.getElementById("diag-prioridade")?.value.trim() || "",
       diagnosticoLeitura: document.getElementById("diag-leitura")?.value.trim() || "",
       diagnosticoSintese: document.getElementById("diag-sintese")?.value.trim() || "",
       condutaInicial: document.getElementById("diag-conduta")?.value.trim() || "",
@@ -251,7 +255,7 @@ window.ZALancamentos = (() => {
     cliente = clientes[index];
     alert("Acompanhamento salvo.");
     renderAcompanhamentos();
-    renderFormAcompanhamento();
+    resetFormAcompanhamento();
   }
 
   function bindEvents() {
@@ -280,7 +284,7 @@ window.ZALancamentos = (() => {
     renderPre();
     renderDiagnostico();
     renderAcompanhamentos();
-    renderFormAcompanhamento();
+    resetFormAcompanhamento();
     bindEvents();
   }
 
