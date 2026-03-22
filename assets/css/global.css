@@ -3961,3 +3961,116 @@ th{color:var(--muted);font-weight:600}
     grid-template-columns: 1fr;
   }
 }
+
+.lancamentos-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+}
+
+.lancamentos-col-main,
+.lancamentos-col-side {
+  display: grid;
+  gap: 18px;
+}
+
+.acompanhamentos-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.acomp-item {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.acomp-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.acomp-item-top strong {
+  color: #fff;
+}
+
+.acomp-item-top span {
+  color: #8fa0cb;
+  font-size: 13px;
+}
+
+.acomp-item p {
+  margin: 6px 0 0;
+  color: #dce4ff;
+  line-height: 1.5;
+}
+
+.cliente-placeholder-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #dce4ff;
+  line-height: 1.6;
+}
+
+.radar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.radar-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.radar-card-head {
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.radar-values {
+  display: grid;
+  gap: 10px;
+}
+
+.radar-pre span,
+.radar-revisado label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #8fa0cb;
+}
+
+.radar-pre strong {
+  color: #fff;
+  font-size: 18px;
+}
+
+.radar-revisado input {
+  width: 100%;
+}
+
+.radar-movimento { border-left: 4px solid #3b82f6; }
+.radar-alimentacao { border-left: 4px solid #22c55e; }
+.radar-sono { border-left: 4px solid #0ea5e9; }
+.radar-proposito { border-left: 4px solid #eab308; }
+.radar-social { border-left: 4px solid #f97316; }
+.radar-estresse { border-left: 4px solid #ef4444; }
+
+@media (max-width: 900px) {
+  .lancamentos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .radar-grid {
+    grid-template-columns: 1fr;
+  }
+}
