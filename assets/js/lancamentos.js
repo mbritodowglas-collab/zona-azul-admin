@@ -144,6 +144,102 @@ window.ZALancamentos = (() => {
     }
   }
 
+  function renderSessao() {
+    const sessao = cliente?.sessao || {};
+
+    document.getElementById("sessao-data").value = sessao.data || "";
+    document.getElementById("sessao-tipo").value = sessao.tipo || "";
+    document.getElementById("sessao-protocolo").value = sessao.protocolo || "";
+
+    const updatedEl = document.getElementById("sessao-updated");
+    if (updatedEl) {
+      updatedEl.textContent = `Última atualização: ${cliente?.sessaoUpdatedAt ? formatDate(cliente.sessaoUpdatedAt) : "—"}`;
+    }
+  }
+
+  function saveSessao() {
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
+    if (index === -1) return;
+
+    clientes[index] = {
+      ...clientes[index],
+      sessao: {
+        data: document.getElementById("sessao-data")?.value || "",
+        tipo: document.getElementById("sessao-tipo")?.value || "",
+        protocolo: document.getElementById("sessao-protocolo")?.value || "",
+      },
+      sessaoUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    alert("Sessão salva.");
+    renderSessao();
+  }
+
+  function calcularAvaliacao() {
+    const peso = parseFloat(document.getElementById("peso")?.value || "");
+    const altura = parseFloat(document.getElementById("altura")?.value || "");
+    const cintura = parseFloat(document.getElementById("cintura")?.value || "");
+    const quadril = parseFloat(document.getElementById("quadril")?.value || "");
+
+    const imcEl = document.getElementById("imc");
+    const rcqEl = document.getElementById("rcq");
+
+    if (imcEl) {
+      imcEl.value = peso && altura ? (peso / (altura * altura)).toFixed(2) : "";
+    }
+
+    if (rcqEl) {
+      rcqEl.value = cintura && quadril ? (cintura / quadril).toFixed(2) : "";
+    }
+  }
+
+  function renderAvaliacao() {
+    const avaliacao = cliente?.avaliacao || {};
+
+    document.getElementById("peso").value = avaliacao.peso || "";
+    document.getElementById("altura").value = avaliacao.altura || "";
+    document.getElementById("cintura").value = avaliacao.cintura || "";
+    document.getElementById("quadril").value = avaliacao.quadril || "";
+    document.getElementById("imc").value = avaliacao.imc || "";
+    document.getElementById("rcq").value = avaliacao.rcq || "";
+
+    const updatedEl = document.getElementById("avaliacao-updated");
+    if (updatedEl) {
+      updatedEl.textContent = `Última atualização: ${cliente?.avaliacaoUpdatedAt ? formatDate(cliente.avaliacaoUpdatedAt) : "—"}`;
+    }
+  }
+
+  function saveAvaliacao() {
+    calcularAvaliacao();
+
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
+    if (index === -1) return;
+
+    clientes[index] = {
+      ...clientes[index],
+      avaliacao: {
+        peso: document.getElementById("peso")?.value || "",
+        altura: document.getElementById("altura")?.value || "",
+        cintura: document.getElementById("cintura")?.value || "",
+        quadril: document.getElementById("quadril")?.value || "",
+        imc: document.getElementById("imc")?.value || "",
+        rcq: document.getElementById("rcq")?.value || "",
+      },
+      avaliacaoUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    alert("Avaliação salva.");
+    renderAvaliacao();
+  }
+
   function renderRadar() {
     const pre = getPreDataFromCliente(cliente);
     const radarPre = getRadarData(pre);
@@ -207,6 +303,30 @@ window.ZALancamentos = (() => {
     }
   }
 
+  function saveDiagnostico() {
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
+    if (index === -1) return;
+
+    clientes[index] = {
+      ...clientes[index],
+      diagnosticoGargalo: document.getElementById("diag-gargalo")?.value.trim() || "",
+      diagnosticoPerfil: document.getElementById("diag-perfil")?.value.trim() || "",
+      diagnosticoTriagem: document.getElementById("diag-triagem")?.value.trim() || "",
+      diagnosticoPrioridade: document.getElementById("diag-prioridade")?.value.trim() || "",
+      diagnosticoLeitura: document.getElementById("diag-leitura")?.value.trim() || "",
+      diagnosticoSintese: document.getElementById("diag-sintese")?.value.trim() || "",
+      condutaInicial: document.getElementById("diag-conduta")?.value.trim() || "",
+      diagnosticoUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    alert("Diagnóstico salvo.");
+    renderDiagnostico();
+  }
+
   function renderAcompanhamentos() {
     const lista = document.getElementById("acompanhamentos-lista");
     if (!lista) return;
@@ -251,30 +371,6 @@ window.ZALancamentos = (() => {
     document.getElementById("acomp-ajustes").value = "";
   }
 
-  function saveDiagnostico() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
-    clientes[index] = {
-      ...clientes[index],
-      diagnosticoGargalo: document.getElementById("diag-gargalo")?.value.trim() || "",
-      diagnosticoPerfil: document.getElementById("diag-perfil")?.value.trim() || "",
-      diagnosticoTriagem: document.getElementById("diag-triagem")?.value.trim() || "",
-      diagnosticoPrioridade: document.getElementById("diag-prioridade")?.value.trim() || "",
-      diagnosticoLeitura: document.getElementById("diag-leitura")?.value.trim() || "",
-      diagnosticoSintese: document.getElementById("diag-sintese")?.value.trim() || "",
-      condutaInicial: document.getElementById("diag-conduta")?.value.trim() || "",
-      diagnosticoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setClientes(clientes);
-    cliente = clientes[index];
-    alert("Diagnóstico salvo.");
-    renderDiagnostico();
-  }
-
   function saveAcompanhamento() {
     const clientes = getClientes();
     const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
@@ -310,6 +406,9 @@ window.ZALancamentos = (() => {
   }
 
   function bindEvents() {
+    document.getElementById("salvar-sessao-btn")?.addEventListener("click", saveSessao);
+    document.getElementById("calcular-btn")?.addEventListener("click", calcularAvaliacao);
+    document.getElementById("salvar-avaliacao-btn")?.addEventListener("click", saveAvaliacao);
     document.getElementById("salvar-radar-btn")?.addEventListener("click", saveRadar);
     document.getElementById("salvar-diagnostico-btn")?.addEventListener("click", saveDiagnostico);
     document.getElementById("salvar-acompanhamento-btn")?.addEventListener("click", saveAcompanhamento);
@@ -334,6 +433,8 @@ window.ZALancamentos = (() => {
 
     renderCabecalho();
     renderPre();
+    renderSessao();
+    renderAvaliacao();
     renderRadar();
     renderDiagnostico();
     renderAcompanhamentos();
