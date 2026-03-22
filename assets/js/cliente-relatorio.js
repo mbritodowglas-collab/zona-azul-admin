@@ -1,4 +1,4 @@
-window.ZARelatorio = (() => {
+window.ZAClienteRelatorio = (() => {
   let clienteId = null;
   let cliente = null;
 
@@ -199,5 +199,5 @@ window.ZARelatorio = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
-  window.ZARelatorio.init();
+  window.ZAClienteRelatorio.init();
 });
