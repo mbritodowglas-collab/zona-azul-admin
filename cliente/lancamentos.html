@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lançamentos | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=31" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul</h1>
+          <p>Lançamentos do cliente</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome-topo">Lançamentos</h2>
+          <p id="cliente-subtitulo">Registro técnico do caso.</p>
+        </div>
+
+        <div class="cliente-topo-acoes">
+          <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+        </div>
+      </div>
+
+      <div id="cliente-not-found" class="card hidden">
+        <div class="card-body">
+          <div class="empty-state">Cliente não encontrado.</div>
+        </div>
+      </div>
+
+      <div id="lancamentos-page">
+        <section class="card cliente-hero-card">
+          <div class="card-body cliente-hero">
+            <div class="cliente-hero-left">
+              <div class="cliente-avatar" id="cliente-avatar">C</div>
+              <div>
+                <h3 id="cliente-nome">Cliente</h3>
+                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BASE DO PRÉ -->
+        <section class="card">
+          <div class="card-header">
+            <h3>Base do pré-diagnóstico</h3>
+          </div>
+          <div class="card-body">
+            <div class="cliente-mini-grid">
+              <div class="cliente-mini-item">
+                <span>Nome</span>
+                <strong id="pre-nome-view">—</strong>
+              </div>
+              <div class="cliente-mini-item">
+                <span>E-mail</span>
+                <strong id="pre-email-view">—</strong>
+              </div>
+              <div class="cliente-mini-item">
+                <span>Telefone</span>
+                <strong id="pre-telefone-view">—</strong>
+              </div>
+            </div>
+
+            <div class="grid cols-2" style="margin-top:16px;">
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Objetivo inicial</label>
+                <textarea id="pre-objetivo" readonly></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Resumo do pré-diagnóstico</label>
+                <textarea id="pre-resumo" readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DIAGNÓSTICO -->
+        <section class="card">
+          <div class="card-header">
+            <h3>Diagnóstico completo</h3>
+          </div>
+          <div class="card-body">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="diag-gargalo">Gargalo principal</label>
+                <input id="diag-gargalo" type="text" placeholder="Ex.: rotina, sono, ambiente..." />
+              </div>
+
+              <div class="field">
+                <label for="diag-triagem">Triagem física</label>
+                <input id="diag-triagem" type="text" placeholder="Ex.: iniciante, dor lombar, baixa capacidade..." />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="diag-leitura">Leitura do caso</label>
+                <textarea id="diag-leitura" placeholder="Descreva a leitura técnica do caso..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="diag-sintese">Síntese diagnóstica</label>
+                <textarea id="diag-sintese" placeholder="Síntese consolidada do diagnóstico..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="diag-conduta">Conduta inicial</label>
+                <textarea id="diag-conduta" placeholder="Direcionamento inicial do caso..."></textarea>
+              </div>
+            </div>
+
+            <div class="cliente-section-actions">
+              <span class="cliente-hub-updated" id="diag-updated">Última atualização: —</span>
+              <button class="cliente-btn cliente-btn-abrir" id="salvar-diagnostico-btn">Salvar diagnóstico</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ACOMPANHAMENTO -->
+        <section class="card">
+          <div class="card-header">
+            <h3>Acompanhamento</h3>
+          </div>
+          <div class="card-body">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="acomp-data">Data</label>
+                <input id="acomp-data" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="acomp-aderencia">Aderência</label>
+                <input id="acomp-aderencia" type="text" placeholder="Ex.: alta, média, baixa" />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="acomp-evolucao">Evolução</label>
+                <textarea id="acomp-evolucao" placeholder="Descreva a evolução percebida..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="acomp-dificuldades">Dificuldades</label>
+                <textarea id="acomp-dificuldades" placeholder="Descreva as dificuldades atuais..."></textarea>
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="acomp-ajustes">Ajustes realizados</label>
+                <textarea id="acomp-ajustes" placeholder="Descreva ajustes de rota e decisões..."></textarea>
+              </div>
+            </div>
+
+            <div class="cliente-section-actions">
+              <span class="cliente-hub-updated" id="acomp-updated">Última atualização: —</span>
+              <button class="cliente-btn cliente-btn-abrir" id="salvar-acompanhamento-btn">Salvar acompanhamento</button>
+            </div>
+
+            <div class="cliente-expand-divider"></div>
+
+            <h4 style="margin:0 0 12px;">Histórico</h4>
+            <div id="acompanhamentos-lista" class="acompanhamentos-lista"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/storage.js?v=31"></script>
+  <script src="../assets/js/lancamentos.js?v=31"></script>
+</body>
+</html>
