@@ -2,6 +2,15 @@ window.ZALancamentos = (() => {
   let clienteId = null;
   let cliente = null;
 
+  const RADAR_KEYS = [
+    "movimento",
+    "alimentacao",
+    "sono",
+    "proposito",
+    "social",
+    "estresse"
+  ];
+
   function getQueryParam(name) {
     const url = new URL(window.location.href);
     return url.searchParams.get(name);
@@ -73,19 +82,13 @@ window.ZALancamentos = (() => {
     return null;
   }
 
+  function getRadarData(pre) {
+    return pre?.radar || pre?.radarInicial || pre?.scores || pre?.pilares || {};
+  }
+
   function getRadarResumo(pre) {
-    if (!pre) return "Sem radar disponível.";
-
-    const radar =
-      pre.radar ||
-      pre.radarInicial ||
-      pre.scores ||
-      pre.pilares ||
-      null;
-
-    if (!radar || typeof radar !== "object") {
-      return "Sem radar disponível.";
-    }
+    const radar = getRadarData(pre);
+    if (!radar || typeof radar !== "object") return "Sem radar disponível.";
 
     const entries = Object.entries(radar)
       .filter(([, value]) => value !== null && value !== undefined && value !== "")
@@ -139,6 +142,54 @@ window.ZALancamentos = (() => {
 
       resumoEl.value = `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`;
     }
+  }
+
+  function renderRadar() {
+    const pre = getPreDataFromCliente(cliente);
+    const radarPre = getRadarData(pre);
+    const radarRevisado = cliente?.radarRevisado || {};
+
+    RADAR_KEYS.forEach((key) => {
+      setText(`radar-pre-${key}`, radarPre?.[key] ?? "—");
+
+      const input = document.getElementById(`radar-revisado-${key}`);
+      if (input) {
+        input.value =
+          radarRevisado?.[key] !== undefined && radarRevisado?.[key] !== null
+            ? radarRevisado[key]
+            : "";
+      }
+    });
+
+    const updatedEl = document.getElementById("radar-updated");
+    if (updatedEl) {
+      updatedEl.textContent = `Última atualização: ${cliente?.radarRevisadoUpdatedAt ? formatDate(cliente.radarRevisadoUpdatedAt) : "—"}`;
+    }
+  }
+
+  function saveRadar() {
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
+    if (index === -1) return;
+
+    const radarRevisado = {};
+
+    RADAR_KEYS.forEach((key) => {
+      const raw = document.getElementById(`radar-revisado-${key}`)?.value;
+      radarRevisado[key] = raw === "" ? null : Number(raw);
+    });
+
+    clientes[index] = {
+      ...clientes[index],
+      radarRevisado,
+      radarRevisadoUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    alert("Radar revisado salvo.");
+    renderRadar();
   }
 
   function renderDiagnostico() {
@@ -259,6 +310,7 @@ window.ZALancamentos = (() => {
   }
 
   function bindEvents() {
+    document.getElementById("salvar-radar-btn")?.addEventListener("click", saveRadar);
     document.getElementById("salvar-diagnostico-btn")?.addEventListener("click", saveDiagnostico);
     document.getElementById("salvar-acompanhamento-btn")?.addEventListener("click", saveAcompanhamento);
   }
@@ -282,6 +334,7 @@ window.ZALancamentos = (() => {
 
     renderCabecalho();
     renderPre();
+    renderRadar();
     renderDiagnostico();
     renderAcompanhamentos();
     resetFormAcompanhamento();
