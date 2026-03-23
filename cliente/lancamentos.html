@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=43" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=44" />
 </head>
 <body>
   <div class="app-shell">
@@ -63,25 +63,30 @@
                 <h3>Base do pré-diagnóstico</h3>
               </div>
               <div class="card-body">
-                <div class="cliente-mini-grid">
-                  <div class="cliente-mini-item">
-                    <span>Nome</span>
-                    <strong id="pre-nome-view">—</strong>
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="pre-nome-edit">Nome</label>
+                    <input id="pre-nome-edit" type="text" />
                   </div>
-                  <div class="cliente-mini-item">
-                    <span>E-mail</span>
-                    <strong id="pre-email-view">—</strong>
-                  </div>
-                  <div class="cliente-mini-item">
-                    <span>Telefone</span>
-                    <strong id="pre-telefone-view">—</strong>
-                  </div>
-                </div>
 
-                <div class="grid cols-2" style="margin-top:16px;">
+                  <div class="field">
+                    <label for="pre-email-edit">E-mail</label>
+                    <input id="pre-email-edit" type="email" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-telefone-edit">Telefone</label>
+                    <input id="pre-telefone-edit" type="text" />
+                  </div>
+
                   <div class="field">
                     <label for="pre-sexo-ref">Sexo para cálculo / referência</label>
                     <input id="pre-sexo-ref" type="text" placeholder="Ex.: masculino / feminino" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-nascimento">Data de nascimento</label>
+                    <input id="pre-nascimento" type="date" />
                   </div>
 
                   <div class="field">
@@ -91,12 +96,12 @@
 
                   <div class="field" style="grid-column: 1 / -1;">
                     <label for="pre-objetivo">Objetivo inicial</label>
-                    <textarea id="pre-objetivo" readonly></textarea>
+                    <textarea id="pre-objetivo"></textarea>
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
                     <label for="pre-resumo">Resumo do pré-diagnóstico</label>
-                    <textarea id="pre-resumo" readonly></textarea>
+                    <textarea id="pre-resumo"></textarea>
                   </div>
                 </div>
 
@@ -560,7 +565,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=43"></script>
-  <script src="../assets/js/lancamentos.js?v=43"></script>
+  <script src="../assets/js/storage.js?v=44"></script>
+  <script src="../assets/js/lancamentos.js?v=44"></script>
 </body>
 </html>
