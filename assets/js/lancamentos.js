@@ -39,11 +39,16 @@ window.ZALancamentos = (() => {
     if (el) el.textContent = value || "—";
   }
 
+  function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value || "";
+  }
+
   function formatDate(dateValue) {
     if (!dateValue) return "—";
     try {
       return new Date(dateValue).toLocaleDateString("pt-BR");
-    } catch (error) {
+    } catch {
       return dateValue;
     }
   }
@@ -97,6 +102,37 @@ window.ZALancamentos = (() => {
     return entries.length ? entries.join(" | ") : "Sem radar disponível.";
   }
 
+  function calculateAgeFromDate(dateStr) {
+    if (!dateStr) return "";
+    const birth = new Date(dateStr);
+    if (Number.isNaN(birth.getTime())) return "";
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age >= 0 ? String(age) : "";
+  }
+
+  function getReferenceSex(pre) {
+    return (
+      pre?.sexo ||
+      pre?.genero ||
+      pre?.sex ||
+      pre?.gender ||
+      ""
+    ).toString().toLowerCase();
+  }
+
+  function getReferenceAge(pre) {
+    return (
+      pre?.idade ||
+      pre?.age ||
+      calculateAgeFromDate(pre?.dataNascimento || pre?.nascimento || pre?.birthDate || "")
+    );
+  }
+
   function renderCabecalho() {
     setText("cliente-nome-topo", cliente?.nome || "Lançamentos");
     setText("cliente-subtitulo", "Registro técnico do caso.");
@@ -120,60 +156,53 @@ window.ZALancamentos = (() => {
     setText("pre-email-view", pre?.email || cliente?.email || "—");
     setText("pre-telefone-view", pre?.telefone || cliente?.telefone || "—");
 
-    const sexo = pre?.sexo || pre?.genero || "";
-    const genero = pre?.genero || pre?.sexo || "";
+    setValue("pre-sexo", pre?.sexo || pre?.genero || "");
+    setValue("pre-genero", pre?.genero || pre?.sexo || "");
+    setValue("pre-idade", getReferenceAge(pre));
 
-    document.getElementById("pre-sexo").value = sexo;
-    document.getElementById("pre-genero").value = genero;
+    setValue(
+      "pre-objetivo",
+      pre?.objetivo ||
+      pre?.objetivo_principal ||
+      cliente?.objetivo ||
+      cliente?.objetivo_principal ||
+      ""
+    );
 
-    const objetivoEl = document.getElementById("pre-objetivo");
-    const resumoEl = document.getElementById("pre-resumo");
+    const resumoBase =
+      pre?.resumoPrediagnostico ||
+      pre?.resumo_pre_diagnostico ||
+      pre?.rotina ||
+      pre?.maior_dificuldade ||
+      "Sem resumo registrado no momento.";
 
-    if (objetivoEl) {
-      objetivoEl.value =
-        pre?.objetivo ||
-        pre?.objetivo_principal ||
-        cliente?.objetivo ||
-        cliente?.objetivo_principal ||
-        "";
-    }
-
-    if (resumoEl) {
-      const resumoBase =
-        pre?.resumoPrediagnostico ||
-        pre?.resumo_pre_diagnostico ||
-        pre?.rotina ||
-        pre?.maior_dificuldade ||
-        "Sem resumo registrado no momento.";
-
-      resumoEl.value = `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`;
-    }
+    setValue("pre-resumo", `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`);
   }
 
   function applyProtocolVisibility() {
-    const tipoEl = document.getElementById("sessao-tipo");
+    const tipo = document.getElementById("sessao-tipo")?.value || "";
     const protocoloEl = document.getElementById("sessao-protocolo");
+    const protocolo = protocoloEl?.value || "";
+
     const blocoPresencial = document.getElementById("bloco-presencial");
     const blocoAvancado = document.getElementById("bloco-avancado");
     const regraTexto = document.getElementById("sessao-regra-texto");
     const fieldAbdomenMarinha = document.getElementById("field-abdomen-marinha");
     const fieldGorduraMarinha = document.getElementById("field-gordura-marinha");
-
-    if (!tipoEl || !protocoloEl || !blocoPresencial || !blocoAvancado) return;
-
-    const tipo = tipoEl.value;
-    let protocolo = protocoloEl.value;
+    const fieldGorduraDobras = document.getElementById("field-gordura-dobras");
 
     if (tipo === "online") {
-      protocolo = "essencial";
-      protocoloEl.value = "essencial";
-      protocoloEl.disabled = true;
+      if (protocoloEl) {
+        protocoloEl.value = "essencial";
+        protocoloEl.disabled = true;
+      }
 
-      blocoPresencial.classList.add("hidden");
-      blocoAvancado.classList.add("hidden");
+      blocoPresencial?.classList.add("hidden");
+      blocoAvancado?.classList.add("hidden");
 
       fieldAbdomenMarinha?.classList.remove("hidden");
       fieldGorduraMarinha?.classList.remove("hidden");
+      fieldGorduraDobras?.classList.add("hidden");
 
       if (regraTexto) {
         regraTexto.textContent = "Online usa Marinha Americana + IMC + RCQ + RCE.";
@@ -181,32 +210,41 @@ window.ZALancamentos = (() => {
       return;
     }
 
-    protocoloEl.disabled = false;
+    if (protocoloEl) protocoloEl.disabled = false;
 
-    if (tipo === "presencial") {
-      blocoPresencial.classList.remove("hidden");
-      fieldAbdomenMarinha?.classList.add("hidden");
-      fieldGorduraMarinha?.classList.add("hidden");
+    if (tipo === "presencial" && protocolo === "essencial") {
+      blocoPresencial?.classList.remove("hidden");
+      blocoAvancado?.classList.add("hidden");
 
-      if (protocolo === "avancado") {
-        blocoAvancado.classList.remove("hidden");
-        if (regraTexto) {
-          regraTexto.textContent = "Presencial avançado usa perimetria completa + dobras + testes.";
-        }
-      } else {
-        blocoAvancado.classList.add("hidden");
-        if (regraTexto) {
-          regraTexto.textContent = "Presencial essencial usa perimetria completa + testes, sem dobras.";
-        }
+      fieldAbdomenMarinha?.classList.remove("hidden");
+      fieldGorduraMarinha?.classList.remove("hidden");
+      fieldGorduraDobras?.classList.add("hidden");
+
+      if (regraTexto) {
+        regraTexto.textContent = "Presencial essencial usa Marinha + perimetria + testes, sem dobras.";
       }
       return;
     }
 
-    protocoloEl.disabled = false;
-    blocoPresencial.classList.add("hidden");
-    blocoAvancado.classList.add("hidden");
+    if (tipo === "presencial" && protocolo === "avancado") {
+      blocoPresencial?.classList.remove("hidden");
+      blocoAvancado?.classList.remove("hidden");
+
+      fieldAbdomenMarinha?.classList.add("hidden");
+      fieldGorduraMarinha?.classList.add("hidden");
+      fieldGorduraDobras?.classList.remove("hidden");
+
+      if (regraTexto) {
+        regraTexto.textContent = "Presencial avançado usa dobras + perimetria + testes.";
+      }
+      return;
+    }
+
+    blocoPresencial?.classList.add("hidden");
+    blocoAvancado?.classList.add("hidden");
     fieldAbdomenMarinha?.classList.remove("hidden");
     fieldGorduraMarinha?.classList.remove("hidden");
+    fieldGorduraDobras?.classList.add("hidden");
 
     if (regraTexto) {
       regraTexto.textContent = "Selecione o tipo da sessão para liberar o protocolo.";
@@ -216,9 +254,9 @@ window.ZALancamentos = (() => {
   function renderSessao() {
     const sessao = cliente?.sessao || {};
 
-    document.getElementById("sessao-data").value = sessao.data || "";
-    document.getElementById("sessao-tipo").value = sessao.tipo || "";
-    document.getElementById("sessao-protocolo").value = sessao.protocolo || "";
+    setValue("sessao-data", sessao.data || "");
+    setValue("sessao-tipo", sessao.tipo || "");
+    setValue("sessao-protocolo", sessao.protocolo || "");
 
     applyProtocolVisibility();
 
@@ -242,20 +280,72 @@ window.ZALancamentos = (() => {
       sessao: {
         data: document.getElementById("sessao-data")?.value || "",
         tipo,
-        protocolo: protocoloFinal,
+        protocolo: protocoloFinal
       },
       sessaoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     setClientes(clientes);
     cliente = clientes[index];
-    applyProtocolVisibility();
-    alert("Sessão salva.");
     renderSessao();
+    alert("Sessão salva.");
+  }
+
+  function calculateMarineBodyFat(heightM, neckCm, waistCm, hipCm, sexRef) {
+    const heightCm = heightM * 100;
+    if (!heightCm || !neckCm || !waistCm) return "";
+
+    if (sexRef.includes("f")) {
+      if (!hipCm) return "";
+      const v =
+        163.205 * Math.log10(waistCm + hipCm - neckCm) -
+        97.684 * Math.log10(heightCm) -
+        78.387;
+      return Number.isFinite(v) ? v.toFixed(2) : "";
+    }
+
+    const diff = waistCm - neckCm;
+    if (diff <= 0) return "";
+    const v =
+      86.01 * Math.log10(diff) -
+      70.041 * Math.log10(heightCm) +
+      36.76;
+    return Number.isFinite(v) ? v.toFixed(2) : "";
+  }
+
+  function calculateDobrasBodyFat(sumDobras, age, sexRef) {
+    if (!sumDobras || !age) return "";
+
+    const ageNum = Number(age);
+    if (!Number.isFinite(ageNum) || ageNum <= 0) return "";
+
+    let densidade = null;
+
+    if (sexRef.includes("f")) {
+      densidade =
+        1.0970 -
+        0.00046971 * sumDobras +
+        0.00000056 * Math.pow(sumDobras, 2) -
+        0.00012828 * ageNum;
+    } else {
+      densidade =
+        1.112 -
+        0.00043499 * sumDobras +
+        0.00000055 * Math.pow(sumDobras, 2) -
+        0.00028826 * ageNum;
+    }
+
+    if (!Number.isFinite(densidade) || densidade <= 0) return "";
+
+    const gordura = (495 / densidade) - 450;
+    return Number.isFinite(gordura) ? gordura.toFixed(2) : "";
   }
 
   function calcularAvaliacao() {
+    const tipo = document.getElementById("sessao-tipo")?.value || "";
+    const protocolo = document.getElementById("sessao-protocolo")?.value || "";
+
     const peso = parseFloat(document.getElementById("peso")?.value || "");
     const altura = parseFloat(document.getElementById("altura")?.value || "");
     const cintura = parseFloat(document.getElementById("cintura")?.value || "");
@@ -263,57 +353,41 @@ window.ZALancamentos = (() => {
     const pescoco = parseFloat(document.getElementById("pescoco")?.value || "");
     const abdomenMarinha = parseFloat(document.getElementById("abdomen-marinha")?.value || "");
 
-    const tipoSessao = document.getElementById("sessao-tipo")?.value || "";
+    const pre = getPreDataFromCliente(cliente);
+    const sexoRef = getReferenceSex(pre);
+    const idadeRef = getReferenceAge(pre);
 
-    const sexoRef =
-      (document.getElementById("pre-sexo")?.value || document.getElementById("pre-genero")?.value || "")
-        .toLowerCase();
-
-    const imcEl = document.getElementById("imc");
-    const rcqEl = document.getElementById("rcq");
-    const rceEl = document.getElementById("rce");
-    const gorduraEl = document.getElementById("gordura-marinha");
-
-    if (imcEl) {
-      imcEl.value = peso && altura ? (peso / (altura * altura)).toFixed(2) : "";
+    if (peso && altura) {
+      setValue("imc", (peso / (altura * altura)).toFixed(2));
+    } else {
+      setValue("imc", "");
     }
 
-    if (rcqEl) {
-      rcqEl.value = cintura && quadril ? (cintura / quadril).toFixed(2) : "";
+    if (cintura && quadril) {
+      setValue("rcq", (cintura / quadril).toFixed(2));
+    } else {
+      setValue("rcq", "");
     }
 
-    if (rceEl) {
-      const alturaCm = altura ? altura * 100 : 0;
-      rceEl.value = cintura && alturaCm ? (cintura / alturaCm).toFixed(2) : "";
+    if (cintura && altura) {
+      setValue("rce", (cintura / (altura * 100)).toFixed(2));
+    } else {
+      setValue("rce", "");
     }
 
-    if (gorduraEl) {
-      let gordura = "";
+    const usaMarinha =
+      tipo === "online" || (tipo === "presencial" && protocolo === "essencial");
 
-      if (tipoSessao === "online" && altura && pescoco && abdomenMarinha) {
-        const alturaCm = altura * 100;
-
-        if (sexoRef.includes("f")) {
-          if (quadril) {
-            const valor =
-              163.205 * Math.log10(abdomenMarinha + quadril - pescoco) -
-              97.684 * Math.log10(alturaCm) -
-              78.387;
-            if (Number.isFinite(valor)) gordura = valor.toFixed(2);
-          }
-        } else {
-          const valor =
-            86.01 * Math.log10(abdomenMarinha - pescoco) -
-            70.041 * Math.log10(alturaCm) +
-            36.76;
-          if (Number.isFinite(valor)) gordura = valor.toFixed(2);
-        }
-      }
-
-      gorduraEl.value = gordura;
+    if (usaMarinha) {
+      setValue(
+        "gordura-marinha",
+        calculateMarineBodyFat(altura, pescoco, abdomenMarinha || cintura, quadril, sexoRef)
+      );
+    } else {
+      setValue("gordura-marinha", "");
     }
 
-    const dobras = [
+    const idsDobras = [
       "dobra-peitoral",
       "dobra-axilar",
       "dobra-triceps",
@@ -323,54 +397,31 @@ window.ZALancamentos = (() => {
       "dobra-coxa"
     ];
 
-    const soma = dobras.reduce((acc, id) => {
+    const somaDobras = idsDobras.reduce((acc, id) => {
       const n = parseFloat(document.getElementById(id)?.value || "");
       return acc + (Number.isFinite(n) ? n : 0);
     }, 0);
 
-    const somaEl = document.getElementById("dobras-soma");
-    if (somaEl) {
-      somaEl.value = soma > 0 ? soma.toFixed(1) : "";
+    setValue("dobras-soma", somaDobras > 0 ? somaDobras.toFixed(1) : "");
+
+    if (tipo === "presencial" && protocolo === "avancado") {
+      setValue("gordura-dobras", calculateDobrasBodyFat(somaDobras, idadeRef, sexoRef));
+    } else {
+      setValue("gordura-dobras", "");
     }
   }
 
   function renderAvaliacao() {
-    const avaliacao = cliente?.avaliacao || {};
+    const a = cliente?.avaliacao || {};
 
-    document.getElementById("peso").value = avaliacao.peso || "";
-    document.getElementById("altura").value = avaliacao.altura || "";
-    document.getElementById("cintura").value = avaliacao.cintura || "";
-    document.getElementById("quadril").value = avaliacao.quadril || "";
-    document.getElementById("pescoco").value = avaliacao.pescoco || "";
-    document.getElementById("abdomen-marinha").value = avaliacao.abdomenMarinha || "";
-    document.getElementById("imc").value = avaliacao.imc || "";
-    document.getElementById("rcq").value = avaliacao.rcq || "";
-    document.getElementById("rce").value = avaliacao.rce || "";
-    document.getElementById("gordura-marinha").value = avaliacao.gorduraMarinha || "";
-
-    document.getElementById("torax").value = avaliacao.torax || "";
-    document.getElementById("abdomen").value = avaliacao.abdomen || "";
-    document.getElementById("braco-direito").value = avaliacao.bracoDireito || "";
-    document.getElementById("braco-esquerdo").value = avaliacao.bracoEsquerdo || "";
-    document.getElementById("coxa-direita").value = avaliacao.coxaDireita || "";
-    document.getElementById("coxa-esquerda").value = avaliacao.coxaEsquerda || "";
-    document.getElementById("panturrilha").value = avaliacao.panturrilha || "";
-
-    document.getElementById("dobra-peitoral").value = avaliacao.dobraPeitoral || "";
-    document.getElementById("dobra-axilar").value = avaliacao.dobraAxilar || "";
-    document.getElementById("dobra-triceps").value = avaliacao.dobraTriceps || "";
-    document.getElementById("dobra-subescapular").value = avaliacao.dobraSubescapular || "";
-    document.getElementById("dobra-abdominal").value = avaliacao.dobraAbdominal || "";
-    document.getElementById("dobra-suprailiaca").value = avaliacao.dobraSuprailiaca || "";
-    document.getElementById("dobra-coxa").value = avaliacao.dobraCoxa || "";
-    document.getElementById("dobras-soma").value = avaliacao.dobrasSoma || "";
-
-    document.getElementById("teste-overhead").value = avaliacao.testeOverhead || "";
-    document.getElementById("teste-thomas").value = avaliacao.testeThomas || "";
-    document.getElementById("teste-sentar-alcancar").value = avaliacao.testeSentarAlcancar || "";
-    document.getElementById("teste-step-fc").value = avaliacao.testeStepFc || "";
-    document.getElementById("teste-step-borg").value = avaliacao.testeStepBorg || "";
-    document.getElementById("teste-step-classificacao").value = avaliacao.testeStepClassificacao || "";
+    [
+      "peso","altura","cintura","quadril","pescoco","abdomen-marinha","imc","rcq","rce",
+      "gordura-marinha","gordura-dobras","torax","abdomen","braco-direito","braco-esquerdo",
+      "coxa-direita","coxa-esquerda","panturrilha","dobra-peitoral","dobra-axilar",
+      "dobra-triceps","dobra-subescapular","dobra-abdominal","dobra-suprailiaca",
+      "dobra-coxa","dobras-soma","teste-overhead","teste-thomas","teste-sentar-alcancar",
+      "teste-step-fc","teste-step-borg","teste-step-classificacao"
+    ].forEach((id) => setValue(id, a[id] || ""));
 
     const updatedEl = document.getElementById("avaliacao-updated");
     if (updatedEl) {
@@ -385,52 +436,31 @@ window.ZALancamentos = (() => {
     const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
+    const ids = [
+      "peso","altura","cintura","quadril","pescoco","abdomen-marinha","imc","rcq","rce",
+      "gordura-marinha","gordura-dobras","torax","abdomen","braco-direito","braco-esquerdo",
+      "coxa-direita","coxa-esquerda","panturrilha","dobra-peitoral","dobra-axilar",
+      "dobra-triceps","dobra-subescapular","dobra-abdominal","dobra-suprailiaca",
+      "dobra-coxa","dobras-soma","teste-overhead","teste-thomas","teste-sentar-alcancar",
+      "teste-step-fc","teste-step-borg","teste-step-classificacao"
+    ];
+
+    const avaliacao = {};
+    ids.forEach((id) => {
+      avaliacao[id] = document.getElementById(id)?.value || "";
+    });
+
     clientes[index] = {
       ...clientes[index],
-      avaliacao: {
-        peso: document.getElementById("peso")?.value || "",
-        altura: document.getElementById("altura")?.value || "",
-        cintura: document.getElementById("cintura")?.value || "",
-        quadril: document.getElementById("quadril")?.value || "",
-        pescoco: document.getElementById("pescoco")?.value || "",
-        abdomenMarinha: document.getElementById("abdomen-marinha")?.value || "",
-        imc: document.getElementById("imc")?.value || "",
-        rcq: document.getElementById("rcq")?.value || "",
-        rce: document.getElementById("rce")?.value || "",
-        gorduraMarinha: document.getElementById("gordura-marinha")?.value || "",
-
-        torax: document.getElementById("torax")?.value || "",
-        abdomen: document.getElementById("abdomen")?.value || "",
-        bracoDireito: document.getElementById("braco-direito")?.value || "",
-        bracoEsquerdo: document.getElementById("braco-esquerdo")?.value || "",
-        coxaDireita: document.getElementById("coxa-direita")?.value || "",
-        coxaEsquerda: document.getElementById("coxa-esquerda")?.value || "",
-        panturrilha: document.getElementById("panturrilha")?.value || "",
-
-        dobraPeitoral: document.getElementById("dobra-peitoral")?.value || "",
-        dobraAxilar: document.getElementById("dobra-axilar")?.value || "",
-        dobraTriceps: document.getElementById("dobra-triceps")?.value || "",
-        dobraSubescapular: document.getElementById("dobra-subescapular")?.value || "",
-        dobraAbdominal: document.getElementById("dobra-abdominal")?.value || "",
-        dobraSuprailiaca: document.getElementById("dobra-suprailiaca")?.value || "",
-        dobraCoxa: document.getElementById("dobra-coxa")?.value || "",
-        dobrasSoma: document.getElementById("dobras-soma")?.value || "",
-
-        testeOverhead: document.getElementById("teste-overhead")?.value || "",
-        testeThomas: document.getElementById("teste-thomas")?.value || "",
-        testeSentarAlcancar: document.getElementById("teste-sentar-alcancar")?.value || "",
-        testeStepFc: document.getElementById("teste-step-fc")?.value || "",
-        testeStepBorg: document.getElementById("teste-step-borg")?.value || "",
-        testeStepClassificacao: document.getElementById("teste-step-classificacao")?.value || "",
-      },
+      avaliacao,
       avaliacaoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     setClientes(clientes);
     cliente = clientes[index];
-    alert("Avaliação salva.");
     renderAvaliacao();
+    alert("Avaliação salva.");
   }
 
   function renderRadar() {
@@ -440,14 +470,7 @@ window.ZALancamentos = (() => {
 
     RADAR_KEYS.forEach((key) => {
       setText(`radar-pre-${key}`, radarPre?.[key] ?? "—");
-
-      const input = document.getElementById(`radar-revisado-${key}`);
-      if (input) {
-        input.value =
-          radarRevisado?.[key] !== undefined && radarRevisado?.[key] !== null
-            ? radarRevisado[key]
-            : "";
-      }
+      setValue(`radar-revisado-${key}`, radarRevisado?.[key] ?? "");
     });
 
     const updatedEl = document.getElementById("radar-updated");
@@ -462,7 +485,6 @@ window.ZALancamentos = (() => {
     if (index === -1) return;
 
     const radarRevisado = {};
-
     RADAR_KEYS.forEach((key) => {
       const raw = document.getElementById(`radar-revisado-${key}`)?.value;
       radarRevisado[key] = raw === "" ? null : Number(raw);
@@ -472,23 +494,23 @@ window.ZALancamentos = (() => {
       ...clientes[index],
       radarRevisado,
       radarRevisadoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     setClientes(clientes);
     cliente = clientes[index];
-    alert("Radar revisado salvo.");
     renderRadar();
+    alert("Radar revisado salvo.");
   }
 
   function renderDiagnostico() {
-    document.getElementById("diag-gargalo").value = cliente?.diagnosticoGargalo || "";
-    document.getElementById("diag-perfil").value = cliente?.diagnosticoPerfil || "";
-    document.getElementById("diag-triagem").value = cliente?.diagnosticoTriagem || "";
-    document.getElementById("diag-prioridade").value = cliente?.diagnosticoPrioridade || "";
-    document.getElementById("diag-leitura").value = cliente?.diagnosticoLeitura || "";
-    document.getElementById("diag-sintese").value = cliente?.diagnosticoSintese || "";
-    document.getElementById("diag-conduta").value = cliente?.condutaInicial || "";
+    setValue("diag-gargalo", cliente?.diagnosticoGargalo || "");
+    setValue("diag-perfil", cliente?.diagnosticoPerfil || "");
+    setValue("diag-triagem", cliente?.diagnosticoTriagem || "");
+    setValue("diag-prioridade", cliente?.diagnosticoPrioridade || "");
+    setValue("diag-leitura", cliente?.diagnosticoLeitura || "");
+    setValue("diag-sintese", cliente?.diagnosticoSintese || "");
+    setValue("diag-conduta", cliente?.condutaInicial || "");
 
     const updatedEl = document.getElementById("diag-updated");
     if (updatedEl) {
@@ -511,13 +533,13 @@ window.ZALancamentos = (() => {
       diagnosticoSintese: document.getElementById("diag-sintese")?.value.trim() || "",
       condutaInicial: document.getElementById("diag-conduta")?.value.trim() || "",
       diagnosticoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     setClientes(clientes);
     cliente = clientes[index];
-    alert("Diagnóstico salvo.");
     renderDiagnostico();
+    alert("Diagnóstico salvo.");
   }
 
   function renderAcompanhamentos() {
@@ -539,29 +561,26 @@ window.ZALancamentos = (() => {
     lista.innerHTML = acompanhamentos
       .slice()
       .reverse()
-      .map((item) => {
-        return `
-          <div class="acomp-item">
-            <div class="acomp-item-top">
-              <strong>${item.data ? formatDate(item.data) : "Sem data"}</strong>
-              <span>${item.aderencia || "Sem aderência informada"}</span>
-            </div>
-            <p><strong>Evolução:</strong> ${item.evolucao || "—"}</p>
-            <p><strong>Dificuldades:</strong> ${item.dificuldades || "—"}</p>
-            <p><strong>Ajustes:</strong> ${item.ajustes || "—"}</p>
+      .map((item) => `
+        <div class="acomp-item">
+          <div class="acomp-item-top">
+            <strong>${item.data ? formatDate(item.data) : "Sem data"}</strong>
+            <span>${item.aderencia || "Sem aderência informada"}</span>
           </div>
-        `;
-      })
+          <p><strong>Evolução:</strong> ${item.evolucao || "—"}</p>
+          <p><strong>Dificuldades:</strong> ${item.dificuldades || "—"}</p>
+          <p><strong>Ajustes:</strong> ${item.ajustes || "—"}</p>
+        </div>
+      `)
       .join("");
   }
 
   function resetFormAcompanhamento() {
-    const hoje = new Date();
-    document.getElementById("acomp-data").value = formatDateForInput(hoje);
-    document.getElementById("acomp-aderencia").value = "";
-    document.getElementById("acomp-evolucao").value = "";
-    document.getElementById("acomp-dificuldades").value = "";
-    document.getElementById("acomp-ajustes").value = "";
+    setValue("acomp-data", formatDateForInput(new Date()));
+    setValue("acomp-aderencia", "");
+    setValue("acomp-evolucao", "");
+    setValue("acomp-dificuldades", "");
+    setValue("acomp-ajustes", "");
   }
 
   function saveAcompanhamento() {
@@ -575,7 +594,7 @@ window.ZALancamentos = (() => {
       evolucao: document.getElementById("acomp-evolucao")?.value.trim() || "",
       dificuldades: document.getElementById("acomp-dificuldades")?.value.trim() || "",
       ajustes: document.getElementById("acomp-ajustes")?.value.trim() || "",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
 
     const acompanhamentos = Array.isArray(clientes[index].acompanhamentos)
@@ -588,14 +607,14 @@ window.ZALancamentos = (() => {
       ...clientes[index],
       acompanhamentos,
       acompanhamentoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     setClientes(clientes);
     cliente = clientes[index];
-    alert("Acompanhamento salvo.");
     renderAcompanhamentos();
     resetFormAcompanhamento();
+    alert("Acompanhamento salvo.");
   }
 
   function bindEvents() {
