@@ -153,20 +153,30 @@ window.ZALancamentos = (() => {
   function applyProtocolVisibility() {
     const tipoEl = document.getElementById("sessao-tipo");
     const protocoloEl = document.getElementById("sessao-protocolo");
+    const blocoPresencial = document.getElementById("bloco-presencial");
     const blocoAvancado = document.getElementById("bloco-avancado");
     const regraTexto = document.getElementById("sessao-regra-texto");
+    const fieldAbdomenMarinha = document.getElementById("field-abdomen-marinha");
+    const fieldGorduraMarinha = document.getElementById("field-gordura-marinha");
 
-    if (!tipoEl || !protocoloEl || !blocoAvancado) return;
+    if (!tipoEl || !protocoloEl || !blocoPresencial || !blocoAvancado) return;
 
     const tipo = tipoEl.value;
-    const protocolo = protocoloEl.value;
+    let protocolo = protocoloEl.value;
 
     if (tipo === "online") {
+      protocolo = "essencial";
       protocoloEl.value = "essencial";
       protocoloEl.disabled = true;
+
+      blocoPresencial.classList.add("hidden");
       blocoAvancado.classList.add("hidden");
+
+      fieldAbdomenMarinha?.classList.remove("hidden");
+      fieldGorduraMarinha?.classList.remove("hidden");
+
       if (regraTexto) {
-        regraTexto.textContent = "Online usa automaticamente o protocolo essencial.";
+        regraTexto.textContent = "Online usa Marinha Americana + IMC + RCQ + RCE.";
       }
       return;
     }
@@ -174,19 +184,30 @@ window.ZALancamentos = (() => {
     protocoloEl.disabled = false;
 
     if (tipo === "presencial") {
-      if (regraTexto) {
-        regraTexto.textContent = "Presencial pode usar protocolo essencial ou avançado.";
-      }
+      blocoPresencial.classList.remove("hidden");
+      fieldAbdomenMarinha?.classList.add("hidden");
+      fieldGorduraMarinha?.classList.add("hidden");
 
       if (protocolo === "avancado") {
         blocoAvancado.classList.remove("hidden");
+        if (regraTexto) {
+          regraTexto.textContent = "Presencial avançado usa perimetria completa + dobras + testes.";
+        }
       } else {
         blocoAvancado.classList.add("hidden");
+        if (regraTexto) {
+          regraTexto.textContent = "Presencial essencial usa perimetria completa + testes, sem dobras.";
+        }
       }
       return;
     }
 
+    protocoloEl.disabled = false;
+    blocoPresencial.classList.add("hidden");
     blocoAvancado.classList.add("hidden");
+    fieldAbdomenMarinha?.classList.remove("hidden");
+    fieldGorduraMarinha?.classList.remove("hidden");
+
     if (regraTexto) {
       regraTexto.textContent = "Selecione o tipo da sessão para liberar o protocolo.";
     }
@@ -242,6 +263,8 @@ window.ZALancamentos = (() => {
     const pescoco = parseFloat(document.getElementById("pescoco")?.value || "");
     const abdomenMarinha = parseFloat(document.getElementById("abdomen-marinha")?.value || "");
 
+    const tipoSessao = document.getElementById("sessao-tipo")?.value || "";
+
     const sexoRef =
       (document.getElementById("pre-sexo")?.value || document.getElementById("pre-genero")?.value || "")
         .toLowerCase();
@@ -267,7 +290,7 @@ window.ZALancamentos = (() => {
     if (gorduraEl) {
       let gordura = "";
 
-      if (altura && pescoco && abdomenMarinha) {
+      if (tipoSessao === "online" && altura && pescoco && abdomenMarinha) {
         const alturaCm = altura * 100;
 
         if (sexoRef.includes("f")) {
