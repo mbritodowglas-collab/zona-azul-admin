@@ -41,7 +41,7 @@ window.ZALancamentos = (() => {
 
   function setValue(id, value) {
     const el = document.getElementById(id);
-    if (el) el.value = value || "";
+    if (el) el.value = value ?? "";
   }
 
   function formatDate(dateValue) {
@@ -67,14 +67,23 @@ window.ZALancamentos = (() => {
     }
   }
 
-  function calculateAgeFromDate(dateStr) {
-    if (!dateStr) return "";
-    const birth = new Date(dateStr);
+  function calculateAgeFromParts(day, month, year) {
+    const d = Number(day);
+    const m = Number(month);
+    const y = Number(year);
+
+    if (!d || !m || !y) return "";
+    const birth = new Date(y, m - 1, d);
     if (Number.isNaN(birth.getTime())) return "";
+
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    const diffMonth = today.getMonth() - birth.getMonth();
+
+    if (diffMonth < 0 || (diffMonth === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
     return age >= 0 ? String(age) : "";
   }
 
@@ -84,19 +93,46 @@ window.ZALancamentos = (() => {
     return ((parts[0]?.[0] || "C") + (parts[1]?.[0] || "")).toUpperCase();
   }
 
-  function getPreDataFromCliente(clienteAtual) {
-    if (!clienteAtual) return null;
+  function isObject(value) {
+    return value && typeof value === "object" && !Array.isArray(value);
+  }
 
-    if (clienteAtual.preDiagnostico && typeof clienteAtual.preDiagnostico === "object") {
+  function firstFilled(...values) {
+    for (const value of values) {
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        return value;
+      }
+    }
+    return "";
+  }
+
+  function getPreDataFromCliente(clienteAtual) {
+    if (!clienteAtual) return {};
+
+    if (isObject(clienteAtual.preDiagnostico)) {
       return clienteAtual.preDiagnostico;
     }
 
     if (clienteAtual.leadId) {
       const lead = getLeadById(clienteAtual.leadId);
-      if (lead) return lead;
+      if (!lead) return {};
+
+      const base = isObject(lead) ? lead : {};
+      const respostas = isObject(lead.respostas) ? lead.respostas : {};
+      const formData = isObject(lead.formData) ? lead.formData : {};
+      const dados = isObject(lead.dados) ? lead.dados : {};
+      const payload = isObject(lead.payload) ? lead.payload : {};
+
+      return {
+        ...base,
+        ...dados,
+        ...payload,
+        ...formData,
+        ...respostas
+      };
     }
 
-    return null;
+    return {};
   }
 
   function getDadosBaseEditados() {
@@ -109,12 +145,12 @@ window.ZALancamentos = (() => {
       pre?.radarInicial ||
       pre?.scores ||
       pre?.pilares || {
-        movimento: pre?.score_movimento || "",
-        alimentacao: pre?.score_alimentacao || "",
-        sono: pre?.score_sono || "",
-        proposito: pre?.score_proposito || "",
-        social: pre?.score_social || "",
-        estresse: pre?.score_estresse || ""
+        movimento: firstFilled(pre?.score_movimento, pre?.movimento),
+        alimentacao: firstFilled(pre?.score_alimentacao, pre?.alimentacao),
+        sono: firstFilled(pre?.score_sono, pre?.sono),
+        proposito: firstFilled(pre?.score_proposito, pre?.proposito),
+        social: firstFilled(pre?.score_social, pre?.social),
+        estresse: firstFilled(pre?.score_estresse, pre?.estresse)
       }
     );
   }
@@ -133,62 +169,100 @@ window.ZALancamentos = (() => {
     };
 
     const entries = Object.entries(radar)
-      .filter(([, value]) => value !== null && value !== undefined && value !== "")
+      .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "")
       .map(([key, value]) => `${labels[key] || key}: ${value}`);
 
     return entries.length ? entries.join(" | ") : "Sem radar disponível.";
   }
 
-  function buildBirthDateFromPre(pre) {
-    if (!pre) return "";
+  function getBirthPartsFromPre(pre) {
+    if (!pre) return { dia: "", mes: "", ano: "" };
 
-    if (pre.dataNascimento) return formatDateForInput(pre.dataNascimento);
-    if (pre.nascimento) return formatDateForInput(pre.nascimento);
-    if (pre.birthDate) return formatDateForInput(pre.birthDate);
+    const dia = firstFilled(
+      pre?.nascimento_dia,
+      pre?.birth_day,
+      pre?.dia_nascimento
+    );
 
-    const dia = String(pre.nascimento_dia || "").padStart(2, "0");
-    const mes = String(pre.nascimento_mes || "").padStart(2, "0");
-    const ano = String(pre.nascimento_ano || "");
+    const mes = firstFilled(
+      pre?.nascimento_mes,
+      pre?.birth_month,
+      pre?.mes_nascimento
+    );
 
-    if (dia && mes && ano) {
-      return `${ano}-${mes}-${dia}`;
+    const ano = firstFilled(
+      pre?.nascimento_ano,
+      pre?.birth_year,
+      pre?.ano_nascimento
+    );
+
+    if (dia || mes || ano) {
+      return {
+        dia: dia ? String(dia) : "",
+        mes: mes ? String(mes) : "",
+        ano: ano ? String(ano) : ""
+      };
     }
 
-    return "";
+    const rawDate = firstFilled(
+      pre?.dataNascimento,
+      pre?.data_nascimento,
+      pre?.nascimento,
+      pre?.birthDate
+    );
+
+    if (rawDate) {
+      const normalized = formatDateForInput(rawDate);
+      if (normalized) {
+        const [yyyy, mm, dd] = normalized.split("-");
+        return {
+          dia: dd || "",
+          mes: String(Number(mm || "")) || "",
+          ano: yyyy || ""
+        };
+      }
+    }
+
+    return { dia: "", mes: "", ano: "" };
   }
 
   function getReferenceSex(pre) {
     const editados = getDadosBaseEditados();
-    const valorEditado =
-      editados.sexoReferencia ||
-      document.getElementById("pre-sexo-ref")?.value?.trim();
+    const valorEditado = firstFilled(
+      editados.sexoReferencia,
+      document.getElementById("pre-sexo-ref")?.value
+    );
 
-    if (valorEditado) return valorEditado.toLowerCase();
+    if (valorEditado) return String(valorEditado).toLowerCase();
 
-    return (
-      pre?.sexo ||
-      pre?.genero ||
-      pre?.sex ||
-      pre?.gender ||
-      ""
-    ).toString().toLowerCase();
+    return String(
+      firstFilled(
+        pre?.sexo,
+        pre?.genero,
+        pre?.sex,
+        pre?.gender
+      )
+    ).toLowerCase();
   }
 
   function getReferenceAge(pre) {
     const editados = getDadosBaseEditados();
-    const nascimentoEditado = editados.dataNascimento;
-    const nascimentoPre = buildBirthDateFromPre(pre);
-    return calculateAgeFromDate(nascimentoEditado || nascimentoPre);
+    const nascimentoPre = getBirthPartsFromPre(pre);
+
+    const dia = firstFilled(editados.nascimentoDia, document.getElementById("pre-nascimento-dia")?.value, nascimentoPre.dia);
+    const mes = firstFilled(editados.nascimentoMes, document.getElementById("pre-nascimento-mes")?.value, nascimentoPre.mes);
+    const ano = firstFilled(editados.nascimentoAno, document.getElementById("pre-nascimento-ano")?.value, nascimentoPre.ano);
+
+    return calculateAgeFromParts(dia, mes, ano);
   }
 
   function getObjetivoInicial(pre, editados) {
-    return (
-      editados.objetivo ||
-      pre?.objetivo ||
-      pre?.objetivo_principal ||
-      pre?.objetivo_fisico ||
-      cliente?.objetivo ||
-      ""
+    return firstFilled(
+      editados.objetivo,
+      pre?.objetivo,
+      pre?.objetivo_principal,
+      pre?.objetivo_fisico,
+      cliente?.objetivo
     );
   }
 
@@ -197,20 +271,54 @@ window.ZALancamentos = (() => {
 
     const blocos = [];
 
-    if (pre?.desafio_atual) blocos.push(`Desafio atual: ${pre.desafio_atual}`);
-    if (pre?.meta_6_meses) blocos.push(`Meta em 6 meses: ${pre.meta_6_meses}`);
-    if (pre?.limitacoes_atuais) blocos.push(`Restrições / limitações: ${pre.limitacoes_atuais}`);
-    if (pre?.por_que_parou) blocos.push(`Por que parou: ${pre.por_que_parou}`);
-    if (pre?.o_que_funcionou) blocos.push(`O que já funcionou: ${pre.o_que_funcionou}`);
-    if (pre?.sabotagem) blocos.push(`Principal sabotagem: ${pre.sabotagem}`);
-    if (pre?.urgencia) blocos.push(`Urgência percebida: ${pre.urgencia}`);
-    if (pre?.investimento) blocos.push(`Investimento em acompanhamento: ${pre.investimento}`);
+    const restricoes = firstFilled(
+      pre?.limitacoes_atuais,
+      pre?.restricoes_medicas,
+      pre?.restricoes,
+      pre?.lesoes,
+      pre?.condicoes_saude
+    );
+
+    const desafio = firstFilled(
+      pre?.desafio_atual,
+      pre?.maior_desafio,
+      pre?.desafio
+    );
+
+    const meta = firstFilled(
+      pre?.meta_6_meses,
+      pre?.meta,
+      pre?.metas
+    );
+
+    const parou = firstFilled(pre?.por_que_parou);
+    const funcionou = firstFilled(pre?.o_que_funcionou);
+    const sabotagem = firstFilled(pre?.sabotagem);
+    const urgencia = firstFilled(pre?.urgencia);
+    const investimento = firstFilled(pre?.investimento);
+
+    if (desafio) blocos.push(`Desafio atual: ${desafio}`);
+    if (meta) blocos.push(`Meta em 6 meses: ${meta}`);
+    if (restricoes) blocos.push(`Restrições / limitações: ${restricoes}`);
+    if (parou) blocos.push(`Por que parou: ${parou}`);
+    if (funcionou) blocos.push(`O que já funcionou: ${funcionou}`);
+    if (sabotagem) blocos.push(`Principal sabotagem: ${sabotagem}`);
+    if (urgencia) blocos.push(`Urgência percebida: ${urgencia}`);
+    if (investimento) blocos.push(`Investimento em acompanhamento: ${investimento}`);
 
     if (!blocos.length) {
-      if (pre?.resumoPrediagnostico) blocos.push(pre.resumoPrediagnostico);
-      if (pre?.resumo_pre_diagnostico) blocos.push(pre.resumo_pre_diagnostico);
-      if (pre?.rotina) blocos.push(pre.rotina);
-      if (pre?.maior_dificuldade) blocos.push(pre.maior_dificuldade);
+      const fallback = firstFilled(
+        pre?.resumoPrediagnostico,
+        pre?.resumo_pre_diagnostico,
+        pre?.rotina,
+        pre?.maior_dificuldade
+      );
+      if (fallback) blocos.push(fallback);
+    }
+
+    const radar = getRadarResumo(pre);
+    if (radar && radar !== "Sem radar disponível.") {
+      blocos.push(`Radar: ${radar}`);
     }
 
     return blocos.join("\n\n");
@@ -235,14 +343,16 @@ window.ZALancamentos = (() => {
   function renderPre() {
     const pre = getPreDataFromCliente(cliente);
     const editados = getDadosBaseEditados();
+    const nascimentoPre = getBirthPartsFromPre(pre);
 
-    const nome = editados.nome || pre?.nome || cliente?.nome || "";
-    const email = editados.email || pre?.email || cliente?.email || "";
-    const telefone = editados.telefone || pre?.telefone || cliente?.telefone || "";
-    const sexo = editados.sexoReferencia || pre?.sexo || pre?.genero || "";
-    const nascimento = editados.dataNascimento || buildBirthDateFromPre(pre);
-    const idade = calculateAgeFromDate(nascimento);
-
+    const nome = firstFilled(editados.nome, pre?.nome, cliente?.nome);
+    const email = firstFilled(editados.email, pre?.email, cliente?.email);
+    const telefone = firstFilled(editados.telefone, pre?.telefone, cliente?.telefone);
+    const sexo = firstFilled(editados.sexoReferencia, pre?.sexo, pre?.genero);
+    const dia = firstFilled(editados.nascimentoDia, nascimentoPre.dia);
+    const mes = firstFilled(editados.nascimentoMes, nascimentoPre.mes);
+    const ano = firstFilled(editados.nascimentoAno, nascimentoPre.ano);
+    const idade = calculateAgeFromParts(dia, mes, ano);
     const objetivo = getObjetivoInicial(pre, editados);
     const resumo = getResumoInicial(pre, editados);
 
@@ -250,7 +360,9 @@ window.ZALancamentos = (() => {
     setValue("pre-email-edit", email);
     setValue("pre-telefone-edit", telefone);
     setValue("pre-sexo-ref", sexo);
-    setValue("pre-nascimento", nascimento);
+    setValue("pre-nascimento-dia", dia);
+    setValue("pre-nascimento-mes", mes);
+    setValue("pre-nascimento-ano", ano);
     setValue("pre-idade", idade);
     setValue("pre-objetivo", objetivo);
     setValue("pre-resumo", resumo);
@@ -273,7 +385,9 @@ window.ZALancamentos = (() => {
         email: document.getElementById("pre-email-edit")?.value?.trim() || "",
         telefone: document.getElementById("pre-telefone-edit")?.value?.trim() || "",
         sexoReferencia: document.getElementById("pre-sexo-ref")?.value?.trim() || "",
-        dataNascimento: document.getElementById("pre-nascimento")?.value || "",
+        nascimentoDia: document.getElementById("pre-nascimento-dia")?.value || "",
+        nascimentoMes: document.getElementById("pre-nascimento-mes")?.value || "",
+        nascimentoAno: document.getElementById("pre-nascimento-ano")?.value || "",
         objetivo: document.getElementById("pre-objetivo")?.value?.trim() || "",
         resumo: document.getElementById("pre-resumo")?.value?.trim() || ""
       },
@@ -285,6 +399,13 @@ window.ZALancamentos = (() => {
     cliente = clientes[index];
     renderPre();
     alert("Dados base salvos.");
+  }
+
+  function updateIdadeFromBirthInputs() {
+    const dia = document.getElementById("pre-nascimento-dia")?.value || "";
+    const mes = document.getElementById("pre-nascimento-mes")?.value || "";
+    const ano = document.getElementById("pre-nascimento-ano")?.value || "";
+    setValue("pre-idade", calculateAgeFromParts(dia, mes, ano));
   }
 
   function applyProtocolVisibility() {
@@ -307,7 +428,6 @@ window.ZALancamentos = (() => {
 
       blocoPresencial?.classList.add("hidden");
       blocoAvancado?.classList.add("hidden");
-
       fieldAbdomenMarinha?.classList.remove("hidden");
       fieldGorduraMarinha?.classList.remove("hidden");
       fieldGorduraDobras?.classList.add("hidden");
@@ -323,7 +443,6 @@ window.ZALancamentos = (() => {
     if (tipo === "presencial" && protocolo === "essencial") {
       blocoPresencial?.classList.remove("hidden");
       blocoAvancado?.classList.add("hidden");
-
       fieldAbdomenMarinha?.classList.remove("hidden");
       fieldGorduraMarinha?.classList.remove("hidden");
       fieldGorduraDobras?.classList.add("hidden");
@@ -337,7 +456,6 @@ window.ZALancamentos = (() => {
     if (tipo === "presencial" && protocolo === "avancado") {
       blocoPresencial?.classList.remove("hidden");
       blocoAvancado?.classList.remove("hidden");
-
       fieldAbdomenMarinha?.classList.add("hidden");
       fieldGorduraMarinha?.classList.add("hidden");
       fieldGorduraDobras?.classList.remove("hidden");
@@ -365,7 +483,6 @@ window.ZALancamentos = (() => {
     setValue("sessao-data", sessao.data || "");
     setValue("sessao-tipo", sessao.tipo || "");
     setValue("sessao-protocolo", sessao.protocolo || "");
-
     applyProtocolVisibility();
 
     const updatedEl = document.getElementById("sessao-updated");
@@ -684,7 +801,8 @@ window.ZALancamentos = (() => {
   }
 
   function resetFormAcompanhamento() {
-    setValue("acomp-data", formatDateForInput(new Date()));
+    const hoje = new Date();
+    setValue("acomp-data", formatDateForInput(hoje));
     setValue("acomp-aderencia", "");
     setValue("acomp-evolucao", "");
     setValue("acomp-dificuldades", "");
@@ -729,10 +847,9 @@ window.ZALancamentos = (() => {
     document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
     document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
 
-    document.getElementById("pre-nascimento")?.addEventListener("change", () => {
-      const nascimento = document.getElementById("pre-nascimento")?.value || "";
-      setValue("pre-idade", calculateAgeFromDate(nascimento));
-    });
+    document.getElementById("pre-nascimento-dia")?.addEventListener("input", updateIdadeFromBirthInputs);
+    document.getElementById("pre-nascimento-mes")?.addEventListener("change", updateIdadeFromBirthInputs);
+    document.getElementById("pre-nascimento-ano")?.addEventListener("input", updateIdadeFromBirthInputs);
 
     document.getElementById("salvar-dados-base-btn")?.addEventListener("click", saveDadosBase);
     document.getElementById("salvar-sessao-btn")?.addEventListener("click", saveSessao);
