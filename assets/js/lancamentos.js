@@ -57,6 +57,7 @@ window.ZALancamentos = (() => {
     if (!dateValue) return "";
     try {
       const d = new Date(dateValue);
+      if (Number.isNaN(d.getTime())) return "";
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, "0");
       const day = String(d.getDate()).padStart(2, "0");
@@ -64,6 +65,17 @@ window.ZALancamentos = (() => {
     } catch {
       return "";
     }
+  }
+
+  function calculateAgeFromDate(dateStr) {
+    if (!dateStr) return "";
+    const birth = new Date(dateStr);
+    if (Number.isNaN(birth.getTime())) return "";
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age >= 0 ? String(age) : "";
   }
 
   function getInitials(nome) {
@@ -87,39 +99,69 @@ window.ZALancamentos = (() => {
     return null;
   }
 
+  function getDadosBaseEditados() {
+    return cliente?.dadosBaseEditados || {};
+  }
+
   function getRadarData(pre) {
-    return pre?.radar || pre?.radarInicial || pre?.scores || pre?.pilares || {};
+    return (
+      pre?.radar ||
+      pre?.radarInicial ||
+      pre?.scores ||
+      pre?.pilares || {
+        movimento: pre?.score_movimento || "",
+        alimentacao: pre?.score_alimentacao || "",
+        sono: pre?.score_sono || "",
+        proposito: pre?.score_proposito || "",
+        social: pre?.score_social || "",
+        estresse: pre?.score_estresse || ""
+      }
+    );
   }
 
   function getRadarResumo(pre) {
     const radar = getRadarData(pre);
     if (!radar || typeof radar !== "object") return "Sem radar disponível.";
 
+    const labels = {
+      movimento: "Movimento",
+      alimentacao: "Alimentação",
+      sono: "Sono",
+      proposito: "Propósito",
+      social: "Social",
+      estresse: "Estresse"
+    };
+
     const entries = Object.entries(radar)
       .filter(([, value]) => value !== null && value !== undefined && value !== "")
-      .map(([key, value]) => `${key}: ${value}`);
+      .map(([key, value]) => `${labels[key] || key}: ${value}`);
 
     return entries.length ? entries.join(" | ") : "Sem radar disponível.";
   }
 
-  function calculateAgeFromDate(dateStr) {
-    if (!dateStr) return "";
-    const birth = new Date(dateStr);
-    if (Number.isNaN(birth.getTime())) return "";
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-    return age >= 0 ? String(age) : "";
-  }
+  function buildBirthDateFromPre(pre) {
+    if (!pre) return "";
 
-  function getDadosBaseEditados() {
-    return cliente?.dadosBaseEditados || {};
+    if (pre.dataNascimento) return formatDateForInput(pre.dataNascimento);
+    if (pre.nascimento) return formatDateForInput(pre.nascimento);
+    if (pre.birthDate) return formatDateForInput(pre.birthDate);
+
+    const dia = String(pre.nascimento_dia || "").padStart(2, "0");
+    const mes = String(pre.nascimento_mes || "").padStart(2, "0");
+    const ano = String(pre.nascimento_ano || "");
+
+    if (dia && mes && ano) {
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    return "";
   }
 
   function getReferenceSex(pre) {
     const editados = getDadosBaseEditados();
-    const valorEditado = editados.sexoReferencia || document.getElementById("pre-sexo-ref")?.value?.trim();
+    const valorEditado =
+      editados.sexoReferencia ||
+      document.getElementById("pre-sexo-ref")?.value?.trim();
 
     if (valorEditado) return valorEditado.toLowerCase();
 
@@ -133,11 +175,45 @@ window.ZALancamentos = (() => {
   }
 
   function getReferenceAge(pre) {
+    const editados = getDadosBaseEditados();
+    const nascimentoEditado = editados.dataNascimento;
+    const nascimentoPre = buildBirthDateFromPre(pre);
+    return calculateAgeFromDate(nascimentoEditado || nascimentoPre);
+  }
+
+  function getObjetivoInicial(pre, editados) {
     return (
-      pre?.idade ||
-      pre?.age ||
-      calculateAgeFromDate(pre?.dataNascimento || pre?.nascimento || pre?.birthDate || "")
+      editados.objetivo ||
+      pre?.objetivo ||
+      pre?.objetivo_principal ||
+      pre?.objetivo_fisico ||
+      cliente?.objetivo ||
+      ""
     );
+  }
+
+  function getResumoInicial(pre, editados) {
+    if (editados.resumo) return editados.resumo;
+
+    const blocos = [];
+
+    if (pre?.desafio_atual) blocos.push(`Desafio atual: ${pre.desafio_atual}`);
+    if (pre?.meta_6_meses) blocos.push(`Meta em 6 meses: ${pre.meta_6_meses}`);
+    if (pre?.limitacoes_atuais) blocos.push(`Restrições / limitações: ${pre.limitacoes_atuais}`);
+    if (pre?.por_que_parou) blocos.push(`Por que parou: ${pre.por_que_parou}`);
+    if (pre?.o_que_funcionou) blocos.push(`O que já funcionou: ${pre.o_que_funcionou}`);
+    if (pre?.sabotagem) blocos.push(`Principal sabotagem: ${pre.sabotagem}`);
+    if (pre?.urgencia) blocos.push(`Urgência percebida: ${pre.urgencia}`);
+    if (pre?.investimento) blocos.push(`Investimento em acompanhamento: ${pre.investimento}`);
+
+    if (!blocos.length) {
+      if (pre?.resumoPrediagnostico) blocos.push(pre.resumoPrediagnostico);
+      if (pre?.resumo_pre_diagnostico) blocos.push(pre.resumo_pre_diagnostico);
+      if (pre?.rotina) blocos.push(pre.rotina);
+      if (pre?.maior_dificuldade) blocos.push(pre.maior_dificuldade);
+    }
+
+    return blocos.join("\n\n");
   }
 
   function renderCabecalho() {
@@ -164,28 +240,11 @@ window.ZALancamentos = (() => {
     const email = editados.email || pre?.email || cliente?.email || "";
     const telefone = editados.telefone || pre?.telefone || cliente?.telefone || "";
     const sexo = editados.sexoReferencia || pre?.sexo || pre?.genero || "";
-    const nascimento =
-      editados.dataNascimento ||
-      pre?.dataNascimento ||
-      pre?.nascimento ||
-      pre?.birthDate ||
-      "";
+    const nascimento = editados.dataNascimento || buildBirthDateFromPre(pre);
     const idade = calculateAgeFromDate(nascimento);
 
-    const objetivo =
-      editados.objetivo ||
-      pre?.objetivo ||
-      pre?.objetivo_principal ||
-      cliente?.objetivo ||
-      "";
-
-    const resumo =
-      editados.resumo ||
-      pre?.resumoPrediagnostico ||
-      pre?.resumo_pre_diagnostico ||
-      pre?.rotina ||
-      pre?.maior_dificuldade ||
-      "";
+    const objetivo = getObjetivoInicial(pre, editados);
+    const resumo = getResumoInicial(pre, editados);
 
     setValue("pre-nome-edit", nome);
     setValue("pre-email-edit", email);
