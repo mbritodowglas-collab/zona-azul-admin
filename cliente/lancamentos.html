@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=37" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=38" />
 </head>
 <body>
   <div class="app-shell">
@@ -79,6 +79,16 @@
                 </div>
 
                 <div class="grid cols-2" style="margin-top:16px;">
+                  <div class="field">
+                    <label for="pre-sexo">Sexo</label>
+                    <input id="pre-sexo" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-genero">Gênero / referência</label>
+                    <input id="pre-genero" type="text" readonly />
+                  </div>
+
                   <div class="field" style="grid-column: 1 / -1;">
                     <label for="pre-objetivo">Objetivo inicial</label>
                     <textarea id="pre-objetivo" readonly></textarea>
@@ -116,12 +126,15 @@
                     <label for="sessao-protocolo">Protocolo</label>
                     <select id="sessao-protocolo">
                       <option value="">Selecionar</option>
-                      <option value="A">A - Online</option>
-                      <option value="B">B - Presencial</option>
-                      <option value="C">C - Presencial avançado</option>
+                      <option value="essencial">Essencial</option>
+                      <option value="avancado">Avançado</option>
                     </select>
                   </div>
                 </div>
+
+                <p class="cliente-hero-meta" style="margin-top: 14px;">
+                  Online usa o protocolo essencial. Presencial pode usar essencial ou avançado.
+                </p>
 
                 <div class="cliente-section-actions">
                   <span class="cliente-hub-updated" id="sessao-updated">Última atualização: —</span>
@@ -148,12 +161,22 @@
 
                   <div class="field">
                     <label for="cintura">Cintura (cm)</label>
-                    <input id="cintura" type="number" />
+                    <input id="cintura" type="number" step="0.1" />
                   </div>
 
                   <div class="field">
                     <label for="quadril">Quadril (cm)</label>
-                    <input id="quadril" type="number" />
+                    <input id="quadril" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pescoco">Pescoço (cm)</label>
+                    <input id="pescoco" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="abdomen-marinha">Abdômen (Marinha) (cm)</label>
+                    <input id="abdomen-marinha" type="number" step="0.1" />
                   </div>
 
                   <div class="field">
@@ -164,6 +187,138 @@
                   <div class="field">
                     <label for="rcq">RCQ</label>
                     <input id="rcq" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="rce">RCE</label>
+                    <input id="rce" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="gordura-marinha">% Gordura (Marinha)</label>
+                    <input id="gordura-marinha" type="text" readonly />
+                  </div>
+                </div>
+
+                <div id="bloco-avancado" class="hidden">
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Perimetria avançada</h4>
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="torax">Tórax (cm)</label>
+                      <input id="torax" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="abdomen">Abdômen (cm)</label>
+                      <input id="abdomen" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="braco-direito">Braço direito (cm)</label>
+                      <input id="braco-direito" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="braco-esquerdo">Braço esquerdo (cm)</label>
+                      <input id="braco-esquerdo" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="coxa-direita">Coxa direita (cm)</label>
+                      <input id="coxa-direita" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="coxa-esquerda">Coxa esquerda (cm)</label>
+                      <input id="coxa-esquerda" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="panturrilha">Panturrilha (cm)</label>
+                      <input id="panturrilha" type="number" step="0.1" />
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Dobras cutâneas</h4>
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="dobra-peitoral">Peitoral (mm)</label>
+                      <input id="dobra-peitoral" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-axilar">Axilar média (mm)</label>
+                      <input id="dobra-axilar" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-triceps">Tríceps (mm)</label>
+                      <input id="dobra-triceps" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-subescapular">Subescapular (mm)</label>
+                      <input id="dobra-subescapular" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-abdominal">Abdominal (mm)</label>
+                      <input id="dobra-abdominal" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-suprailiaca">Suprailíaca (mm)</label>
+                      <input id="dobra-suprailiaca" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-coxa">Coxa (mm)</label>
+                      <input id="dobra-coxa" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobras-soma">Somatório de dobras</label>
+                      <input id="dobras-soma" type="text" readonly />
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Testes funcionais</h4>
+                  <div class="grid cols-2">
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-overhead">Overhead Squat / Mobilidade</label>
+                      <textarea id="teste-overhead" placeholder="Registre observações do overhead squat..."></textarea>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-thomas">Thomas Test</label>
+                      <textarea id="teste-thomas" placeholder="Registre observações do Thomas Test..."></textarea>
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-sentar-alcancar">Sentar e alcançar (cm)</label>
+                      <input id="teste-sentar-alcancar" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-fc">Step test / FC recuperação</label>
+                      <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-borg">Step test / Borg</label>
+                      <input id="teste-step-borg" type="text" placeholder="Ex.: 13" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-classificacao">Step test / Classificação</label>
+                      <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom" />
+                    </div>
                   </div>
                 </div>
 
