@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=40" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=41" />
 </head>
 <body>
   <div class="app-shell">
@@ -89,6 +89,11 @@
                     <input id="pre-genero" type="text" readonly />
                   </div>
 
+                  <div class="field">
+                    <label for="pre-idade">Idade</label>
+                    <input id="pre-idade" type="text" readonly />
+                  </div>
+
                   <div class="field" style="grid-column: 1 / -1;">
                     <label for="pre-objetivo">Objetivo inicial</label>
                     <textarea id="pre-objetivo" readonly></textarea>
@@ -133,7 +138,7 @@
                 </div>
 
                 <p class="cliente-hero-meta" id="sessao-regra-texto" style="margin-top: 14px;">
-                  Online usa Marinha Americana. Presencial usa essencial ou avançado.
+                  Online usa Marinha. Presencial essencial usa Marinha sem dobras. Presencial avançado usa dobras.
                 </p>
 
                 <div class="cliente-section-actions">
@@ -198,6 +203,11 @@
                     <label for="gordura-marinha">% Gordura (Marinha)</label>
                     <input id="gordura-marinha" type="text" readonly />
                   </div>
+
+                  <div class="field hidden" id="field-gordura-dobras">
+                    <label for="gordura-dobras">% Gordura (Dobras)</label>
+                    <input id="gordura-dobras" type="text" readonly />
+                  </div>
                 </div>
 
                 <div id="bloco-presencial" class="hidden">
@@ -256,8 +266,8 @@
                     </div>
 
                     <div class="field">
-                      <label for="teste-sentar-alcancar">Sentar e alcançar (cm)</label>
-                      <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 ou não realiza" />
+                      <label for="teste-sentar-alcancar">Sentar e alcançar</label>
+                      <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 cm ou não realiza" />
                     </div>
 
                     <div class="field">
