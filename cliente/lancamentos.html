@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=39" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=40" />
 </head>
 <body>
   <div class="app-shell">
@@ -133,7 +133,7 @@
                 </div>
 
                 <p class="cliente-hero-meta" id="sessao-regra-texto" style="margin-top: 14px;">
-                  Online usa o protocolo essencial. Presencial pode usar essencial ou avançado.
+                  Online usa Marinha Americana. Presencial usa essencial ou avançado.
                 </p>
 
                 <div class="cliente-section-actions">
@@ -174,7 +174,7 @@
                     <input id="pescoco" type="number" step="0.1" />
                   </div>
 
-                  <div class="field">
+                  <div class="field" id="field-abdomen-marinha">
                     <label for="abdomen-marinha">Abdômen (Marinha) (cm)</label>
                     <input id="abdomen-marinha" type="number" step="0.1" />
                   </div>
@@ -194,16 +194,16 @@
                     <input id="rce" type="text" readonly />
                   </div>
 
-                  <div class="field">
+                  <div class="field" id="field-gordura-marinha">
                     <label for="gordura-marinha">% Gordura (Marinha)</label>
                     <input id="gordura-marinha" type="text" readonly />
                   </div>
                 </div>
 
-                <div id="bloco-avancado" class="hidden">
+                <div id="bloco-presencial" class="hidden">
                   <div class="cliente-expand-divider"></div>
 
-                  <h4 class="subsection-title">Perimetria avançada</h4>
+                  <h4 class="subsection-title">Perimetria presencial</h4>
                   <div class="grid cols-2">
                     <div class="field">
                       <label for="torax">Tórax (cm)</label>
@@ -241,6 +241,43 @@
                     </div>
                   </div>
 
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Testes funcionais</h4>
+                  <div class="grid cols-2">
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-overhead">Overhead Squat / Mobilidade</label>
+                      <textarea id="teste-overhead" placeholder="Registre observações do overhead squat..."></textarea>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-thomas">Thomas Test</label>
+                      <textarea id="teste-thomas" placeholder="Registre observações do Thomas Test..."></textarea>
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-sentar-alcancar">Sentar e alcançar (cm)</label>
+                      <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-fc">Step test / FC recuperação</label>
+                      <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-borg">Step test / Borg</label>
+                      <input id="teste-step-borg" type="text" placeholder="Ex.: 13 ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-classificacao">Step test / Classificação</label>
+                      <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom ou não realiza" />
+                    </div>
+                  </div>
+                </div>
+
+                <div id="bloco-avancado" class="hidden">
                   <div class="cliente-expand-divider"></div>
 
                   <h4 class="subsection-title">Dobras cutâneas</h4>
@@ -283,41 +320,6 @@
                     <div class="field">
                       <label for="dobras-soma">Somatório de dobras</label>
                       <input id="dobras-soma" type="text" readonly />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-
-                  <h4 class="subsection-title">Testes funcionais</h4>
-                  <div class="grid cols-2">
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="teste-overhead">Overhead Squat / Mobilidade</label>
-                      <textarea id="teste-overhead" placeholder="Registre observações do overhead squat..."></textarea>
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="teste-thomas">Thomas Test</label>
-                      <textarea id="teste-thomas" placeholder="Registre observações do Thomas Test..."></textarea>
-                    </div>
-
-                    <div class="field">
-                      <label for="teste-sentar-alcancar">Sentar e alcançar (cm)</label>
-                      <input id="teste-sentar-alcancar" type="number" step="0.1" />
-                    </div>
-
-                    <div class="field">
-                      <label for="teste-step-fc">Step test / FC recuperação</label>
-                      <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm" />
-                    </div>
-
-                    <div class="field">
-                      <label for="teste-step-borg">Step test / Borg</label>
-                      <input id="teste-step-borg" type="text" placeholder="Ex.: 13" />
-                    </div>
-
-                    <div class="field">
-                      <label for="teste-step-classificacao">Step test / Classificação</label>
-                      <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom" />
                     </div>
                   </div>
                 </div>
@@ -548,7 +550,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=39"></script>
-  <script src="../assets/js/lancamentos.js?v=39"></script>
+  <script src="../assets/js/storage.js?v=40"></script>
+  <script src="../assets/js/lancamentos.js?v=40"></script>
 </body>
 </html>
