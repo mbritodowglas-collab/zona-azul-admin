@@ -109,13 +109,20 @@ window.ZALancamentos = (() => {
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
     return age >= 0 ? String(age) : "";
   }
 
+  function getDadosBaseEditados() {
+    return cliente?.dadosBaseEditados || {};
+  }
+
   function getReferenceSex(pre) {
+    const editados = getDadosBaseEditados();
+    const valorEditado = editados.sexoReferencia || document.getElementById("pre-sexo-ref")?.value?.trim();
+
+    if (valorEditado) return valorEditado.toLowerCase();
+
     return (
       pre?.sexo ||
       pre?.genero ||
@@ -151,13 +158,20 @@ window.ZALancamentos = (() => {
 
   function renderPre() {
     const pre = getPreDataFromCliente(cliente);
+    const editados = getDadosBaseEditados();
 
     setText("pre-nome-view", pre?.nome || cliente?.nome || "—");
     setText("pre-email-view", pre?.email || cliente?.email || "—");
     setText("pre-telefone-view", pre?.telefone || cliente?.telefone || "—");
 
-    setValue("pre-sexo", pre?.sexo || pre?.genero || "");
-    setValue("pre-genero", pre?.genero || pre?.sexo || "");
+    setValue(
+      "pre-sexo-ref",
+      editados.sexoReferencia ||
+      pre?.sexo ||
+      pre?.genero ||
+      ""
+    );
+
     setValue("pre-idade", getReferenceAge(pre));
 
     setValue(
@@ -177,6 +191,32 @@ window.ZALancamentos = (() => {
       "Sem resumo registrado no momento.";
 
     setValue("pre-resumo", `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`);
+
+    const updatedEl = document.getElementById("dados-base-updated");
+    if (updatedEl) {
+      updatedEl.textContent = `Última atualização: ${cliente?.dadosBaseUpdatedAt ? formatDate(cliente.dadosBaseUpdatedAt) : "—"}`;
+    }
+  }
+
+  function saveDadosBase() {
+    const clientes = getClientes();
+    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
+    if (index === -1) return;
+
+    clientes[index] = {
+      ...clientes[index],
+      dadosBaseEditados: {
+        ...(clientes[index].dadosBaseEditados || {}),
+        sexoReferencia: document.getElementById("pre-sexo-ref")?.value?.trim() || ""
+      },
+      dadosBaseUpdatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    setClientes(clientes);
+    cliente = clientes[index];
+    renderPre();
+    alert("Dados base salvos.");
   }
 
   function applyProtocolVisibility() {
@@ -205,7 +245,7 @@ window.ZALancamentos = (() => {
       fieldGorduraDobras?.classList.add("hidden");
 
       if (regraTexto) {
-        regraTexto.textContent = "Online usa Marinha Americana + IMC + RCQ + RCE.";
+        regraTexto.textContent = "Online usa Marinha. Presencial essencial usa Marinha sem dobras. Presencial avançado usa dobras.";
       }
       return;
     }
@@ -621,6 +661,7 @@ window.ZALancamentos = (() => {
     document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
     document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
 
+    document.getElementById("salvar-dados-base-btn")?.addEventListener("click", saveDadosBase);
     document.getElementById("salvar-sessao-btn")?.addEventListener("click", saveSessao);
     document.getElementById("calcular-btn")?.addEventListener("click", calcularAvaliacao);
     document.getElementById("salvar-avaliacao-btn")?.addEventListener("click", saveAvaliacao);
