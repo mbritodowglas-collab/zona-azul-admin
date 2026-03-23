@@ -160,37 +160,41 @@ window.ZALancamentos = (() => {
     const pre = getPreDataFromCliente(cliente);
     const editados = getDadosBaseEditados();
 
-    setText("pre-nome-view", pre?.nome || cliente?.nome || "—");
-    setText("pre-email-view", pre?.email || cliente?.email || "—");
-    setText("pre-telefone-view", pre?.telefone || cliente?.telefone || "—");
+    const nome = editados.nome || pre?.nome || cliente?.nome || "";
+    const email = editados.email || pre?.email || cliente?.email || "";
+    const telefone = editados.telefone || pre?.telefone || cliente?.telefone || "";
+    const sexo = editados.sexoReferencia || pre?.sexo || pre?.genero || "";
+    const nascimento =
+      editados.dataNascimento ||
+      pre?.dataNascimento ||
+      pre?.nascimento ||
+      pre?.birthDate ||
+      "";
+    const idade = calculateAgeFromDate(nascimento);
 
-    setValue(
-      "pre-sexo-ref",
-      editados.sexoReferencia ||
-      pre?.sexo ||
-      pre?.genero ||
-      ""
-    );
-
-    setValue("pre-idade", getReferenceAge(pre));
-
-    setValue(
-      "pre-objetivo",
+    const objetivo =
+      editados.objetivo ||
       pre?.objetivo ||
       pre?.objetivo_principal ||
       cliente?.objetivo ||
-      cliente?.objetivo_principal ||
-      ""
-    );
+      "";
 
-    const resumoBase =
+    const resumo =
+      editados.resumo ||
       pre?.resumoPrediagnostico ||
       pre?.resumo_pre_diagnostico ||
       pre?.rotina ||
       pre?.maior_dificuldade ||
-      "Sem resumo registrado no momento.";
+      "";
 
-    setValue("pre-resumo", `${resumoBase}\n\nRadar: ${getRadarResumo(pre)}`);
+    setValue("pre-nome-edit", nome);
+    setValue("pre-email-edit", email);
+    setValue("pre-telefone-edit", telefone);
+    setValue("pre-sexo-ref", sexo);
+    setValue("pre-nascimento", nascimento);
+    setValue("pre-idade", idade);
+    setValue("pre-objetivo", objetivo);
+    setValue("pre-resumo", resumo);
 
     const updatedEl = document.getElementById("dados-base-updated");
     if (updatedEl) {
@@ -206,8 +210,13 @@ window.ZALancamentos = (() => {
     clientes[index] = {
       ...clientes[index],
       dadosBaseEditados: {
-        ...(clientes[index].dadosBaseEditados || {}),
-        sexoReferencia: document.getElementById("pre-sexo-ref")?.value?.trim() || ""
+        nome: document.getElementById("pre-nome-edit")?.value?.trim() || "",
+        email: document.getElementById("pre-email-edit")?.value?.trim() || "",
+        telefone: document.getElementById("pre-telefone-edit")?.value?.trim() || "",
+        sexoReferencia: document.getElementById("pre-sexo-ref")?.value?.trim() || "",
+        dataNascimento: document.getElementById("pre-nascimento")?.value || "",
+        objetivo: document.getElementById("pre-objetivo")?.value?.trim() || "",
+        resumo: document.getElementById("pre-resumo")?.value?.trim() || ""
       },
       dadosBaseUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -660,6 +669,11 @@ window.ZALancamentos = (() => {
   function bindEvents() {
     document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
     document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
+
+    document.getElementById("pre-nascimento")?.addEventListener("change", () => {
+      const nascimento = document.getElementById("pre-nascimento")?.value || "";
+      setValue("pre-idade", calculateAgeFromDate(nascimento));
+    });
 
     document.getElementById("salvar-dados-base-btn")?.addEventListener("click", saveDadosBase);
     document.getElementById("salvar-sessao-btn")?.addEventListener("click", saveSessao);
