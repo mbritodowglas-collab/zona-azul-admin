@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=44" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=45" />
 </head>
 <body>
   <div class="app-shell">
@@ -84,9 +84,27 @@
                     <input id="pre-sexo-ref" type="text" placeholder="Ex.: masculino / feminino" />
                   </div>
 
-                  <div class="field">
-                    <label for="pre-nascimento">Data de nascimento</label>
-                    <input id="pre-nascimento" type="date" />
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label>Data de nascimento</label>
+                    <div class="birth-grid">
+                      <input id="pre-nascimento-dia" type="number" min="1" max="31" placeholder="Dia" />
+                      <select id="pre-nascimento-mes">
+                        <option value="">Mês</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Fev</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Abr</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Ago</option>
+                        <option value="9">Set</option>
+                        <option value="10">Out</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dez</option>
+                      </select>
+                      <input id="pre-nascimento-ano" type="number" min="1900" max="2100" placeholder="Ano" />
+                    </div>
                   </div>
 
                   <div class="field">
@@ -565,7 +583,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=44"></script>
-  <script src="../assets/js/lancamentos.js?v=44"></script>
+  <script src="../assets/js/storage.js?v=45"></script>
+  <script src="../assets/js/lancamentos.js?v=45"></script>
 </body>
 </html>
