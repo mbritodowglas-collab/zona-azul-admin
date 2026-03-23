@@ -120,6 +120,12 @@ window.ZALancamentos = (() => {
     setText("pre-email-view", pre?.email || cliente?.email || "—");
     setText("pre-telefone-view", pre?.telefone || cliente?.telefone || "—");
 
+    const sexo = pre?.sexo || pre?.genero || "";
+    const genero = pre?.genero || pre?.sexo || "";
+
+    document.getElementById("pre-sexo").value = sexo;
+    document.getElementById("pre-genero").value = genero;
+
     const objetivoEl = document.getElementById("pre-objetivo");
     const resumoEl = document.getElementById("pre-resumo");
 
@@ -144,12 +150,56 @@ window.ZALancamentos = (() => {
     }
   }
 
+  function applyProtocolVisibility() {
+    const tipoEl = document.getElementById("sessao-tipo");
+    const protocoloEl = document.getElementById("sessao-protocolo");
+    const blocoAvancado = document.getElementById("bloco-avancado");
+    const regraTexto = document.getElementById("sessao-regra-texto");
+
+    if (!tipoEl || !protocoloEl || !blocoAvancado) return;
+
+    const tipo = tipoEl.value;
+    const protocolo = protocoloEl.value;
+
+    if (tipo === "online") {
+      protocoloEl.value = "essencial";
+      protocoloEl.disabled = true;
+      blocoAvancado.classList.add("hidden");
+      if (regraTexto) {
+        regraTexto.textContent = "Online usa automaticamente o protocolo essencial.";
+      }
+      return;
+    }
+
+    protocoloEl.disabled = false;
+
+    if (tipo === "presencial") {
+      if (regraTexto) {
+        regraTexto.textContent = "Presencial pode usar protocolo essencial ou avançado.";
+      }
+
+      if (protocolo === "avancado") {
+        blocoAvancado.classList.remove("hidden");
+      } else {
+        blocoAvancado.classList.add("hidden");
+      }
+      return;
+    }
+
+    blocoAvancado.classList.add("hidden");
+    if (regraTexto) {
+      regraTexto.textContent = "Selecione o tipo da sessão para liberar o protocolo.";
+    }
+  }
+
   function renderSessao() {
     const sessao = cliente?.sessao || {};
 
     document.getElementById("sessao-data").value = sessao.data || "";
     document.getElementById("sessao-tipo").value = sessao.tipo || "";
     document.getElementById("sessao-protocolo").value = sessao.protocolo || "";
+
+    applyProtocolVisibility();
 
     const updatedEl = document.getElementById("sessao-updated");
     if (updatedEl) {
@@ -162,12 +212,16 @@ window.ZALancamentos = (() => {
     const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
+    const tipo = document.getElementById("sessao-tipo")?.value || "";
+    const protocoloSelecionado = document.getElementById("sessao-protocolo")?.value || "";
+    const protocoloFinal = tipo === "online" ? "essencial" : protocoloSelecionado;
+
     clientes[index] = {
       ...clientes[index],
       sessao: {
         data: document.getElementById("sessao-data")?.value || "",
-        tipo: document.getElementById("sessao-tipo")?.value || "",
-        protocolo: document.getElementById("sessao-protocolo")?.value || "",
+        tipo,
+        protocolo: protocoloFinal,
       },
       sessaoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -175,6 +229,7 @@ window.ZALancamentos = (() => {
 
     setClientes(clientes);
     cliente = clientes[index];
+    applyProtocolVisibility();
     alert("Sessão salva.");
     renderSessao();
   }
@@ -184,9 +239,17 @@ window.ZALancamentos = (() => {
     const altura = parseFloat(document.getElementById("altura")?.value || "");
     const cintura = parseFloat(document.getElementById("cintura")?.value || "");
     const quadril = parseFloat(document.getElementById("quadril")?.value || "");
+    const pescoco = parseFloat(document.getElementById("pescoco")?.value || "");
+    const abdomenMarinha = parseFloat(document.getElementById("abdomen-marinha")?.value || "");
+
+    const sexoRef =
+      (document.getElementById("pre-sexo")?.value || document.getElementById("pre-genero")?.value || "")
+        .toLowerCase();
 
     const imcEl = document.getElementById("imc");
     const rcqEl = document.getElementById("rcq");
+    const rceEl = document.getElementById("rce");
+    const gorduraEl = document.getElementById("gordura-marinha");
 
     if (imcEl) {
       imcEl.value = peso && altura ? (peso / (altura * altura)).toFixed(2) : "";
@@ -194,6 +257,57 @@ window.ZALancamentos = (() => {
 
     if (rcqEl) {
       rcqEl.value = cintura && quadril ? (cintura / quadril).toFixed(2) : "";
+    }
+
+    if (rceEl) {
+      const alturaCm = altura ? altura * 100 : 0;
+      rceEl.value = cintura && alturaCm ? (cintura / alturaCm).toFixed(2) : "";
+    }
+
+    if (gorduraEl) {
+      let gordura = "";
+
+      if (altura && pescoco && abdomenMarinha) {
+        const alturaCm = altura * 100;
+
+        if (sexoRef.includes("f")) {
+          if (quadril) {
+            const valor =
+              163.205 * Math.log10(abdomenMarinha + quadril - pescoco) -
+              97.684 * Math.log10(alturaCm) -
+              78.387;
+            if (Number.isFinite(valor)) gordura = valor.toFixed(2);
+          }
+        } else {
+          const valor =
+            86.01 * Math.log10(abdomenMarinha - pescoco) -
+            70.041 * Math.log10(alturaCm) +
+            36.76;
+          if (Number.isFinite(valor)) gordura = valor.toFixed(2);
+        }
+      }
+
+      gorduraEl.value = gordura;
+    }
+
+    const dobras = [
+      "dobra-peitoral",
+      "dobra-axilar",
+      "dobra-triceps",
+      "dobra-subescapular",
+      "dobra-abdominal",
+      "dobra-suprailiaca",
+      "dobra-coxa"
+    ];
+
+    const soma = dobras.reduce((acc, id) => {
+      const n = parseFloat(document.getElementById(id)?.value || "");
+      return acc + (Number.isFinite(n) ? n : 0);
+    }, 0);
+
+    const somaEl = document.getElementById("dobras-soma");
+    if (somaEl) {
+      somaEl.value = soma > 0 ? soma.toFixed(1) : "";
     }
   }
 
@@ -204,8 +318,36 @@ window.ZALancamentos = (() => {
     document.getElementById("altura").value = avaliacao.altura || "";
     document.getElementById("cintura").value = avaliacao.cintura || "";
     document.getElementById("quadril").value = avaliacao.quadril || "";
+    document.getElementById("pescoco").value = avaliacao.pescoco || "";
+    document.getElementById("abdomen-marinha").value = avaliacao.abdomenMarinha || "";
     document.getElementById("imc").value = avaliacao.imc || "";
     document.getElementById("rcq").value = avaliacao.rcq || "";
+    document.getElementById("rce").value = avaliacao.rce || "";
+    document.getElementById("gordura-marinha").value = avaliacao.gorduraMarinha || "";
+
+    document.getElementById("torax").value = avaliacao.torax || "";
+    document.getElementById("abdomen").value = avaliacao.abdomen || "";
+    document.getElementById("braco-direito").value = avaliacao.bracoDireito || "";
+    document.getElementById("braco-esquerdo").value = avaliacao.bracoEsquerdo || "";
+    document.getElementById("coxa-direita").value = avaliacao.coxaDireita || "";
+    document.getElementById("coxa-esquerda").value = avaliacao.coxaEsquerda || "";
+    document.getElementById("panturrilha").value = avaliacao.panturrilha || "";
+
+    document.getElementById("dobra-peitoral").value = avaliacao.dobraPeitoral || "";
+    document.getElementById("dobra-axilar").value = avaliacao.dobraAxilar || "";
+    document.getElementById("dobra-triceps").value = avaliacao.dobraTriceps || "";
+    document.getElementById("dobra-subescapular").value = avaliacao.dobraSubescapular || "";
+    document.getElementById("dobra-abdominal").value = avaliacao.dobraAbdominal || "";
+    document.getElementById("dobra-suprailiaca").value = avaliacao.dobraSuprailiaca || "";
+    document.getElementById("dobra-coxa").value = avaliacao.dobraCoxa || "";
+    document.getElementById("dobras-soma").value = avaliacao.dobrasSoma || "";
+
+    document.getElementById("teste-overhead").value = avaliacao.testeOverhead || "";
+    document.getElementById("teste-thomas").value = avaliacao.testeThomas || "";
+    document.getElementById("teste-sentar-alcancar").value = avaliacao.testeSentarAlcancar || "";
+    document.getElementById("teste-step-fc").value = avaliacao.testeStepFc || "";
+    document.getElementById("teste-step-borg").value = avaliacao.testeStepBorg || "";
+    document.getElementById("teste-step-classificacao").value = avaliacao.testeStepClassificacao || "";
 
     const updatedEl = document.getElementById("avaliacao-updated");
     if (updatedEl) {
@@ -227,8 +369,36 @@ window.ZALancamentos = (() => {
         altura: document.getElementById("altura")?.value || "",
         cintura: document.getElementById("cintura")?.value || "",
         quadril: document.getElementById("quadril")?.value || "",
+        pescoco: document.getElementById("pescoco")?.value || "",
+        abdomenMarinha: document.getElementById("abdomen-marinha")?.value || "",
         imc: document.getElementById("imc")?.value || "",
         rcq: document.getElementById("rcq")?.value || "",
+        rce: document.getElementById("rce")?.value || "",
+        gorduraMarinha: document.getElementById("gordura-marinha")?.value || "",
+
+        torax: document.getElementById("torax")?.value || "",
+        abdomen: document.getElementById("abdomen")?.value || "",
+        bracoDireito: document.getElementById("braco-direito")?.value || "",
+        bracoEsquerdo: document.getElementById("braco-esquerdo")?.value || "",
+        coxaDireita: document.getElementById("coxa-direita")?.value || "",
+        coxaEsquerda: document.getElementById("coxa-esquerda")?.value || "",
+        panturrilha: document.getElementById("panturrilha")?.value || "",
+
+        dobraPeitoral: document.getElementById("dobra-peitoral")?.value || "",
+        dobraAxilar: document.getElementById("dobra-axilar")?.value || "",
+        dobraTriceps: document.getElementById("dobra-triceps")?.value || "",
+        dobraSubescapular: document.getElementById("dobra-subescapular")?.value || "",
+        dobraAbdominal: document.getElementById("dobra-abdominal")?.value || "",
+        dobraSuprailiaca: document.getElementById("dobra-suprailiaca")?.value || "",
+        dobraCoxa: document.getElementById("dobra-coxa")?.value || "",
+        dobrasSoma: document.getElementById("dobras-soma")?.value || "",
+
+        testeOverhead: document.getElementById("teste-overhead")?.value || "",
+        testeThomas: document.getElementById("teste-thomas")?.value || "",
+        testeSentarAlcancar: document.getElementById("teste-sentar-alcancar")?.value || "",
+        testeStepFc: document.getElementById("teste-step-fc")?.value || "",
+        testeStepBorg: document.getElementById("teste-step-borg")?.value || "",
+        testeStepClassificacao: document.getElementById("teste-step-classificacao")?.value || "",
       },
       avaliacaoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -406,6 +576,9 @@ window.ZALancamentos = (() => {
   }
 
   function bindEvents() {
+    document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
+    document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
+
     document.getElementById("salvar-sessao-btn")?.addEventListener("click", saveSessao);
     document.getElementById("calcular-btn")?.addEventListener("click", calcularAvaliacao);
     document.getElementById("salvar-avaliacao-btn")?.addEventListener("click", saveAvaliacao);
