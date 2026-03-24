@@ -529,7 +529,7 @@ window.ZALancamentos = (() => {
 
     if (tipo === "online") {
       if (protocoloEl) {
-        protocoloEl.value = "essencial";
+        protocoloEl.value = "A";
         protocoloEl.disabled = true;
       }
 
@@ -540,14 +540,14 @@ window.ZALancamentos = (() => {
       fieldGorduraDobras?.classList.add("hidden");
 
       if (regraTexto) {
-        regraTexto.textContent = "Online usa Marinha. Presencial essencial usa Marinha sem dobras. Presencial avançado usa dobras.";
+        regraTexto.textContent = "Protocolo A: online com Marinha Americana.";
       }
       return;
     }
 
     if (protocoloEl) protocoloEl.disabled = false;
 
-    if (tipo === "presencial" && protocolo === "essencial") {
+    if (tipo === "presencial" && protocolo === "B") {
       blocoPresencial?.classList.remove("hidden");
       blocoAvancado?.classList.add("hidden");
       fieldAbdomenMarinha?.classList.remove("hidden");
@@ -555,12 +555,12 @@ window.ZALancamentos = (() => {
       fieldGorduraDobras?.classList.add("hidden");
 
       if (regraTexto) {
-        regraTexto.textContent = "Presencial essencial usa Marinha + perimetria + testes, sem dobras.";
+        regraTexto.textContent = "Protocolo B: presencial sem dobras, com Marinha + perimetria + testes.";
       }
       return;
     }
 
-    if (tipo === "presencial" && protocolo === "avancado") {
+    if (tipo === "presencial" && protocolo === "C") {
       blocoPresencial?.classList.remove("hidden");
       blocoAvancado?.classList.remove("hidden");
       fieldAbdomenMarinha?.classList.add("hidden");
@@ -568,7 +568,7 @@ window.ZALancamentos = (() => {
       fieldGorduraDobras?.classList.remove("hidden");
 
       if (regraTexto) {
-        regraTexto.textContent = "Presencial avançado usa dobras + perimetria + testes.";
+        regraTexto.textContent = "Protocolo C: presencial com dobras + perimetria + testes.";
       }
       return;
     }
@@ -605,7 +605,7 @@ window.ZALancamentos = (() => {
 
     const tipo = document.getElementById("sessao-tipo")?.value || "";
     const protocoloSelecionado = document.getElementById("sessao-protocolo")?.value || "";
-    const protocoloFinal = tipo === "online" ? "essencial" : protocoloSelecionado;
+    const protocoloFinal = tipo === "online" ? "A" : protocoloSelecionado;
 
     clientes[index] = {
       ...clientes[index],
@@ -624,7 +624,7 @@ window.ZALancamentos = (() => {
     showFeedback("Sessão salva com sucesso.", "Sessão atualizada", "📌");
   }
 
-  function calculateMarineBodyFat(heightM, neckCm, waistCm, hipCm, sexRef) {
+  function calculateMarineBodyFat(heightM, waistCm, neckCm, hipCm, sexRef) {
     const heightCm = heightM * 100;
     if (!heightCm || !neckCm || !waistCm) return "";
 
@@ -701,7 +701,7 @@ window.ZALancamentos = (() => {
     }
 
     const usaMarinha =
-      tipo === "online" || (tipo === "presencial" && protocolo === "essencial");
+      tipo === "online" || protocolo === "A" || protocolo === "B";
 
     if (usaMarinha && (!Number.isFinite(abdomenMarinha) || abdomenMarinha <= 0)) {
       showFeedback("Abdômen é obrigatório para o protocolo da Marinha Americana.", "Campo obrigatório", "⚠");
@@ -730,23 +730,18 @@ window.ZALancamentos = (() => {
     const sexoRef = getReferenceSex(pre);
     const idadeRef = getReferenceAge(pre);
 
-    if (peso && altura) {
-      setValue("imc", (peso / (altura * altura)).toFixed(2));
-    } else {
-      setValue("imc", "");
-    }
-
+    setValue("imc", (peso / (altura * altura)).toFixed(2));
     setValue("rcq", (cintura / quadril).toFixed(2));
     setValue("rce", (cintura / (altura * 100)).toFixed(2));
 
     const usaMarinha =
-      tipo === "online" || (tipo === "presencial" && protocolo === "essencial");
+      tipo === "online" || protocolo === "A" || protocolo === "B";
 
     if (usaMarinha) {
       const gorduraMarinha = calculateMarineBodyFat(
         altura,
-        pescoco,
         abdomenMarinha || cintura,
+        pescoco,
         quadril,
         sexoRef
       );
@@ -772,7 +767,7 @@ window.ZALancamentos = (() => {
 
     setValue("dobras-soma", somaDobras > 0 ? somaDobras.toFixed(1) : "");
 
-    if (tipo === "presencial" && protocolo === "avancado") {
+    if (protocolo === "C") {
       setValue("gordura-dobras", calculateDobrasBodyFat(somaDobras, idadeRef, sexoRef));
     } else {
       setValue("gordura-dobras", "");
