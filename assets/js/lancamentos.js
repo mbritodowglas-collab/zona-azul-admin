@@ -87,6 +87,17 @@ window.ZALancamentos = (() => {
     return age >= 0 ? String(age) : "";
   }
 
+  function calculateAgeFromDate(dateStr) {
+    if (!dateStr) return "";
+    const birth = new Date(dateStr);
+    if (Number.isNaN(birth.getTime())) return "";
+    return calculateAgeFromParts(
+      birth.getDate(),
+      birth.getMonth() + 1,
+      birth.getFullYear()
+    );
+  }
+
   function getInitials(nome) {
     if (!nome) return "C";
     const parts = nome.trim().split(" ").filter(Boolean);
@@ -104,6 +115,142 @@ window.ZALancamentos = (() => {
       }
     }
     return "";
+  }
+
+  function ensureFeedbackModal() {
+    if (document.getElementById("za-feedback-overlay")) return;
+
+    const style = document.createElement("style");
+    style.id = "za-feedback-style";
+    style.textContent = `
+      .za-feedback-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(6, 10, 24, 0.72);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+
+      .za-feedback-overlay.hidden {
+        display: none;
+      }
+
+      .za-feedback-modal {
+        width: min(100%, 420px);
+        background: linear-gradient(180deg, rgba(25,31,56,0.98), rgba(15,20,39,0.98));
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+        padding: 22px 20px 18px;
+        color: #f5f7ff;
+      }
+
+      .za-feedback-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .za-feedback-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: rgba(120, 130, 255, 0.16);
+        border: 1px solid rgba(138, 147, 255, 0.25);
+      }
+
+      .za-feedback-title {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .za-feedback-message {
+        margin: 10px 0 0;
+        color: rgba(230,235,255,0.88);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .za-feedback-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 18px;
+      }
+
+      .za-feedback-btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #ffffff;
+        background: linear-gradient(135deg, #6d73ff, #8d72ff);
+        box-shadow: 0 10px 24px rgba(109,115,255,0.25);
+      }
+
+      .za-feedback-btn:active {
+        transform: scale(0.98);
+      }
+    `;
+    document.head.appendChild(style);
+
+    const overlay = document.createElement("div");
+    overlay.id = "za-feedback-overlay";
+    overlay.className = "za-feedback-overlay hidden";
+    overlay.innerHTML = `
+      <div class="za-feedback-modal" role="dialog" aria-modal="true" aria-labelledby="za-feedback-title">
+        <div class="za-feedback-head">
+          <div class="za-feedback-icon" id="za-feedback-icon">✓</div>
+          <h3 class="za-feedback-title" id="za-feedback-title">Tudo certo</h3>
+        </div>
+        <p class="za-feedback-message" id="za-feedback-message"></p>
+        <div class="za-feedback-actions">
+          <button type="button" class="za-feedback-btn" id="za-feedback-ok">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) hideFeedback();
+    });
+
+    document.getElementById("za-feedback-ok")?.addEventListener("click", hideFeedback);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") hideFeedback();
+    });
+  }
+
+  function showFeedback(message, title = "Tudo certo", icon = "✓") {
+    ensureFeedbackModal();
+
+    const overlay = document.getElementById("za-feedback-overlay");
+    const titleEl = document.getElementById("za-feedback-title");
+    const iconEl = document.getElementById("za-feedback-icon");
+    const messageEl = document.getElementById("za-feedback-message");
+
+    if (titleEl) titleEl.textContent = title;
+    if (iconEl) iconEl.textContent = icon;
+    if (messageEl) messageEl.textContent = message;
+    overlay?.classList.remove("hidden");
+  }
+
+  function hideFeedback() {
+    document.getElementById("za-feedback-overlay")?.classList.add("hidden");
   }
 
   function getPreDataFromCliente(clienteAtual) {
@@ -228,10 +375,7 @@ window.ZALancamentos = (() => {
 
   function getReferenceSex(pre) {
     const editados = getDadosBaseEditados();
-    const valorEditado = firstFilled(
-      editados.sexoReferencia,
-      document.getElementById("pre-sexo-ref")?.value
-    );
+    const valorEditado = editados.sexoReferencia || document.getElementById("pre-sexo-ref")?.value?.trim();
 
     if (valorEditado) return String(valorEditado).toLowerCase();
 
@@ -398,7 +542,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderPre();
-    alert("Dados base salvos.");
+    showFeedback("Dados base salvos com sucesso.", "Base atualizada", "📝");
   }
 
   function updateIdadeFromBirthInputs() {
@@ -514,7 +658,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderSessao();
-    alert("Sessão salva.");
+    showFeedback("Sessão salva com sucesso.", "Sessão atualizada", "📌");
   }
 
   function calculateMarineBodyFat(heightM, neckCm, waistCm, hipCm, sexRef) {
@@ -685,7 +829,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderAvaliacao();
-    alert("Avaliação salva.");
+    showFeedback("Avaliação salva com sucesso.", "Avaliação atualizada", "📊");
   }
 
   function renderRadar() {
@@ -725,7 +869,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderRadar();
-    alert("Radar revisado salvo.");
+    showFeedback("Radar revisado salvo com sucesso.", "Radar atualizado", "🧠");
   }
 
   function renderDiagnostico() {
@@ -764,7 +908,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderDiagnostico();
-    alert("Diagnóstico salvo.");
+    showFeedback("Diagnóstico salvo com sucesso.", "Diagnóstico atualizado", "🩺");
   }
 
   function renderAcompanhamentos() {
@@ -840,7 +984,7 @@ window.ZALancamentos = (() => {
     cliente = clientes[index];
     renderAcompanhamentos();
     resetFormAcompanhamento();
-    alert("Acompanhamento salvo.");
+    showFeedback("Acompanhamento salvo com sucesso.", "Acompanhamento atualizado", "📅");
   }
 
   function bindEvents() {
@@ -862,6 +1006,7 @@ window.ZALancamentos = (() => {
 
   function init() {
     clienteId = getQueryParam("id");
+    ensureFeedbackModal();
 
     if (!clienteId) {
       document.getElementById("lancamentos-page")?.classList.add("hidden");
