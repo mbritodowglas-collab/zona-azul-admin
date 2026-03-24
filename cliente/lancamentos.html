@@ -4,7 +4,63 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=49" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=50" />
+  <style>
+    .launch-accordion {
+      overflow: hidden;
+    }
+
+    .accordion-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: inherit;
+      padding: 0;
+    }
+
+    .accordion-toggle h3 {
+      margin: 0 0 4px;
+    }
+
+    .accordion-toggle .cliente-hero-meta,
+    .accordion-toggle .muted {
+      margin: 0;
+    }
+
+    .accordion-icon {
+      flex: 0 0 auto;
+      font-size: 24px;
+      line-height: 1;
+      color: rgba(255,255,255,0.72);
+      transition: transform 0.22s ease;
+    }
+
+    .launch-accordion.is-open .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-panel {
+      display: none;
+    }
+
+    .launch-accordion.is-open .accordion-panel {
+      display: block;
+    }
+
+    .launch-accordion .card-header {
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .launch-accordion:not(.is-open) .card-header {
+      border-bottom: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -59,11 +115,19 @@
         <section class="lancamentos-grid">
           <div class="lancamentos-col-main">
 
-            <section class="card">
+            <!-- BASE DO PRÉ -->
+            <section class="card launch-accordion" data-accordion="dados-base">
               <div class="card-header">
-                <h3>Base do pré-diagnóstico</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="true">
+                  <div>
+                    <h3>Base do pré-diagnóstico</h3>
+                    <p class="cliente-hero-meta">Dados herdados e ajustes finos.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <div class="grid cols-2">
                   <div class="field">
                     <label for="pre-nome-edit">Nome</label>
@@ -131,11 +195,19 @@
               </div>
             </section>
 
-            <section class="card">
+            <!-- SESSÃO -->
+            <section class="card launch-accordion" data-accordion="sessao">
               <div class="card-header">
-                <h3>Estrutura da sessão</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Estrutura da sessão</h3>
+                    <p class="cliente-hero-meta">Tipo da sessão e protocolo aplicado.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <div class="grid cols-3">
                   <div class="field">
                     <label for="sessao-data">Data da sessão</label>
@@ -173,11 +245,19 @@
               </div>
             </section>
 
-            <section class="card">
+            <!-- AVALIAÇÃO -->
+            <section class="card launch-accordion" data-accordion="avaliacao">
               <div class="card-header">
-                <h3>Avaliação física</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Avaliação física</h3>
+                    <p class="cliente-hero-meta">Medidas, cálculos e testes.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <div class="grid cols-2">
                   <div class="field">
                     <label for="peso">Peso (kg)</label>
@@ -367,11 +447,19 @@
               </div>
             </section>
 
-            <section class="card">
+            <!-- RADAR -->
+            <section class="card launch-accordion" data-accordion="radar">
               <div class="card-header">
-                <h3>Radar revisado</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Radar revisado</h3>
+                    <p class="cliente-hero-meta">Comparação entre percepção inicial e leitura técnica.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <p class="cliente-hero-meta" style="margin-bottom: 16px;">
                   Compare o score original do cliente com a sua leitura revisada da sessão.
                 </p>
@@ -451,12 +539,19 @@
               </div>
             </section>
 
-            <section class="card">
+            <!-- DIAGNÓSTICO -->
+            <section class="card launch-accordion" data-accordion="diagnostico">
               <div class="card-header">
-                <h3>Diagnóstico completo</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Diagnóstico completo</h3>
+                    <p class="cliente-hero-meta">Síntese, gaps e plano inicial.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
 
+              <div class="card-body accordion-panel">
                 <h4 class="subsection-title">Síntese do diagnóstico</h4>
 
                 <div class="grid cols-2">
@@ -627,11 +722,19 @@
           </div>
 
           <div class="lancamentos-col-side">
-            <section class="card">
+            <!-- NOVO ACOMPANHAMENTO -->
+            <section class="card launch-accordion" data-accordion="novo-acompanhamento">
               <div class="card-header">
-                <h3>Novo acompanhamento</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Novo acompanhamento</h3>
+                    <p class="cliente-hero-meta">Registro da execução e ajuste da rota.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <div class="grid cols-1">
                   <div class="field">
                     <label for="acomp-data">Data</label>
@@ -666,11 +769,19 @@
               </div>
             </section>
 
-            <section class="card">
+            <!-- HISTÓRICO -->
+            <section class="card launch-accordion" data-accordion="historico-acompanhamentos">
               <div class="card-header">
-                <h3>Histórico de acompanhamentos</h3>
+                <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <div>
+                    <h3>Histórico de acompanhamentos</h3>
+                    <p class="cliente-hero-meta">Linha do tempo dos registros salvos.</p>
+                  </div>
+                  <span class="accordion-icon">⌄</span>
+                </button>
               </div>
-              <div class="card-body">
+
+              <div class="card-body accordion-panel">
                 <div id="acompanhamentos-lista" class="acompanhamentos-lista"></div>
               </div>
             </section>
@@ -680,7 +791,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=49"></script>
-  <script src="../assets/js/lancamentos.js?v=49"></script>
+  <script src="../assets/js/storage.js?v=50"></script>
+  <script src="../assets/js/lancamentos.js?v=50"></script>
 </body>
 </html>
