@@ -1,440 +1,348 @@
-window.ZARelatorioCliente = (() => {
-  let clienteId = null;
-  let cliente = null;
-  let radarChart = null;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório do Cliente | Zona Azul</title>
 
-  const RADAR_LABELS = {
-    movimento: "Movimento",
-    alimentacao: "Alimentação",
-    sono: "Sono",
-    proposito: "Propósito",
-    social: "Social",
-    estresse: "Estresse"
-  };
+<link rel="stylesheet" href="../assets/css/global.css?v=54">
 
-  function getQueryParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name);
-  }
+<style>
 
-  function getClientes() {
-    return window.ZAStorage?.getClientes?.() || [];
-  }
+/* ===== BASE ===== */
 
-  function getClienteById(id) {
-    return getClientes().find((item) => String(item.id) === String(id)) || null;
-  }
+body {
+  background: radial-gradient(circle at top, #111827, #020617 70%);
+}
 
-  function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value ?? "—";
-  }
+.report-wrap {
+  display: grid;
+  gap: 24px;
+}
 
-  function formatDate(dateValue) {
-    if (!dateValue) return "—";
-    try {
-      return new Date(dateValue).toLocaleDateString("pt-BR");
-    } catch {
-      return String(dateValue);
-    }
-  }
+/* ===== HERO ===== */
 
-  function formatNumber(value, digits = 2) {
-    const n = Number(value);
-    if (!Number.isFinite(n)) return "—";
-    return n.toFixed(digits).replace(".", ",");
-  }
+.report-hero {
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 28px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 
-  function formatRaw(value) {
-    if (value === null || value === undefined || value === "") return "—";
-    return String(value);
-  }
+.report-hero-left {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
 
-  function getInitials(nome) {
-    if (!nome) return "C";
-    const parts = nome.trim().split(" ").filter(Boolean);
-    return ((parts[0]?.[0] || "C") + (parts[1]?.[0] || "")).toUpperCase();
-  }
+.report-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 22px;
+  background: linear-gradient(135deg,#6d73ff,#8d72ff);
+}
 
-  function firstFilled(...values) {
-    for (const value of values) {
-      if (value !== undefined && value !== null && String(value).trim() !== "") {
-        return value;
-      }
-    }
-    return "";
-  }
+.report-title {
+  font-size: 26px;
+  font-weight: 700;
+}
 
-  function ensureHistorico(clienteObj) {
-    const historico = clienteObj?.historico || {};
-    return {
-      avaliacoes: Array.isArray(historico.avaliacoes) ? historico.avaliacoes : [],
-      radar: Array.isArray(historico.radar) ? historico.radar : []
-    };
-  }
+.report-sub {
+  opacity: 0.7;
+}
 
-  function getPrimeiraEUltimaAvaliacao() {
-    const historico = ensureHistorico(cliente);
-    const lista = historico.avaliacoes;
+/* ===== CARDS ===== */
 
-    if (!lista.length) {
-      const fallback = cliente?.sessaoEAvaliacao;
-      if (!fallback?.avaliacao) {
-        return { inicial: null, atual: null };
-      }
+.report-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 26px;
+  overflow: hidden;
+}
 
-      const fake = {
-        data: fallback?.sessao?.data || "",
-        protocolo: fallback?.sessao?.protocolo || "",
-        tipoSessao: fallback?.sessao?.tipo || "",
-        avaliacao: {
-          peso: fallback.avaliacao["peso"] || "",
-          altura: fallback.avaliacao["altura"] || "",
-          cintura: fallback.avaliacao["cintura"] || "",
-          quadril: fallback.avaliacao["quadril"] || "",
-          pescoco: fallback.avaliacao["pescoco"] || "",
-          abdomenMarinha: fallback.avaliacao["abdomen-marinha"] || "",
-          imc: fallback.avaliacao["imc"] || "",
-          rcq: fallback.avaliacao["rcq"] || "",
-          rce: fallback.avaliacao["rce"] || "",
-          gorduraMarinha: fallback.avaliacao["gordura-marinha"] || "",
-          gorduraDobras: fallback.avaliacao["gordura-dobras"] || "",
-          perimetria: {
-            torax: fallback.avaliacao["torax"] || "",
-            abdomen: fallback.avaliacao["abdomen"] || "",
-            bracoDireito: fallback.avaliacao["braco-direito"] || "",
-            bracoEsquerdo: fallback.avaliacao["braco-esquerdo"] || "",
-            coxaDireita: fallback.avaliacao["coxa-direita"] || "",
-            coxaEsquerda: fallback.avaliacao["coxa-esquerda"] || "",
-            panturrilha: fallback.avaliacao["panturrilha"] || ""
-          }
-        }
-      };
+.report-card-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 
-      return { inicial: fake, atual: fake };
-    }
+.report-card-header h3 {
+  margin: 0;
+  font-size: 22px;
+}
 
-    return {
-      inicial: lista[0],
-      atual: lista[lista.length - 1]
-    };
-  }
+.report-card-body {
+  padding: 20px;
+}
 
-  function getPrimeiroEUltimoRadar() {
-    const historico = ensureHistorico(cliente);
-    const lista = historico.radar;
+/* ===== SUMMARY ===== */
 
-    if (!lista.length) {
-      const atual = cliente?.analiseCaso?.radarRevisado || {};
-      return {
-        inicial: atual,
-        atual
-      };
-    }
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 16px;
+}
 
-    return {
-      inicial: lista[0]?.valores || {},
-      atual: lista[lista.length - 1]?.valores || {}
-    };
-  }
+.summary-box {
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 18px;
+}
 
-  function getDiagnosticoAtual() {
-    return cliente?.analiseCaso?.diagnosticoCompleto || {};
-  }
+.summary-box h4 {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
 
-  function getResumoObjetivo() {
-    return firstFilled(
-      cliente?.dadosBaseEditados?.objetivo,
-      cliente?.preDiagnostico?.objetivo,
-      cliente?.preDiagnostico?.objetivo_principal,
-      cliente?.preDiagnostico?.objetivo_fisico,
-      cliente?.objetivo
-    ) || "—";
-  }
+.summary-box p {
+  font-size: 16px;
+  font-weight: 600;
+}
 
-  function deltaText(oldValue, newValue, suffix = "", invertPositive = false, digits = 2) {
-    const oldNum = Number(oldValue);
-    const newNum = Number(newValue);
+/* ===== RADAR ===== */
 
-    if (!Number.isFinite(oldNum) || !Number.isFinite(newNum)) {
-      return { text: "Sem comparação", className: "delta-neutral" };
-    }
+.radar-wrap {
+  padding: 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 20px;
+}
 
-    const delta = newNum - oldNum;
-    const abs = Math.abs(delta).toFixed(digits).replace(".", ",");
+.radar-canvas-wrap {
+  height: 380px;
+}
 
-    if (delta === 0) {
-      return { text: `Sem variação`, className: "delta-neutral" };
-    }
+/* ===== METRICS ===== */
 
-    const improved = invertPositive ? delta < 0 : delta > 0;
-    const sign = delta > 0 ? "+" : "-";
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 14px;
+}
 
-    return {
-      text: `${sign}${abs}${suffix ? ` ${suffix}` : ""}`,
-      className: improved ? "delta-positive" : "delta-negative"
-    };
-  }
+.metric-card {
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 18px;
+  transition: 0.2s;
+}
 
-  function metricCard(label, oldValue, newValue, options = {}) {
-    const {
-      suffix = "",
-      invertPositive = false,
-      digits = 2,
-      raw = false
-    } = options;
+.metric-card:hover {
+  transform: translateY(-3px);
+}
 
-    const oldText = raw ? formatRaw(oldValue) : formatNumber(oldValue, digits);
-    const newText = raw ? formatRaw(newValue) : formatNumber(newValue, digits);
-    const delta = raw
-      ? { text: "Comparação visual", className: "delta-neutral" }
-      : deltaText(oldValue, newValue, suffix, invertPositive, digits);
+.metric-label {
+  font-size: 12px;
+  opacity: 0.6;
+}
 
-    return `
-      <div class="metric-card">
-        <span class="metric-label">${label}</span>
-        <div class="metric-main">
-          <div class="metric-values">
-            <div class="metric-old">
-              <small>Inicial</small>
-              <strong>${oldText}</strong>
-            </div>
-            <div class="metric-new">
-              <small>Atual</small>
-              <strong>${newText}</strong>
-            </div>
-          </div>
-          <div class="metric-delta ${delta.className}">${delta.text}</div>
-        </div>
+.metric-values {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.metric-values strong {
+  font-size: 18px;
+}
+
+.metric-delta {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.delta-positive { color: #22c55e; }
+.delta-negative { color: #ef4444; }
+.delta-neutral { color: #eab308; }
+
+/* ===== PERIMETRIA ===== */
+
+.perimetria-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 14px;
+}
+
+/* ===== DIAGNÓSTICO ===== */
+
+.text-box {
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: 18px;
+}
+
+.text-box h4 {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.text-box p {
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* ===== TIMELINE ===== */
+
+.timeline {
+  display: grid;
+  gap: 12px;
+}
+
+.timeline-item {
+  background: rgba(255,255,255,0.03);
+  padding: 14px;
+  border-radius: 14px;
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media(max-width:900px){
+  .summary-grid { grid-template-columns:1fr; }
+  .metrics-grid { grid-template-columns:1fr 1fr; }
+  .perimetria-grid { grid-template-columns:1fr 1fr; }
+}
+
+@media(max-width:500px){
+  .metrics-grid { grid-template-columns:1fr; }
+  .perimetria-grid { grid-template-columns:1fr; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+<main class="main">
+
+<div class="report-wrap">
+
+<!-- HERO -->
+<section class="report-hero">
+  <div class="report-hero-left">
+    <div class="report-avatar" id="report-avatar">C</div>
+    <div>
+      <div class="report-title" id="report-nome">Cliente</div>
+      <div class="report-sub" id="report-email"></div>
+      <div class="report-sub" id="report-meta"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="report-sub" id="report-data-geracao"></div>
+  </div>
+</section>
+
+<!-- RESUMO -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Resumo Estratégico</h3>
+  </div>
+
+  <div class="report-card-body">
+    <div class="summary-grid">
+      <div class="summary-box">
+        <h4>Objetivo</h4>
+        <p id="summary-objetivo"></p>
       </div>
-    `;
-  }
+      <div class="summary-box">
+        <h4>Gargalo</h4>
+        <p id="summary-gargalo"></p>
+      </div>
+      <div class="summary-box">
+        <h4>Prioridade</h4>
+        <p id="summary-prioridade"></p>
+      </div>
+    </div>
+  </div>
+</section>
 
-  function renderHeader() {
-    const nome = cliente?.nome || "Cliente";
-    const email = cliente?.email || "—";
-    const objetivo = getResumoObjetivo();
+<!-- RADAR -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Evolução do Radar</h3>
+  </div>
 
-    setText("report-avatar", getInitials(nome));
-    setText("report-nome", nome);
-    setText("report-email", email);
-    setText("report-meta", `Objetivo: ${objetivo}`);
-    setText("report-data-geracao", `Gerado em ${formatDate(new Date().toISOString())}`);
+  <div class="report-card-body radar-wrap">
+    <div class="radar-canvas-wrap">
+      <canvas id="radar-chart"></canvas>
+    </div>
+  </div>
+</section>
 
-    const voltar = document.getElementById("voltar-cliente-link");
-    if (voltar && clienteId) {
-      voltar.href = `../cliente/index.html?id=${encodeURIComponent(clienteId)}`;
-    }
-  }
+<!-- MÉTRICAS -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Composição Corporal</h3>
+  </div>
 
-  function renderResumo() {
-    const d = getDiagnosticoAtual();
-    setText("summary-objetivo", getResumoObjetivo());
-    setText("summary-gargalo", d.gargalo || "—");
-    setText("summary-prioridade", d.prioridade || "—");
-  }
+  <div class="report-card-body">
+    <div id="metrics-grid" class="metrics-grid"></div>
+  </div>
+</section>
 
-  function renderRadar() {
-    const radar = getPrimeiroEUltimoRadar();
-    const labels = Object.keys(RADAR_LABELS).map((key) => RADAR_LABELS[key]);
+<!-- PERIMETRIA -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Perimetria</h3>
+  </div>
 
-    const initialData = Object.keys(RADAR_LABELS).map((key) => Number(radar.inicial?.[key] ?? 0));
-    const currentData = Object.keys(RADAR_LABELS).map((key) => Number(radar.atual?.[key] ?? 0));
+  <div class="report-card-body">
+    <div id="perimetria-grid" class="perimetria-grid"></div>
+  </div>
+</section>
 
-    const ctx = document.getElementById("radar-chart");
-    if (!ctx || typeof Chart === "undefined") return;
+<!-- DIAGNÓSTICO -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Leitura Técnica</h3>
+  </div>
 
-    if (radarChart) radarChart.destroy();
+  <div class="report-card-body summary-grid">
+    <div class="text-box">
+      <h4>Leitura</h4>
+      <p id="diagnostico-leitura"></p>
+    </div>
 
-    radarChart = new Chart(ctx, {
-      type: "radar",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Inicial",
-            data: initialData,
-            backgroundColor: "rgba(255, 159, 64, 0.20)",
-            borderColor: "rgba(255, 159, 64, 0.95)",
-            pointBackgroundColor: "rgba(255, 159, 64, 0.95)",
-            pointBorderColor: "#fff",
-            borderWidth: 2
-          },
-          {
-            label: "Atual",
-            data: currentData,
-            backgroundColor: "rgba(54, 162, 235, 0.20)",
-            borderColor: "rgba(54, 162, 235, 0.95)",
-            pointBackgroundColor: "rgba(54, 162, 235, 0.95)",
-            pointBorderColor: "#fff",
-            borderWidth: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          r: {
-            min: 0,
-            max: 10,
-            ticks: {
-              stepSize: 2,
-              backdropColor: "transparent",
-              color: "rgba(235,240,255,0.72)"
-            },
-            grid: {
-              color: "rgba(255,255,255,0.12)"
-            },
-            angleLines: {
-              color: "rgba(255,255,255,0.12)"
-            },
-            pointLabels: {
-              color: "rgba(235,240,255,0.88)",
-              font: {
-                size: 13
-              }
-            }
-          }
-        }
-      }
-    });
-  }
+    <div class="text-box">
+      <h4>Síntese</h4>
+      <p id="diagnostico-sintese"></p>
+    </div>
 
-  function renderMetrics() {
-    const { inicial, atual } = getPrimeiraEUltimaAvaliacao();
-    const grid = document.getElementById("metrics-grid");
-    if (!grid) return;
+    <div class="text-box">
+      <h4>Foco</h4>
+      <p id="diagnostico-foco"></p>
+    </div>
+  </div>
+</section>
 
-    if (!inicial || !atual) {
-      grid.innerHTML = `<div class="report-empty">Nenhuma avaliação salva para comparação.</div>`;
-      return;
-    }
+<!-- TIMELINE -->
+<section class="report-card">
+  <div class="report-card-header">
+    <h3>Acompanhamentos</h3>
+  </div>
 
-    const av0 = inicial.avaliacao || {};
-    const av1 = atual.avaliacao || {};
+  <div class="report-card-body">
+    <div id="timeline-list" class="timeline"></div>
+  </div>
+</section>
 
-    const gorduraInicial = firstFilled(av0.gorduraDobras, av0.gorduraMarinha);
-    const gorduraAtual = firstFilled(av1.gorduraDobras, av1.gorduraMarinha);
+</div>
 
-    grid.innerHTML = [
-      metricCard("Peso (kg)", av0.peso, av1.peso, { invertPositive: true, digits: 1 }),
-      metricCard("IMC", av0.imc, av1.imc, { invertPositive: true }),
-      metricCard("RCQ", av0.rcq, av1.rcq, { invertPositive: true }),
-      metricCard("RCE", av0.rce, av1.rce, { invertPositive: true }),
-      metricCard("% Gordura", gorduraInicial, gorduraAtual, { suffix: "p.p.", invertPositive: true }),
-      metricCard("Protocolo", inicial.protocolo, atual.protocolo, { raw: true }),
-      metricCard("Data inicial", inicial.data, atual.data, { raw: true }),
-      metricCard("Tipo de sessão", inicial.tipoSessao, atual.tipoSessao, { raw: true })
-    ].join("");
-  }
+</main>
+</div>
 
-  function renderPerimetria() {
-    const { inicial, atual } = getPrimeiraEUltimaAvaliacao();
-    const grid = document.getElementById("perimetria-grid");
-    if (!grid) return;
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/storage.js?v=52"></script>
+<script src="../assets/js/relatorio-cliente.js?v=53"></script>
 
-    if (!inicial || !atual) {
-      grid.innerHTML = `<div class="report-empty">Nenhuma perimetria salva para comparação.</div>`;
-      return;
-    }
-
-    const p0 = inicial.avaliacao?.perimetria || {};
-    const p1 = atual.avaliacao?.perimetria || {};
-
-    grid.innerHTML = [
-      metricCard("Cintura", inicial.avaliacao?.cintura, atual.avaliacao?.cintura, { suffix: "cm", invertPositive: true, digits: 1 }),
-      metricCard("Quadril", inicial.avaliacao?.quadril, atual.avaliacao?.quadril, { suffix: "cm", invertPositive: true, digits: 1 }),
-      metricCard("Tórax", p0.torax, p1.torax, { suffix: "cm", digits: 1 }),
-      metricCard("Abdômen", p0.abdomen, p1.abdomen, { suffix: "cm", invertPositive: true, digits: 1 }),
-      metricCard("Braço direito", p0.bracoDireito, p1.bracoDireito, { suffix: "cm", digits: 1 }),
-      metricCard("Braço esquerdo", p0.bracoEsquerdo, p1.bracoEsquerdo, { suffix: "cm", digits: 1 }),
-      metricCard("Coxa direita", p0.coxaDireita, p1.coxaDireita, { suffix: "cm", digits: 1 }),
-      metricCard("Coxa esquerda", p0.coxaEsquerda, p1.coxaEsquerda, { suffix: "cm", digits: 1 }),
-      metricCard("Panturrilha", p0.panturrilha, p1.panturrilha, { suffix: "cm", digits: 1 })
-    ].join("");
-  }
-
-  function renderDiagnostico() {
-    const d = getDiagnosticoAtual();
-    const foco = firstFilled(
-      d?.focoMes1?.gap,
-      d?.focoMes1?.habito,
-      d?.focoMes1?.ambiente
-    );
-
-    setText("diagnostico-leitura", d.leitura || "—");
-    setText("diagnostico-sintese", d.sintese || "—");
-    setText("diagnostico-foco", foco || "—");
-  }
-
-  function renderTimeline() {
-    const root = document.getElementById("timeline-list");
-    if (!root) return;
-
-    const itens = Array.isArray(cliente?.acompanhamentos) ? cliente.acompanhamentos : [];
-
-    if (!itens.length) {
-      root.innerHTML = `<div class="report-empty">Nenhum acompanhamento registrado até o momento.</div>`;
-      return;
-    }
-
-    root.innerHTML = itens
-      .slice(-3)
-      .reverse()
-      .map((item) => `
-        <article class="timeline-item">
-          <div class="timeline-item-top">
-            <strong>${item.data ? formatDate(item.data) : "Sem data"}</strong>
-            <span>${item.aderencia || "Sem aderência informada"}</span>
-          </div>
-          <p><strong>Evolução:</strong> ${item.evolucao || "—"}</p>
-          <p><strong>Dificuldades:</strong> ${item.dificuldades || "—"}</p>
-          <p><strong>Ajustes:</strong> ${item.ajustes || "—"}</p>
-        </article>
-      `)
-      .join("");
-  }
-
-  function bindEvents() {
-    document.getElementById("print-report-btn")?.addEventListener("click", () => {
-      window.print();
-    });
-  }
-
-  function init() {
-    clienteId = getQueryParam("id");
-
-    if (!clienteId) {
-      document.getElementById("relatorio-page")?.classList.add("hidden");
-      document.getElementById("relatorio-not-found")?.classList.remove("hidden");
-      return;
-    }
-
-    cliente = getClienteById(clienteId);
-
-    if (!cliente) {
-      document.getElementById("relatorio-page")?.classList.add("hidden");
-      document.getElementById("relatorio-not-found")?.classList.remove("hidden");
-      return;
-    }
-
-    renderHeader();
-    renderResumo();
-    renderRadar();
-    renderMetrics();
-    renderPerimetria();
-    renderDiagnostico();
-    renderTimeline();
-    bindEvents();
-  }
-
-  return { init };
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-  window.ZARelatorioCliente.init();
-});
+</body>
+</html>
