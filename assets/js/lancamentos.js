@@ -1061,6 +1061,61 @@ window.ZALancamentos = (() => {
     showFeedback("Acompanhamento salvo com sucesso.", "Acompanhamento atualizado", "📅");
   }
 
+  function initAccordions() {
+    const accordions = Array.from(document.querySelectorAll(".launch-accordion"));
+    if (!accordions.length) return;
+
+    const STORAGE_KEY = "za_lancamentos_open_accordion";
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    function openAccordion(targetAccordion) {
+      accordions.forEach((accordion) => {
+        const toggle = accordion.querySelector(".accordion-toggle");
+        const isTarget = accordion === targetAccordion;
+
+        accordion.classList.toggle("is-open", isTarget);
+        if (toggle) {
+          toggle.setAttribute("aria-expanded", isTarget ? "true" : "false");
+        }
+      });
+
+      const name = targetAccordion?.dataset?.accordion || "";
+      if (name) {
+        localStorage.setItem(STORAGE_KEY, name);
+      }
+    }
+
+    accordions.forEach((accordion, index) => {
+      const toggle = accordion.querySelector(".accordion-toggle");
+      if (!toggle) return;
+
+      toggle.addEventListener("click", () => {
+        const isOpen = accordion.classList.contains("is-open");
+
+        if (isOpen) {
+          accordion.classList.remove("is-open");
+          toggle.setAttribute("aria-expanded", "false");
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
+
+        openAccordion(accordion);
+      });
+
+      const shouldOpen =
+        (saved && accordion.dataset.accordion === saved) ||
+        (!saved && index === 0);
+
+      if (shouldOpen) {
+        accordion.classList.add("is-open");
+        toggle.setAttribute("aria-expanded", "true");
+      } else {
+        accordion.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
   function bindEvents() {
     document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
     document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
@@ -1105,6 +1160,7 @@ window.ZALancamentos = (() => {
     renderAcompanhamentos();
     resetFormAcompanhamento();
     bindEvents();
+    initAccordions();
   }
 
   return { init };
