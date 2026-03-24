@@ -431,6 +431,68 @@ window.ZALancamentos = (() => {
     return blocos.join("\n\n");
   }
 
+  function ensureHistoricoStructure(clienteObj) {
+    if (!clienteObj.historico || !isObject(clienteObj.historico)) {
+      clienteObj.historico = {};
+    }
+    if (!Array.isArray(clienteObj.historico.avaliacoes)) {
+      clienteObj.historico.avaliacoes = [];
+    }
+    if (!Array.isArray(clienteObj.historico.radar)) {
+      clienteObj.historico.radar = [];
+    }
+    return clienteObj;
+  }
+
+  function buildAvaliacaoHistorica(sessao, avaliacao) {
+    return {
+      data: sessao.data || new Date().toISOString(),
+      protocolo: sessao.protocolo || "",
+      tipoSessao: sessao.tipo || "",
+      avaliacao: {
+        peso: avaliacao["peso"] || "",
+        altura: avaliacao["altura"] || "",
+        cintura: avaliacao["cintura"] || "",
+        quadril: avaliacao["quadril"] || "",
+        pescoco: avaliacao["pescoco"] || "",
+        abdomenMarinha: avaliacao["abdomen-marinha"] || "",
+        imc: avaliacao["imc"] || "",
+        rcq: avaliacao["rcq"] || "",
+        rce: avaliacao["rce"] || "",
+        gorduraMarinha: avaliacao["gordura-marinha"] || "",
+        gorduraDobras: avaliacao["gordura-dobras"] || "",
+        perimetria: {
+          torax: avaliacao["torax"] || "",
+          abdomen: avaliacao["abdomen"] || "",
+          bracoDireito: avaliacao["braco-direito"] || "",
+          bracoEsquerdo: avaliacao["braco-esquerdo"] || "",
+          coxaDireita: avaliacao["coxa-direita"] || "",
+          coxaEsquerda: avaliacao["coxa-esquerda"] || "",
+          panturrilha: avaliacao["panturrilha"] || ""
+        },
+        dobras: {
+          peitoral: avaliacao["dobra-peitoral"] || "",
+          axilar: avaliacao["dobra-axilar"] || "",
+          triceps: avaliacao["dobra-triceps"] || "",
+          subescapular: avaliacao["dobra-subescapular"] || "",
+          abdominal: avaliacao["dobra-abdominal"] || "",
+          suprailiaca: avaliacao["dobra-suprailiaca"] || "",
+          coxa: avaliacao["dobra-coxa"] || "",
+          soma: avaliacao["dobras-soma"] || ""
+        }
+      },
+      savedAt: new Date().toISOString()
+    };
+  }
+
+  function buildRadarHistorico(radarRevisado, tipo = "reavaliacao") {
+    return {
+      data: new Date().toISOString(),
+      tipo,
+      valores: { ...radarRevisado }
+    };
+  }
+
   function renderCabecalho() {
     setText("cliente-nome-topo", cliente?.nome || "Lançamentos");
     setText("cliente-subtitulo", "Registro técnico do caso.");
@@ -795,24 +857,33 @@ window.ZALancamentos = (() => {
       avaliacao[id] = document.getElementById(id)?.value || "";
     });
 
-    clientes[index] = {
+    const sessaoAtual = {
+      data: document.getElementById("sessao-data")?.value || "",
+      tipo,
+      protocolo: tipo === "online" ? "A" : protocolo
+    };
+
+    let clienteAtualizado = {
       ...clientes[index],
       sessaoEAvaliacao: {
-        sessao: {
-          data: document.getElementById("sessao-data")?.value || "",
-          tipo,
-          protocolo: tipo === "online" ? "A" : protocolo
-        },
+        sessao: sessaoAtual,
         avaliacao
       },
       sessaoEAvaliacaoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
+    clienteAtualizado = ensureHistoricoStructure(clienteAtualizado);
+    clienteAtualizado.historico.avaliacoes.push(
+      buildAvaliacaoHistorica(sessaoAtual, avaliacao)
+    );
+
+    clientes[index] = clienteAtualizado;
+
     setClientes(clientes);
     cliente = clientes[index];
     renderSessaoEAvaliacao();
-    showFeedback("Sessão e avaliação salvas com sucesso.", "Bloco atualizado", "📌");
+    showFeedback("Sessão e avaliação salvas com sucesso. Histórico atualizado também.", "Bloco atualizado", "📌");
   }
 
   function renderAnaliseCaso() {
@@ -876,7 +947,7 @@ window.ZALancamentos = (() => {
       radarRevisado[key] = raw === "" ? null : Number(raw);
     });
 
-    clientes[index] = {
+    let clienteAtualizado = {
       ...clientes[index],
       analiseCaso: {
         radarRevisado,
@@ -931,10 +1002,23 @@ window.ZALancamentos = (() => {
       updatedAt: new Date().toISOString()
     };
 
+    clienteAtualizado = ensureHistoricoStructure(clienteAtualizado);
+
+    const tipoHistorico =
+      clienteAtualizado.historico.radar.length === 0
+        ? "avaliacao_inicial"
+        : "reavaliacao";
+
+    clienteAtualizado.historico.radar.push(
+      buildRadarHistorico(radarRevisado, tipoHistorico)
+    );
+
+    clientes[index] = clienteAtualizado;
+
     setClientes(clientes);
     cliente = clientes[index];
     renderAnaliseCaso();
-    showFeedback("Análise do caso salva com sucesso.", "Bloco atualizado", "🧠");
+    showFeedback("Análise do caso salva com sucesso. Histórico do radar atualizado também.", "Bloco atualizado", "🧠");
   }
 
   function renderAcompanhamentos() {
