@@ -119,6 +119,13 @@ window.ZALancamentos = (() => {
     return !!document.getElementById(id)?.checked;
   }
 
+  function num(id) {
+    const raw = document.getElementById(id)?.value;
+    if (raw === undefined || raw === null || raw === "") return NaN;
+    const parsed = Number(String(raw).replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : NaN;
+  }
+
   function ensureFeedbackModal() {
     if (document.getElementById("za-feedback-overlay")) return;
 
@@ -667,16 +674,57 @@ window.ZALancamentos = (() => {
     return Number.isFinite(gordura) ? gordura.toFixed(2) : "";
   }
 
+  function validarAvaliacao(tipo, protocolo, peso, altura, cintura, quadril, pescoco, abdomenMarinha) {
+    if (!Number.isFinite(peso) || peso <= 0) {
+      showFeedback("Informe um peso válido para calcular a avaliação.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    if (!Number.isFinite(altura) || altura <= 0) {
+      showFeedback("Informe uma altura válida para calcular a avaliação.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    if (!Number.isFinite(cintura) || cintura <= 0) {
+      showFeedback("Informe uma cintura válida para calcular RCQ e RCE.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    if (!Number.isFinite(quadril) || quadril <= 0) {
+      showFeedback("Quadril é obrigatório para todos, porque o RCQ usa cintura ÷ quadril.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    if (!Number.isFinite(pescoco) || pescoco <= 0) {
+      showFeedback("Informe um pescoço válido para calcular o percentual de gordura.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    const usaMarinha =
+      tipo === "online" || (tipo === "presencial" && protocolo === "essencial");
+
+    if (usaMarinha && (!Number.isFinite(abdomenMarinha) || abdomenMarinha <= 0)) {
+      showFeedback("Abdômen é obrigatório para o protocolo da Marinha Americana.", "Campo obrigatório", "⚠");
+      return false;
+    }
+
+    return true;
+  }
+
   function calcularAvaliacao() {
     const tipo = document.getElementById("sessao-tipo")?.value || "";
     const protocolo = document.getElementById("sessao-protocolo")?.value || "";
 
-    const peso = parseFloat(document.getElementById("peso")?.value || "");
-    const altura = parseFloat(document.getElementById("altura")?.value || "");
-    const cintura = parseFloat(document.getElementById("cintura")?.value || "");
-    const quadril = parseFloat(document.getElementById("quadril")?.value || "");
-    const pescoco = parseFloat(document.getElementById("pescoco")?.value || "");
-    const abdomenMarinha = parseFloat(document.getElementById("abdomen-marinha")?.value || "");
+    const peso = num("peso");
+    const altura = num("altura");
+    const cintura = num("cintura");
+    const quadril = num("quadril");
+    const pescoco = num("pescoco");
+    const abdomenMarinha = num("abdomen-marinha");
+
+    if (!validarAvaliacao(tipo, protocolo, peso, altura, cintura, quadril, pescoco, abdomenMarinha)) {
+      return;
+    }
 
     const pre = getPreDataFromCliente(cliente);
     const sexoRef = getReferenceSex(pre);
@@ -688,26 +736,21 @@ window.ZALancamentos = (() => {
       setValue("imc", "");
     }
 
-    if (cintura && quadril) {
-      setValue("rcq", (cintura / quadril).toFixed(2));
-    } else {
-      setValue("rcq", "");
-    }
-
-    if (cintura && altura) {
-      setValue("rce", (cintura / (altura * 100)).toFixed(2));
-    } else {
-      setValue("rce", "");
-    }
+    setValue("rcq", (cintura / quadril).toFixed(2));
+    setValue("rce", (cintura / (altura * 100)).toFixed(2));
 
     const usaMarinha =
       tipo === "online" || (tipo === "presencial" && protocolo === "essencial");
 
     if (usaMarinha) {
-      setValue(
-        "gordura-marinha",
-        calculateMarineBodyFat(altura, pescoco, abdomenMarinha || cintura, quadril, sexoRef)
+      const gorduraMarinha = calculateMarineBodyFat(
+        altura,
+        pescoco,
+        abdomenMarinha || cintura,
+        quadril,
+        sexoRef
       );
+      setValue("gordura-marinha", gorduraMarinha);
     } else {
       setValue("gordura-marinha", "");
     }
@@ -723,7 +766,7 @@ window.ZALancamentos = (() => {
     ];
 
     const somaDobras = idsDobras.reduce((acc, id) => {
-      const n = parseFloat(document.getElementById(id)?.value || "");
+      const n = num(id);
       return acc + (Number.isFinite(n) ? n : 0);
     }, 0);
 
@@ -755,6 +798,19 @@ window.ZALancamentos = (() => {
   }
 
   function saveAvaliacao() {
+    const tipo = document.getElementById("sessao-tipo")?.value || "";
+    const protocolo = document.getElementById("sessao-protocolo")?.value || "";
+    const peso = num("peso");
+    const altura = num("altura");
+    const cintura = num("cintura");
+    const quadril = num("quadril");
+    const pescoco = num("pescoco");
+    const abdomenMarinha = num("abdomen-marinha");
+
+    if (!validarAvaliacao(tipo, protocolo, peso, altura, cintura, quadril, pescoco, abdomenMarinha)) {
+      return;
+    }
+
     calcularAvaliacao();
 
     const clientes = getClientes();
@@ -862,7 +918,6 @@ window.ZALancamentos = (() => {
     setChecked("comb-checkin", d.combinados?.checkinExplicado);
     setValue("comb-proxima-sessao", d.combinados?.proximaSessao || "");
     setValue("comb-protocolo-aplicado", d.combinados?.protocoloAplicado || "");
-    setChecked("comb-lead-convertido", d.combinados?.leadConvertido);
 
     const updatedEl = document.getElementById("diag-updated");
     if (updatedEl) {
@@ -918,8 +973,7 @@ window.ZALancamentos = (() => {
         termoAssinado: checked("comb-termo"),
         checkinExplicado: checked("comb-checkin"),
         proximaSessao: document.getElementById("comb-proxima-sessao")?.value || "",
-        protocoloAplicado: val("comb-protocolo-aplicado"),
-        leadConvertido: checked("comb-lead-convertido")
+        protocoloAplicado: val("comb-protocolo-aplicado")
       }
     };
 
