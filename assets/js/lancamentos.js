@@ -11,6 +11,15 @@ window.ZALancamentos = (() => {
     "estresse"
   ];
 
+  const RADAR_LABELS = {
+    movimento: "Movimento",
+    alimentacao: "Alimentação",
+    sono: "Sono",
+    proposito: "Propósito",
+    social: "Social",
+    estresse: "Estresse"
+  };
+
   function getQueryParam(name) {
     const url = new URL(window.location.href);
     return url.searchParams.get(name);
@@ -302,18 +311,9 @@ window.ZALancamentos = (() => {
     const radar = getRadarData(pre);
     if (!radar || typeof radar !== "object") return "Sem radar disponível.";
 
-    const labels = {
-      movimento: "Movimento",
-      alimentacao: "Alimentação",
-      sono: "Sono",
-      proposito: "Propósito",
-      social: "Social",
-      estresse: "Estresse"
-    };
-
     const entries = Object.entries(radar)
       .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "")
-      .map(([key, value]) => `${labels[key] || key}: ${value}`);
+      .map(([key, value]) => `${RADAR_LABELS[key] || key}: ${value}`);
 
     return entries.length ? entries.join(" | ") : "Sem radar disponível.";
   }
@@ -491,6 +491,35 @@ window.ZALancamentos = (() => {
       tipo,
       valores: { ...radarRevisado }
     };
+  }
+
+  function getRadarRevisadoFromInputs() {
+    const radar = {};
+    RADAR_KEYS.forEach((key) => {
+      const raw = document.getElementById(`radar-revisado-${key}`)?.value;
+      radar[key] = raw === "" ? null : Number(raw);
+    });
+    return radar;
+  }
+
+  function getTopGapLabelsFromRadar(radar) {
+    return Object.entries(radar)
+      .filter(([, value]) => Number.isFinite(value))
+      .sort((a, b) => {
+        if (a[1] !== b[1]) return a[1] - b[1];
+        return RADAR_KEYS.indexOf(a[0]) - RADAR_KEYS.indexOf(b[0]);
+      })
+      .slice(0, 3)
+      .map(([key]) => RADAR_LABELS[key] || key);
+  }
+
+  function updateGapPilarsFromRadar() {
+    const radar = getRadarRevisadoFromInputs();
+    const gaps = getTopGapLabelsFromRadar(radar);
+
+    setValue("gap1-pilar", gaps[0] || "");
+    setValue("gap2-pilar", gaps[1] || "");
+    setValue("gap3-pilar", gaps[2] || "");
   }
 
   function renderCabecalho() {
@@ -930,6 +959,8 @@ window.ZALancamentos = (() => {
     setValue("comb-proxima-sessao", d.combinados?.proximaSessao || "");
     setValue("comb-protocolo-aplicado", d.combinados?.protocoloAplicado || "");
 
+    updateGapPilarsFromRadar();
+
     const updatedEl = document.getElementById("analise-caso-updated");
     if (updatedEl) {
       updatedEl.textContent = `Última atualização: ${cliente?.analiseCasoUpdatedAt ? formatDate(cliente.analiseCasoUpdatedAt) : "—"}`;
@@ -941,11 +972,9 @@ window.ZALancamentos = (() => {
     const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
-    const radarRevisado = {};
-    RADAR_KEYS.forEach((key) => {
-      const raw = document.getElementById(`radar-revisado-${key}`)?.value;
-      radarRevisado[key] = raw === "" ? null : Number(raw);
-    });
+    updateGapPilarsFromRadar();
+
+    const radarRevisado = getRadarRevisadoFromInputs();
 
     let clienteAtualizado = {
       ...clientes[index],
@@ -1018,7 +1047,7 @@ window.ZALancamentos = (() => {
     setClientes(clientes);
     cliente = clientes[index];
     renderAnaliseCaso();
-    showFeedback("Análise do caso salva com sucesso. Histórico do radar atualizado também.", "Bloco atualizado", "🧠");
+    showFeedback("Análise do caso salva com sucesso. Gaps atualizados automaticamente pelo radar.", "Bloco atualizado", "🧠");
   }
 
   function renderAcompanhamentos() {
@@ -1152,6 +1181,15 @@ window.ZALancamentos = (() => {
     });
   }
 
+  function bindRadarGapEvents() {
+    RADAR_KEYS.forEach((key) => {
+      const input = document.getElementById(`radar-revisado-${key}`);
+      if (!input) return;
+      input.addEventListener("input", updateGapPilarsFromRadar);
+      input.addEventListener("change", updateGapPilarsFromRadar);
+    });
+  }
+
   function bindEvents() {
     document.getElementById("sessao-tipo")?.addEventListener("change", applyProtocolVisibility);
     document.getElementById("sessao-protocolo")?.addEventListener("change", applyProtocolVisibility);
@@ -1165,6 +1203,8 @@ window.ZALancamentos = (() => {
     document.getElementById("salvar-sessao-avaliacao-btn")?.addEventListener("click", saveSessaoEAvaliacao);
     document.getElementById("salvar-analise-caso-btn")?.addEventListener("click", saveAnaliseCaso);
     document.getElementById("salvar-acompanhamento-btn")?.addEventListener("click", saveAcompanhamento);
+
+    bindRadarGapEvents();
   }
 
   function init() {
