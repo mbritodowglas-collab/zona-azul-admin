@@ -44,6 +44,11 @@ window.ZALancamentos = (() => {
     if (el) el.value = value ?? "";
   }
 
+  function setChecked(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!value;
+  }
+
   function formatDate(dateValue) {
     if (!dateValue) return "—";
     try {
@@ -87,17 +92,6 @@ window.ZALancamentos = (() => {
     return age >= 0 ? String(age) : "";
   }
 
-  function calculateAgeFromDate(dateStr) {
-    if (!dateStr) return "";
-    const birth = new Date(dateStr);
-    if (Number.isNaN(birth.getTime())) return "";
-    return calculateAgeFromParts(
-      birth.getDate(),
-      birth.getMonth() + 1,
-      birth.getFullYear()
-    );
-  }
-
   function getInitials(nome) {
     if (!nome) return "C";
     const parts = nome.trim().split(" ").filter(Boolean);
@@ -117,6 +111,14 @@ window.ZALancamentos = (() => {
     return "";
   }
 
+  function val(id) {
+    return document.getElementById(id)?.value?.trim?.() ?? document.getElementById(id)?.value ?? "";
+  }
+
+  function checked(id) {
+    return !!document.getElementById(id)?.checked;
+  }
+
   function ensureFeedbackModal() {
     if (document.getElementById("za-feedback-overlay")) return;
 
@@ -134,11 +136,7 @@ window.ZALancamentos = (() => {
         padding: 20px;
         z-index: 9999;
       }
-
-      .za-feedback-overlay.hidden {
-        display: none;
-      }
-
+      .za-feedback-overlay.hidden { display: none; }
       .za-feedback-modal {
         width: min(100%, 420px);
         background: linear-gradient(180deg, rgba(25,31,56,0.98), rgba(15,20,39,0.98));
@@ -148,14 +146,12 @@ window.ZALancamentos = (() => {
         padding: 22px 20px 18px;
         color: #f5f7ff;
       }
-
       .za-feedback-head {
         display: flex;
         align-items: center;
         gap: 12px;
         margin-bottom: 10px;
       }
-
       .za-feedback-icon {
         width: 42px;
         height: 42px;
@@ -167,7 +163,6 @@ window.ZALancamentos = (() => {
         background: rgba(120, 130, 255, 0.16);
         border: 1px solid rgba(138, 147, 255, 0.25);
       }
-
       .za-feedback-title {
         margin: 0;
         font-size: 20px;
@@ -175,20 +170,17 @@ window.ZALancamentos = (() => {
         font-weight: 700;
         color: #ffffff;
       }
-
       .za-feedback-message {
         margin: 10px 0 0;
         color: rgba(230,235,255,0.88);
         font-size: 16px;
         line-height: 1.55;
       }
-
       .za-feedback-actions {
         display: flex;
         justify-content: flex-end;
         margin-top: 18px;
       }
-
       .za-feedback-btn {
         border: 0;
         border-radius: 14px;
@@ -200,10 +192,7 @@ window.ZALancamentos = (() => {
         background: linear-gradient(135deg, #6d73ff, #8d72ff);
         box-shadow: 0 10px 24px rgba(109,115,255,0.25);
       }
-
-      .za-feedback-btn:active {
-        transform: scale(0.98);
-      }
+      .za-feedback-btn:active { transform: scale(0.98); }
     `;
     document.head.appendChild(style);
 
@@ -325,23 +314,9 @@ window.ZALancamentos = (() => {
   function getBirthPartsFromPre(pre) {
     if (!pre) return { dia: "", mes: "", ano: "" };
 
-    const dia = firstFilled(
-      pre?.nascimento_dia,
-      pre?.birth_day,
-      pre?.dia_nascimento
-    );
-
-    const mes = firstFilled(
-      pre?.nascimento_mes,
-      pre?.birth_month,
-      pre?.mes_nascimento
-    );
-
-    const ano = firstFilled(
-      pre?.nascimento_ano,
-      pre?.birth_year,
-      pre?.ano_nascimento
-    );
+    const dia = firstFilled(pre?.nascimento_dia, pre?.birth_day, pre?.dia_nascimento);
+    const mes = firstFilled(pre?.nascimento_mes, pre?.birth_month, pre?.mes_nascimento);
+    const ano = firstFilled(pre?.nascimento_ano, pre?.birth_year, pre?.ano_nascimento);
 
     if (dia || mes || ano) {
       return {
@@ -379,14 +354,7 @@ window.ZALancamentos = (() => {
 
     if (valorEditado) return String(valorEditado).toLowerCase();
 
-    return String(
-      firstFilled(
-        pre?.sexo,
-        pre?.genero,
-        pre?.sex,
-        pre?.gender
-      )
-    ).toLowerCase();
+    return String(firstFilled(pre?.sexo, pre?.genero, pre?.sex, pre?.gender)).toLowerCase();
   }
 
   function getReferenceAge(pre) {
@@ -414,7 +382,6 @@ window.ZALancamentos = (() => {
     if (editados.resumo) return editados.resumo;
 
     const blocos = [];
-
     const restricoes = firstFilled(
       pre?.limitacoes_atuais,
       pre?.restricoes_medicas,
@@ -422,19 +389,8 @@ window.ZALancamentos = (() => {
       pre?.lesoes,
       pre?.condicoes_saude
     );
-
-    const desafio = firstFilled(
-      pre?.desafio_atual,
-      pre?.maior_desafio,
-      pre?.desafio
-    );
-
-    const meta = firstFilled(
-      pre?.meta_6_meses,
-      pre?.meta,
-      pre?.metas
-    );
-
+    const desafio = firstFilled(pre?.desafio_atual, pre?.maior_desafio, pre?.desafio);
+    const meta = firstFilled(pre?.meta_6_meses, pre?.meta, pre?.metas);
     const parou = firstFilled(pre?.por_que_parou);
     const funcionou = firstFilled(pre?.o_que_funcionou);
     const sabotagem = firstFilled(pre?.sabotagem);
@@ -525,15 +481,15 @@ window.ZALancamentos = (() => {
     clientes[index] = {
       ...clientes[index],
       dadosBaseEditados: {
-        nome: document.getElementById("pre-nome-edit")?.value?.trim() || "",
-        email: document.getElementById("pre-email-edit")?.value?.trim() || "",
-        telefone: document.getElementById("pre-telefone-edit")?.value?.trim() || "",
-        sexoReferencia: document.getElementById("pre-sexo-ref")?.value?.trim() || "",
+        nome: val("pre-nome-edit"),
+        email: val("pre-email-edit"),
+        telefone: val("pre-telefone-edit"),
+        sexoReferencia: val("pre-sexo-ref"),
         nascimentoDia: document.getElementById("pre-nascimento-dia")?.value || "",
         nascimentoMes: document.getElementById("pre-nascimento-mes")?.value || "",
         nascimentoAno: document.getElementById("pre-nascimento-ano")?.value || "",
-        objetivo: document.getElementById("pre-objetivo")?.value?.trim() || "",
-        resumo: document.getElementById("pre-resumo")?.value?.trim() || ""
+        objetivo: val("pre-objetivo"),
+        resumo: val("pre-resumo")
       },
       dadosBaseUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -873,13 +829,40 @@ window.ZALancamentos = (() => {
   }
 
   function renderDiagnostico() {
-    setValue("diag-gargalo", cliente?.diagnosticoGargalo || "");
-    setValue("diag-perfil", cliente?.diagnosticoPerfil || "");
-    setValue("diag-triagem", cliente?.diagnosticoTriagem || "");
-    setValue("diag-prioridade", cliente?.diagnosticoPrioridade || "");
-    setValue("diag-leitura", cliente?.diagnosticoLeitura || "");
-    setValue("diag-sintese", cliente?.diagnosticoSintese || "");
-    setValue("diag-conduta", cliente?.condutaInicial || "");
+    const d = cliente?.diagnosticoCompleto || {};
+
+    setValue("diag-gargalo", d.gargalo || "");
+    setValue("diag-prioridade", d.prioridade || "");
+    setValue("diag-leitura", d.leitura || "");
+    setValue("diag-sintese", d.sintese || "");
+
+    setValue("gap1-pilar", d.gaps?.[0]?.pilar || "");
+    setValue("gap1-causa", d.gaps?.[0]?.causa || "");
+    setValue("gap1-acao", d.gaps?.[0]?.acao || "");
+
+    setValue("gap2-pilar", d.gaps?.[1]?.pilar || "");
+    setValue("gap2-causa", d.gaps?.[1]?.causa || "");
+    setValue("gap2-acao", d.gaps?.[1]?.acao || "");
+
+    setValue("gap3-pilar", d.gaps?.[2]?.pilar || "");
+    setValue("gap3-causa", d.gaps?.[2]?.causa || "");
+    setValue("gap3-acao", d.gaps?.[2]?.acao || "");
+
+    setValue("diag-perfil-condicionamento", d.perfil?.condicionamento || "");
+    setValue("diag-perfil-plano", d.perfil?.plano || "");
+    setValue("diag-perfil-formato", d.perfil?.formato || "");
+    setValue("diag-triagem", d.triagem || "");
+
+    setValue("foco-gap", d.focoMes1?.gap || "");
+    setValue("foco-ambiente", d.focoMes1?.ambiente || "");
+    setValue("foco-habito", d.focoMes1?.habito || "");
+
+    setChecked("comb-plano-enviado", d.combinados?.planoEnviado);
+    setChecked("comb-termo", d.combinados?.termoAssinado);
+    setChecked("comb-checkin", d.combinados?.checkinExplicado);
+    setValue("comb-proxima-sessao", d.combinados?.proximaSessao || "");
+    setValue("comb-protocolo-aplicado", d.combinados?.protocoloAplicado || "");
+    setChecked("comb-lead-convertido", d.combinados?.leadConvertido);
 
     const updatedEl = document.getElementById("diag-updated");
     if (updatedEl) {
@@ -892,15 +875,57 @@ window.ZALancamentos = (() => {
     const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
     if (index === -1) return;
 
+    const diagnosticoCompleto = {
+      gargalo: val("diag-gargalo"),
+      prioridade: val("diag-prioridade"),
+      leitura: val("diag-leitura"),
+      sintese: val("diag-sintese"),
+
+      gaps: [
+        {
+          pilar: val("gap1-pilar"),
+          causa: val("gap1-causa"),
+          acao: val("gap1-acao")
+        },
+        {
+          pilar: val("gap2-pilar"),
+          causa: val("gap2-causa"),
+          acao: val("gap2-acao")
+        },
+        {
+          pilar: val("gap3-pilar"),
+          causa: val("gap3-causa"),
+          acao: val("gap3-acao")
+        }
+      ],
+
+      perfil: {
+        condicionamento: val("diag-perfil-condicionamento"),
+        plano: val("diag-perfil-plano"),
+        formato: val("diag-perfil-formato")
+      },
+
+      triagem: val("diag-triagem"),
+
+      focoMes1: {
+        gap: val("foco-gap"),
+        ambiente: val("foco-ambiente"),
+        habito: val("foco-habito")
+      },
+
+      combinados: {
+        planoEnviado: checked("comb-plano-enviado"),
+        termoAssinado: checked("comb-termo"),
+        checkinExplicado: checked("comb-checkin"),
+        proximaSessao: document.getElementById("comb-proxima-sessao")?.value || "",
+        protocoloAplicado: val("comb-protocolo-aplicado"),
+        leadConvertido: checked("comb-lead-convertido")
+      }
+    };
+
     clientes[index] = {
       ...clientes[index],
-      diagnosticoGargalo: document.getElementById("diag-gargalo")?.value.trim() || "",
-      diagnosticoPerfil: document.getElementById("diag-perfil")?.value.trim() || "",
-      diagnosticoTriagem: document.getElementById("diag-triagem")?.value.trim() || "",
-      diagnosticoPrioridade: document.getElementById("diag-prioridade")?.value.trim() || "",
-      diagnosticoLeitura: document.getElementById("diag-leitura")?.value.trim() || "",
-      diagnosticoSintese: document.getElementById("diag-sintese")?.value.trim() || "",
-      condutaInicial: document.getElementById("diag-conduta")?.value.trim() || "",
+      diagnosticoCompleto,
       diagnosticoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -960,10 +985,10 @@ window.ZALancamentos = (() => {
 
     const novo = {
       data: document.getElementById("acomp-data")?.value || "",
-      aderencia: document.getElementById("acomp-aderencia")?.value.trim() || "",
-      evolucao: document.getElementById("acomp-evolucao")?.value.trim() || "",
-      dificuldades: document.getElementById("acomp-dificuldades")?.value.trim() || "",
-      ajustes: document.getElementById("acomp-ajustes")?.value.trim() || "",
+      aderencia: val("acomp-aderencia"),
+      evolucao: val("acomp-evolucao"),
+      dificuldades: val("acomp-dificuldades"),
+      ajustes: val("acomp-ajustes"),
       createdAt: new Date().toISOString()
     };
 
