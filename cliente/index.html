@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliente | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=30" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=55" />
 </head>
 <body>
 
@@ -21,7 +21,6 @@
 
   <main class="main">
 
-    <!-- TOPO -->
     <div class="topbar">
       <div>
         <h2 id="cliente-nome">Cliente</h2>
@@ -29,35 +28,28 @@
       </div>
 
       <div>
-        <button id="voltar-btn">Voltar</button>
+        <button id="voltar-btn" type="button">Voltar</button>
       </div>
     </div>
 
-    <!-- CARDS PRINCIPAIS -->
     <section class="grid-3">
 
-      <!-- LANÇAMENTOS -->
       <div class="card card-main">
         <h3>🧩 Lançamentos</h3>
         <p>Registrar diagnóstico, evolução e dados do cliente.</p>
-
-        <button data-open="lancamentos">Abrir</button>
+        <button data-open="lancamentos" type="button">Abrir</button>
       </div>
 
-      <!-- RELATÓRIO -->
       <div class="card card-main">
         <h3>📊 Relatório completo</h3>
         <p>Visualizar análise consolidada do cliente.</p>
-
-        <button data-open="relatorio">Abrir relatório</button>
+        <button data-open="relatorio" type="button">Abrir relatório</button>
       </div>
 
-      <!-- PLANEJAMENTO -->
       <div class="card card-main">
         <h3>🧠 Planejamento do treinador</h3>
         <p>Definir estratégia, comportamento e treino.</p>
-
-        <button data-open="planejamento">Abrir planejamento</button>
+        <button data-open="planejamento" type="button">Abrir planejamento</button>
       </div>
 
     </section>
@@ -66,8 +58,81 @@
 
 </div>
 
-<script src="../assets/js/storage.js"></script>
-<script src="../assets/js/cliente.js"></script>
+<script src="../assets/js/storage.js?v=55"></script>
+<script>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const clienteId = params.get("id");
+
+    function getClientes() {
+      return window.ZAStorage?.getClientes?.() || [];
+    }
+
+    function getClienteById(id) {
+      return getClientes().find((item) => String(item.id) === String(id)) || null;
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value || "—";
+    }
+
+    function firstFilled(...values) {
+      for (const value of values) {
+        if (value !== undefined && value !== null && String(value).trim() !== "") {
+          return value;
+        }
+      }
+      return "";
+    }
+
+    const cliente = clienteId ? getClienteById(clienteId) : null;
+
+    if (cliente) {
+      setText("cliente-nome", cliente.nome || "Cliente");
+      setText(
+        "cliente-objetivo",
+        firstFilled(
+          cliente?.dadosBaseEditados?.objetivo,
+          cliente?.preDiagnostico?.objetivo,
+          cliente?.preDiagnostico?.objetivo_principal,
+          cliente?.preDiagnostico?.objetivo_fisico,
+          cliente?.objetivo,
+          "Objetivo não informado"
+        )
+      );
+    } else {
+      setText("cliente-nome", "Cliente não encontrado");
+      setText("cliente-objetivo", "Verifique o ID do cliente");
+    }
+
+    document.getElementById("voltar-btn")?.addEventListener("click", () => {
+      window.location.href = "../clientes/";
+    });
+
+    document.querySelectorAll("[data-open]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!clienteId) return;
+
+        const type = button.dataset.open;
+
+        if (type === "lancamentos") {
+          window.location.href = `./lancamentos.html?id=${encodeURIComponent(clienteId)}`;
+          return;
+        }
+
+        if (type === "relatorio") {
+          window.location.href = `./relatorio-cliente.html?id=${encodeURIComponent(clienteId)}`;
+          return;
+        }
+
+        if (type === "planejamento") {
+          window.location.href = `./planejamento.html?id=${encodeURIComponent(clienteId)}`;
+        }
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
