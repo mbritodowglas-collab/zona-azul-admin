@@ -3,8 +3,339 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatório completo | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=34" />
+  <title>Relatório do Cliente | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=53" />
+  <style>
+    .report-wrap {
+      display: grid;
+      gap: 20px;
+    }
+
+    .report-hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .report-hero-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .report-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, rgba(109,115,255,0.22), rgba(141,114,255,0.18));
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .report-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .report-card {
+      background: linear-gradient(180deg, rgba(18, 24, 46, 0.96), rgba(11, 16, 34, 0.96));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .report-card-header {
+      padding: 22px 22px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .report-card-header h3 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      color: #fff;
+    }
+
+    .report-muted {
+      margin: 0;
+      color: rgba(230,235,255,0.72);
+      line-height: 1.5;
+    }
+
+    .report-card-body {
+      padding: 22px;
+    }
+
+    .report-summary-grid,
+    .report-metrics-grid,
+    .report-perimetria-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .report-summary-grid {
+      grid-template-columns: repeat(3, minmax(0,1fr));
+    }
+
+    .report-metrics-grid,
+    .report-perimetria-grid {
+      grid-template-columns: repeat(4, minmax(0,1fr));
+    }
+
+    .summary-box,
+    .metric-card,
+    .timeline-box,
+    .text-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .summary-box h4,
+    .text-box h4,
+    .timeline-box h4 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .summary-box p,
+    .text-box p,
+    .timeline-box p,
+    .timeline-box li {
+      margin: 0;
+      color: rgba(235,240,255,0.84);
+      line-height: 1.6;
+    }
+
+    .metric-label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(230,235,255,0.62);
+      margin-bottom: 8px;
+    }
+
+    .metric-main {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .metric-values {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric-old,
+    .metric-new {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-old small,
+    .metric-new small {
+      color: rgba(230,235,255,0.54);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .metric-old strong,
+    .metric-new strong {
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .metric-delta {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .delta-positive { color: #8ff0b6; }
+    .delta-negative { color: #ff9b9b; }
+    .delta-neutral { color: #ffd36e; }
+
+    .radar-wrap {
+      display: grid;
+      gap: 16px;
+    }
+
+    .radar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(235,240,255,0.82);
+      font-size: 14px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+    }
+
+    .legend-dot.initial {
+      background: rgba(255, 159, 64, 0.95);
+    }
+
+    .legend-dot.current {
+      background: rgba(54, 162, 235, 0.95);
+    }
+
+    .radar-canvas-wrap {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 360px;
+    }
+
+    .timeline-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .timeline-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-item-top strong {
+      color: #fff;
+    }
+
+    .timeline-item-top span {
+      color: rgba(235,240,255,0.7);
+      font-size: 13px;
+    }
+
+    .report-empty {
+      color: rgba(235,240,255,0.68);
+      line-height: 1.6;
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .report-summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .report-metrics-grid,
+      .report-perimetria-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .report-metrics-grid,
+      .report-perimetria-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .report-hero {
+        align-items: flex-start;
+      }
+
+      .report-actions {
+        width: 100%;
+      }
+
+      .report-actions .cliente-btn {
+        flex: 1 1 auto;
+      }
+
+      .radar-canvas-wrap {
+        min-height: 300px;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      .topbar,
+      .report-actions {
+        display: none !important;
+      }
+
+      body,
+      .main,
+      .app-shell {
+        background: #fff !important;
+      }
+
+      .report-card,
+      .summary-box,
+      .metric-card,
+      .timeline-box,
+      .text-box,
+      .radar-canvas-wrap,
+      .timeline-item {
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        border-color: rgba(0,0,0,0.12) !important;
+      }
+
+      .report-card-header h3,
+      .summary-box h4,
+      .text-box h4,
+      .timeline-box h4,
+      .metric-old strong,
+      .metric-new strong,
+      .timeline-item-top strong {
+        color: #000 !important;
+      }
+
+      .report-muted,
+      .summary-box p,
+      .text-box p,
+      .timeline-box p,
+      .timeline-box li,
+      .timeline-item-top span,
+      .metric-label,
+      .metric-old small,
+      .metric-new small {
+        color: rgba(0,0,0,0.72) !important;
+      }
+
+      .print-only {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -13,13 +344,12 @@
         <div class="brand-badge">ZA</div>
         <div>
           <h1>Zona Azul</h1>
-          <p>Relatório completo</p>
+          <p>Relatório do cliente</p>
         </div>
       </div>
 
       <nav class="nav">
         <a href="../index.html">Dashboard</a>
-        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
         <a href="../clientes/">Clientes</a>
       </nav>
     </aside>
@@ -27,231 +357,142 @@
     <main class="main">
       <div class="topbar">
         <div>
-          <h2 id="cliente-nome-topo">Relatório</h2>
-          <p id="cliente-subtitulo">Consolidação do caso do cliente.</p>
+          <h2>Relatório do cliente</h2>
+          <p class="muted">Comparativo inicial vs atual da trajetória.</p>
         </div>
 
-        <div class="cliente-topo-acoes">
+        <div class="report-actions">
           <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
-          <button class="cliente-btn cliente-btn-abrir" id="imprimir-relatorio-btn">Imprimir / PDF</button>
+          <button id="print-report-btn" class="cliente-btn cliente-btn-abrir" type="button">Imprimir / PDF</button>
         </div>
       </div>
 
-      <div id="cliente-not-found" class="card hidden">
+      <div id="relatorio-not-found" class="card hidden">
         <div class="card-body">
           <div class="empty-state">Cliente não encontrado.</div>
         </div>
       </div>
 
-      <div id="relatorio-page">
-        <section class="card cliente-hero-card">
-          <div class="card-body cliente-hero">
-            <div class="cliente-hero-left">
-              <div class="cliente-avatar" id="cliente-avatar">C</div>
+      <div id="relatorio-page" class="report-wrap">
+        <section class="report-card">
+          <div class="report-card-body">
+            <div class="report-hero">
+              <div class="report-hero-left">
+                <div class="report-avatar" id="report-avatar">C</div>
+                <div>
+                  <h2 id="report-nome" style="margin:0 0 6px;">Cliente</h2>
+                  <p id="report-email" class="report-muted">—</p>
+                  <p id="report-meta" class="report-muted">Objetivo: —</p>
+                </div>
+              </div>
+
               <div>
-                <h3 id="cliente-nome">Cliente</h3>
-                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
-                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+                <p class="report-muted print-only">Relatório comparativo da metodologia Zona Azul.</p>
+                <p id="report-data-geracao" class="report-muted">Gerado em —</p>
               </div>
             </div>
           </div>
         </section>
 
-        <div id="relatorio-print-area">
-          <section class="card">
-            <div class="card-header">
-              <h3>Dados do cliente</h3>
-            </div>
-            <div class="card-body">
-              <div class="cliente-mini-grid">
-                <div class="cliente-mini-item">
-                  <span>Nome</span>
-                  <strong id="dados-nome">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>E-mail</span>
-                  <strong id="dados-email">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Telefone</span>
-                  <strong id="dados-telefone">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Plano</span>
-                  <strong id="dados-plano">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Fase atual</span>
-                  <strong id="dados-fase">—</strong>
-                </div>
-                <div class="cliente-mini-item">
-                  <span>Data de início</span>
-                  <strong id="dados-data-inicio">—</strong>
-                </div>
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Resumo executivo</h3>
+            <p class="report-muted">Síntese da fase atual e direção prioritária do processo.</p>
+          </div>
+          <div class="report-card-body">
+            <div class="report-summary-grid">
+              <div class="summary-box">
+                <h4>Objetivo principal</h4>
+                <p id="summary-objetivo">—</p>
               </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-header">
-              <h3>Base do pré-diagnóstico</h3>
-            </div>
-            <div class="card-body">
-              <div class="relatorio-bloco">
-                <h4>Objetivo inicial</h4>
-                <p id="pre-objetivo">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Resumo do pré-diagnóstico</h4>
-                <p id="pre-resumo">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Radar inicial</h4>
-                <p id="pre-radar">—</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-header">
-              <h3>Diagnóstico completo</h3>
-            </div>
-            <div class="card-body">
-              <div class="relatorio-bloco">
+              <div class="summary-box">
                 <h4>Gargalo principal</h4>
-                <p id="diag-gargalo">—</p>
+                <p id="summary-gargalo">—</p>
               </div>
-
-              <div class="relatorio-bloco">
-                <h4>Triagem física</h4>
-                <p id="diag-triagem">—</p>
+              <div class="summary-box">
+                <h4>Prioridade imediata</h4>
+                <p id="summary-prioridade">—</p>
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div class="relatorio-bloco">
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Radar comparativo</h3>
+            <p class="report-muted">Comparação entre o primeiro radar salvo e o radar mais recente.</p>
+          </div>
+          <div class="report-card-body">
+            <div class="radar-wrap">
+              <div class="radar-legend">
+                <span class="legend-item"><span class="legend-dot initial"></span> Inicial</span>
+                <span class="legend-item"><span class="legend-dot current"></span> Atual</span>
+              </div>
+              <div class="radar-canvas-wrap">
+                <canvas id="radar-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Composição corporal e indicadores</h3>
+            <p class="report-muted">Comparação entre a primeira e a avaliação mais recente.</p>
+          </div>
+          <div class="report-card-body">
+            <div id="metrics-grid" class="report-metrics-grid"></div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Perimetria comparativa</h3>
+            <p class="report-muted">Evolução das medidas registradas entre a primeira e a avaliação mais recente.</p>
+          </div>
+          <div class="report-card-body">
+            <div id="perimetria-grid" class="report-perimetria-grid"></div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Leitura técnica do caso</h3>
+            <p class="report-muted">Síntese estratégica da fase atual do cliente.</p>
+          </div>
+          <div class="report-card-body">
+            <div class="report-summary-grid">
+              <div class="text-box">
                 <h4>Leitura do caso</h4>
-                <p id="diag-leitura">—</p>
+                <p id="diagnostico-leitura">—</p>
               </div>
-
-              <div class="relatorio-bloco">
+              <div class="text-box">
                 <h4>Síntese diagnóstica</h4>
-                <p id="diag-sintese">—</p>
+                <p id="diagnostico-sintese">—</p>
               </div>
-
-              <div class="relatorio-bloco">
-                <h4>Conduta inicial</h4>
-                <p id="diag-conduta">—</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-header">
-              <h3>Último acompanhamento</h3>
-            </div>
-            <div class="card-body">
-              <div class="relatorio-bloco">
-                <h4>Data</h4>
-                <p id="acomp-data">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Aderência</h4>
-                <p id="acomp-aderencia">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Evolução</h4>
-                <p id="acomp-evolucao">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Dificuldades</h4>
-                <p id="acomp-dificuldades">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Ajustes realizados</h4>
-                <p id="acomp-ajustes">—</p>
+              <div class="text-box">
+                <h4>Foco da próxima fase</h4>
+                <p id="diagnostico-foco">—</p>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section class="card">
-            <div class="card-header">
-              <h3>Planejamento do treinador</h3>
-            </div>
-            <div class="card-body">
-              <div class="relatorio-bloco">
-                <h4>Objetivo central</h4>
-                <p id="plan-objetivo-central">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Foco do mês</h4>
-                <p id="plan-foco-mes">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Direção comportamental</h4>
-                <p id="plan-direcao">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Hábitos-chave</h4>
-                <p id="plan-habitos">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Observações do planejamento</h4>
-                <p id="plan-observacoes">—</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="card-header">
-              <h3>Programação de treinos</h3>
-            </div>
-            <div class="card-body">
-              <div class="relatorio-bloco">
-                <h4>Fase atual</h4>
-                <p id="treino-fase">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Frequência semanal</h4>
-                <p id="treino-frequencia">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Divisão</h4>
-                <p id="treino-divisao">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Objetivo do ciclo</h4>
-                <p id="treino-objetivo-ciclo">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Resumo técnico</h4>
-                <p id="treino-resumo">—</p>
-              </div>
-
-              <div class="relatorio-bloco">
-                <h4>Orientações para MFIT</h4>
-                <p id="treino-orientacoes">—</p>
-              </div>
-            </div>
-          </section>
-        </div>
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Acompanhamentos recentes</h3>
+            <p class="report-muted">Últimos registros operacionais do processo.</p>
+          </div>
+          <div class="report-card-body">
+            <div id="timeline-list" class="timeline-list"></div>
+          </div>
+        </section>
       </div>
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=34"></script>
-  <script src="../assets/js/cliente-relatorio.js?v=34"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../assets/js/storage.js?v=52"></script>
+  <script src="../assets/js/relatorio-cliente.js?v=53"></script>
 </body>
 </html>
