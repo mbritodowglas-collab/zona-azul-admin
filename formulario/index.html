@@ -3,370 +3,683 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pré-diagnóstico | Metodologia Vida Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css" />
+  <title>Lançamentos | Zona Azul</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=48" />
 </head>
-<body class="public-body">
-  <main class="public-wrap">
-    <section class="hero-card hero-card-public">
-      <div class="hero-topline">
-        <span class="hero-badge">METODOLOGIA VIDA AZUL</span>
-      </div>
-
-      <div class="hero-content">
-        <h1 class="hero-title">Pré-diagnóstico de Saúde e Qualidade de Vida</h1>
-        <p class="hero-description">
-          Responda com sinceridade. Suas respostas ajudam a identificar padrões,
-          desafios e oportunidades para melhorar sua saúde e qualidade de vida.
-        </p>
-      </div>
-    </section>
-
-    <section class="card" id="form-card">
-      <div class="card-header">
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
         <div>
-          <h3 id="step-title">Identificação</h3>
-          <p class="muted" id="step-subtitle">Vamos começar com seus dados básicos.</p>
+          <h1>Zona Azul</h1>
+          <p>Lançamentos do cliente</p>
         </div>
-        <span class="step-indicator" id="step-indicator">Etapa 1 de 7</span>
       </div>
 
-      <div class="card-body">
-        <div class="progress-wrap">
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill" style="width: 14.28%;"></div>
-          </div>
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome-topo">Lançamentos</h2>
+          <p id="cliente-subtitulo">Registro técnico do caso.</p>
         </div>
 
-        <form id="public-pre-form">
-          <!-- ETAPA 1 -->
-          <div class="form-step" data-step="1">
-            <div class="grid grid-2">
-              <div class="field">
-                <label for="nome">Nome completo</label>
-                <input id="nome" type="text" required />
-              </div>
+        <div class="cliente-topo-acoes">
+          <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+        </div>
+      </div>
 
-              <div class="field">
-                <label for="email">Email</label>
-                <input id="email" type="email" required />
-              </div>
+      <div id="cliente-not-found" class="card hidden">
+        <div class="card-body">
+          <div class="empty-state">Cliente não encontrado.</div>
+        </div>
+      </div>
 
-              <div class="field">
-                <label>Data de nascimento</label>
-                <div class="birth-grid">
-                  <input id="nascimento_dia" type="number" min="1" max="31" placeholder="Dia" required />
-                  <select id="nascimento_mes" required>
-                    <option value="">Mês</option>
-                    <option value="1">Jan</option>
-                    <option value="2">Fev</option>
-                    <option value="3">Mar</option>
-                    <option value="4">Abr</option>
-                    <option value="5">Mai</option>
-                    <option value="6">Jun</option>
-                    <option value="7">Jul</option>
-                    <option value="8">Ago</option>
-                    <option value="9">Set</option>
-                    <option value="10">Out</option>
-                    <option value="11">Nov</option>
-                    <option value="12">Dez</option>
-                  </select>
-                  <input id="nascimento_ano" type="number" min="1900" max="2100" placeholder="Ano" required />
+      <div id="lancamentos-page">
+        <section class="card cliente-hero-card">
+          <div class="card-body cliente-hero">
+            <div class="cliente-hero-left">
+              <div class="cliente-avatar" id="cliente-avatar">C</div>
+              <div>
+                <h3 id="cliente-nome">Cliente</h3>
+                <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lancamentos-grid">
+          <div class="lancamentos-col-main">
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Base do pré-diagnóstico</h3>
+              </div>
+              <div class="card-body">
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="pre-nome-edit">Nome</label>
+                    <input id="pre-nome-edit" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-email-edit">E-mail</label>
+                    <input id="pre-email-edit" type="email" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-telefone-edit">Telefone</label>
+                    <input id="pre-telefone-edit" type="text" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-sexo-ref">Sexo para cálculo / referência</label>
+                    <input id="pre-sexo-ref" type="text" placeholder="Ex.: masculino / feminino" />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label>Data de nascimento</label>
+                    <div class="birth-grid">
+                      <input id="pre-nascimento-dia" type="number" min="1" max="31" placeholder="Dia" />
+                      <select id="pre-nascimento-mes">
+                        <option value="">Mês</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Fev</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Abr</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Ago</option>
+                        <option value="9">Set</option>
+                        <option value="10">Out</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dez</option>
+                      </select>
+                      <input id="pre-nascimento-ano" type="number" min="1900" max="2100" placeholder="Ano" />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="pre-idade">Idade</label>
+                    <input id="pre-idade" type="text" readonly />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="pre-objetivo">Objetivo inicial</label>
+                    <textarea id="pre-objetivo"></textarea>
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="pre-resumo">Resumo do pré-diagnóstico</label>
+                    <textarea id="pre-resumo"></textarea>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="dados-base-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-dados-base-btn">Salvar dados base</button>
                 </div>
               </div>
+            </section>
 
-              <div class="field">
-                <label for="genero">Gênero</label>
-                <select id="genero" required>
-                  <option value="">Selecione</option>
-                  <option value="masculino">Masculino</option>
-                  <option value="feminino">Feminino</option>
-                  <option value="nao_informar">Prefiro não informar</option>
-                </select>
+            <section class="card">
+              <div class="card-header">
+                <h3>Estrutura da sessão</h3>
               </div>
+              <div class="card-body">
+                <div class="grid cols-3">
+                  <div class="field">
+                    <label for="sessao-data">Data da sessão</label>
+                    <input id="sessao-data" type="date" />
+                  </div>
 
-              <div class="field">
-                <label for="cidade">Cidade</label>
-                <input id="cidade" type="text" required />
-              </div>
+                  <div class="field">
+                    <label for="sessao-tipo">Tipo</label>
+                    <select id="sessao-tipo">
+                      <option value="">Selecionar</option>
+                      <option value="online">Online</option>
+                      <option value="presencial">Presencial</option>
+                    </select>
+                  </div>
 
-              <div class="field">
-                <label for="origem">Origem</label>
-                <select id="origem" required>
-                  <option value="">Selecione</option>
-                  <option value="indicacao">Indicação</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="google">Google</option>
-                  <option value="outro">Outro</option>
-                </select>
+                  <div class="field">
+                    <label for="sessao-protocolo">Protocolo</label>
+                    <select id="sessao-protocolo">
+                      <option value="">Selecionar</option>
+                      <option value="essencial">Essencial</option>
+                      <option value="avancado">Avançado</option>
+                    </select>
+                  </div>
+                </div>
+
+                <p class="cliente-hero-meta" id="sessao-regra-texto" style="margin-top: 14px;">
+                  Online usa Marinha. Presencial essencial usa Marinha sem dobras. Presencial avançado usa dobras.
+                </p>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="sessao-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-sessao-btn">Salvar sessão</button>
+                </div>
               </div>
-            </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Avaliação física</h3>
+              </div>
+              <div class="card-body">
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="peso">Peso (kg)</label>
+                    <input id="peso" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="altura">Altura (m)</label>
+                    <input id="altura" type="number" step="0.01" />
+                  </div>
+
+                  <div class="field">
+                    <label for="cintura">Cintura (cm)</label>
+                    <input id="cintura" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="quadril">Quadril (cm)</label>
+                    <input id="quadril" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="pescoco">Pescoço (cm)</label>
+                    <input id="pescoco" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field" id="field-abdomen-marinha">
+                    <label for="abdomen-marinha">Abdômen (Marinha) (cm)</label>
+                    <input id="abdomen-marinha" type="number" step="0.1" />
+                  </div>
+
+                  <div class="field">
+                    <label for="imc">IMC</label>
+                    <input id="imc" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="rcq">RCQ</label>
+                    <input id="rcq" type="text" readonly />
+                  </div>
+
+                  <div class="field">
+                    <label for="rce">RCE</label>
+                    <input id="rce" type="text" readonly />
+                  </div>
+
+                  <div class="field" id="field-gordura-marinha">
+                    <label for="gordura-marinha">% Gordura (Marinha)</label>
+                    <input id="gordura-marinha" type="text" readonly />
+                  </div>
+
+                  <div class="field hidden" id="field-gordura-dobras">
+                    <label for="gordura-dobras">% Gordura (Dobras)</label>
+                    <input id="gordura-dobras" type="text" readonly />
+                  </div>
+                </div>
+
+                <div id="bloco-presencial" class="hidden">
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Perimetria presencial</h4>
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="torax">Tórax (cm)</label>
+                      <input id="torax" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="abdomen">Abdômen (cm)</label>
+                      <input id="abdomen" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="braco-direito">Braço direito (cm)</label>
+                      <input id="braco-direito" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="braco-esquerdo">Braço esquerdo (cm)</label>
+                      <input id="braco-esquerdo" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="coxa-direita">Coxa direita (cm)</label>
+                      <input id="coxa-direita" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="coxa-esquerda">Coxa esquerda (cm)</label>
+                      <input id="coxa-esquerda" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="panturrilha">Panturrilha (cm)</label>
+                      <input id="panturrilha" type="number" step="0.1" />
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Testes funcionais</h4>
+                  <div class="grid cols-2">
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-overhead">Overhead Squat / Mobilidade</label>
+                      <textarea id="teste-overhead" placeholder="Registre observações do overhead squat..."></textarea>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="teste-thomas">Thomas Test</label>
+                      <textarea id="teste-thomas" placeholder="Registre observações do Thomas Test..."></textarea>
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-sentar-alcancar">Sentar e alcançar</label>
+                      <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 cm ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-fc">Step test / FC recuperação</label>
+                      <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-borg">Step test / Borg</label>
+                      <input id="teste-step-borg" type="text" placeholder="Ex.: 13 ou não realiza" />
+                    </div>
+
+                    <div class="field">
+                      <label for="teste-step-classificacao">Step test / Classificação</label>
+                      <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom ou não realiza" />
+                    </div>
+                  </div>
+                </div>
+
+                <div id="bloco-avancado" class="hidden">
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Dobras cutâneas</h4>
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="dobra-peitoral">Peitoral (mm)</label>
+                      <input id="dobra-peitoral" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-axilar">Axilar média (mm)</label>
+                      <input id="dobra-axilar" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-triceps">Tríceps (mm)</label>
+                      <input id="dobra-triceps" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-subescapular">Subescapular (mm)</label>
+                      <input id="dobra-subescapular" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-abdominal">Abdominal (mm)</label>
+                      <input id="dobra-abdominal" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-suprailiaca">Suprailíaca (mm)</label>
+                      <input id="dobra-suprailiaca" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobra-coxa">Coxa (mm)</label>
+                      <input id="dobra-coxa" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="dobras-soma">Somatório de dobras</label>
+                      <input id="dobras-soma" type="text" readonly />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="avaliacao-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-secundario" id="calcular-btn">Calcular</button>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-avaliacao-btn">Salvar avaliação</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Radar revisado</h3>
+              </div>
+              <div class="card-body">
+                <p class="cliente-hero-meta" style="margin-bottom: 16px;">
+                  Compare o score original do cliente com a sua leitura revisada da sessão.
+                </p>
+
+                <div class="radar-grid">
+                  <div class="radar-card radar-movimento">
+                    <div class="radar-card-head"><strong>Movimento</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-movimento">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-movimento">Revisado</label>
+                        <input id="radar-revisado-movimento" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-alimentacao">
+                    <div class="radar-card-head"><strong>Alimentação</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-alimentacao">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-alimentacao">Revisado</label>
+                        <input id="radar-revisado-alimentacao" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-sono">
+                    <div class="radar-card-head"><strong>Sono</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-sono">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-sono">Revisado</label>
+                        <input id="radar-revisado-sono" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-proposito">
+                    <div class="radar-card-head"><strong>Propósito</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-proposito">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-proposito">Revisado</label>
+                        <input id="radar-revisado-proposito" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-social">
+                    <div class="radar-card-head"><strong>Social</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-social">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-social">Revisado</label>
+                        <input id="radar-revisado-social" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="radar-card radar-estresse">
+                    <div class="radar-card-head"><strong>Estresse</strong></div>
+                    <div class="radar-values">
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-estresse">—</strong></div>
+                      <div class="radar-revisado">
+                        <label for="radar-revisado-estresse">Revisado</label>
+                        <input id="radar-revisado-estresse" type="number" min="0" max="10" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="radar-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-radar-btn">Salvar radar revisado</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Diagnóstico completo</h3>
+              </div>
+              <div class="card-body">
+
+                <h4 class="subsection-title">Síntese do diagnóstico</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="diag-gargalo">Gargalo principal</label>
+                    <input id="diag-gargalo" type="text" placeholder="Ex.: sono, rotina, ansiedade, ambiente..." />
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-prioridade">Prioridade imediata</label>
+                    <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono, treinar 3x, ajustar alimentação..." />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="diag-leitura">Leitura do caso</label>
+                    <textarea id="diag-leitura" placeholder="Descreva sua leitura técnica do caso..."></textarea>
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="diag-sintese">Síntese diagnóstica</label>
+                    <textarea id="diag-sintese" placeholder="Resuma em 3–4 frases o padrão identificado e o que você leu nas entrelinhas..."></textarea>
+                  </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Gaps prioritários identificados</h4>
+
+                <div class="grid cols-3">
+                  <div class="field">
+                    <label for="gap1-pilar">1º GAP — Pilar</label>
+                    <input id="gap1-pilar" type="text" placeholder="Ex.: Sono" />
+                  </div>
+                  <div class="field">
+                    <label for="gap1-causa">1º GAP — Causa raiz</label>
+                    <input id="gap1-causa" type="text" placeholder="Ex.: rotina noturna desorganizada" />
+                  </div>
+                  <div class="field">
+                    <label for="gap1-acao">1º GAP — Ação</label>
+                    <input id="gap1-acao" type="text" placeholder="Ex.: higiene do sono + reduzir telas" />
+                  </div>
+
+                  <div class="field">
+                    <label for="gap2-pilar">2º GAP — Pilar</label>
+                    <input id="gap2-pilar" type="text" placeholder="Ex.: Movimento" />
+                  </div>
+                  <div class="field">
+                    <label for="gap2-causa">2º GAP — Causa raiz</label>
+                    <input id="gap2-causa" type="text" placeholder="Ex.: falta de regularidade" />
+                  </div>
+                  <div class="field">
+                    <label for="gap2-acao">2º GAP — Ação</label>
+                    <input id="gap2-acao" type="text" placeholder="Ex.: treino mínimo 3x/semana" />
+                  </div>
+
+                  <div class="field">
+                    <label for="gap3-pilar">3º GAP — Pilar</label>
+                    <input id="gap3-pilar" type="text" placeholder="Ex.: Estresse" />
+                  </div>
+                  <div class="field">
+                    <label for="gap3-causa">3º GAP — Causa raiz</label>
+                    <input id="gap3-causa" type="text" placeholder="Ex.: sobrecarga crônica" />
+                  </div>
+                  <div class="field">
+                    <label for="gap3-acao">3º GAP — Ação</label>
+                    <input id="gap3-acao" type="text" placeholder="Ex.: ritual diário de pausa" />
+                  </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Perfil de entrada e plano do mês 1</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="diag-perfil-condicionamento">Nível de condicionamento</label>
+                    <select id="diag-perfil-condicionamento">
+                      <option value="">Selecionar</option>
+                      <option value="iniciante">Iniciante</option>
+                      <option value="intermediario">Intermediário</option>
+                      <option value="avancado">Avançado</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-perfil-plano">Plano fechado</label>
+                    <select id="diag-perfil-plano">
+                      <option value="">Selecionar</option>
+                      <option value="mensal">Mensal</option>
+                      <option value="trimestral">Trimestral</option>
+                      <option value="semestral">Semestral</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-perfil-formato">Formato</label>
+                    <select id="diag-perfil-formato">
+                      <option value="">Selecionar</option>
+                      <option value="presencial">Presencial</option>
+                      <option value="online">Online</option>
+                      <option value="hibrido">Híbrido</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-triagem">Triagem física</label>
+                    <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar, baixa resistência..." />
+                  </div>
+
+                  <div class="field">
+                    <label for="foco-gap">Principal gap a trabalhar</label>
+                    <input id="foco-gap" type="text" placeholder="Ex.: Sono" />
+                  </div>
+
+                  <div class="field">
+                    <label for="foco-ambiente">Ajuste de ambiente urgente</label>
+                    <input id="foco-ambiente" type="text" placeholder="Ex.: retirar celular do quarto" />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="foco-habito">1º hábito de ancoragem</label>
+                    <input id="foco-habito" type="text" placeholder="Ex.: deitar 30 min mais cedo todos os dias" />
+                  </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Combinados da sessão</h4>
+
+                <div class="grid cols-2">
+                  <label class="checkbox-field">
+                    <input id="comb-plano-enviado" type="checkbox" />
+                    <span>Plano do Mês 1 enviado no MFIT em até 48h</span>
+                  </label>
+
+                  <label class="checkbox-field">
+                    <input id="comb-termo" type="checkbox" />
+                    <span>Termo de compromisso assinado</span>
+                  </label>
+
+                  <label class="checkbox-field">
+                    <input id="comb-checkin" type="checkbox" />
+                    <span>Check-in semanal explicado e aceito</span>
+                  </label>
+
+                  <div class="field">
+                    <label for="comb-proxima-sessao">Próxima sessão de fase agendada</label>
+                    <input id="comb-proxima-sessao" type="date" />
+                  </div>
+
+                  <div class="field">
+                    <label for="comb-protocolo-aplicado">Protocolo de avaliação física aplicado</label>
+                    <select id="comb-protocolo-aplicado">
+                      <option value="">Selecionar</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="diag-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-diagnostico-btn">Salvar diagnóstico</button>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <!-- ETAPA 2 -->
-          <div class="form-step hidden" data-step="2">
-            <div class="field">
-              <label for="exp_personal">Já fez acompanhamento com personal ou nutricionista?</label>
-              <select id="exp_personal" required>
-                <option value="">Selecione</option>
-                <option value="nunca">Nunca</option>
-                <option value="fez_nao_manteve">Já fiz, mas não mantive</option>
-                <option value="faz_atualmente">Faço atualmente</option>
-                <option value="fez_manteve">Já fiz e mantive</option>
-              </select>
-            </div>
+          <div class="lancamentos-col-side">
+            <section class="card">
+              <div class="card-header">
+                <h3>Novo acompanhamento</h3>
+              </div>
+              <div class="card-body">
+                <div class="grid cols-1">
+                  <div class="field">
+                    <label for="acomp-data">Data</label>
+                    <input id="acomp-data" type="date" />
+                  </div>
 
-            <div class="field">
-              <label for="exp_emagrecimento">Já seguiu algum processo de emagrecimento?</label>
-              <select id="exp_emagrecimento" required>
-                <option value="">Selecione</option>
-                <option value="nunca">Nunca</option>
-                <option value="nao_funcionou">Já tentei, mas não funcionou</option>
-                <option value="funcionou_nao_manteve">Funcionou, mas não mantive</option>
-                <option value="em_processo">Estou em processo</option>
-              </select>
-            </div>
+                  <div class="field">
+                    <label for="acomp-aderencia">Aderência</label>
+                    <input id="acomp-aderencia" type="text" placeholder="Ex.: alta, média, baixa" />
+                  </div>
 
-            <div class="field">
-              <label for="o_que_funcionou">O que já funcionou para você? (opcional)</label>
-              <textarea id="o_que_funcionou"></textarea>
-            </div>
+                  <div class="field">
+                    <label for="acomp-evolucao">Evolução</label>
+                    <textarea id="acomp-evolucao" placeholder="Descreva a evolução percebida..."></textarea>
+                  </div>
 
-            <div class="field">
-              <label for="limitacoes_atuais">Você tem alguma dor, lesão ou condição de saúde que impacta sua rotina hoje? (opcional)</label>
-              <textarea
-                id="limitacoes_atuais"
-                placeholder="Ex: dores lombares, joelho, hérnia, ansiedade, pressão alta, lesão antiga, etc."
-              ></textarea>
-            </div>
+                  <div class="field">
+                    <label for="acomp-dificuldades">Dificuldades</label>
+                    <textarea id="acomp-dificuldades" placeholder="Descreva as dificuldades atuais..."></textarea>
+                  </div>
 
-            <div class="field">
-              <label for="por_que_parou">Por que você parou?</label>
-              <textarea id="por_que_parou" required></textarea>
-            </div>
+                  <div class="field">
+                    <label for="acomp-ajustes">Ajustes realizados</label>
+                    <textarea id="acomp-ajustes" placeholder="Descreva os ajustes feitos..."></textarea>
+                  </div>
+                </div>
+
+                <div class="cliente-section-actions">
+                  <span class="cliente-hub-updated" id="acomp-updated">Última atualização: —</span>
+                  <button class="cliente-btn cliente-btn-abrir" id="salvar-acompanhamento-btn">Salvar acompanhamento</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Histórico de acompanhamentos</h3>
+              </div>
+              <div class="card-body">
+                <div id="acompanhamentos-lista" class="acompanhamentos-lista"></div>
+              </div>
+            </section>
           </div>
-
-          <!-- ETAPA 3 -->
-          <div class="form-step hidden" data-step="3">
-            <div class="field">
-              <label>Movimento</label>
-              <p class="field-help">Como você avalia sua frequência e qualidade de movimento físico atualmente?</p>
-              <div class="score-group" data-target="score_movimento">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_movimento" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Alimentação</label>
-              <p class="field-help">Como você avalia a qualidade da sua alimentação no dia a dia?</p>
-              <div class="score-group" data-target="score_alimentacao">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_alimentacao" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Sono</label>
-              <p class="field-help">Como você avalia a qualidade do seu sono?</p>
-              <div class="score-group" data-target="score_sono">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_sono" type="hidden" required />
-            </div>
-          </div>
-
-          <!-- ETAPA 4 -->
-          <div class="form-step hidden" data-step="4">
-            <div class="field">
-              <label>Propósito</label>
-              <p class="field-help">Você sente que tem clareza sobre o que te motiva e dá sentido à sua vida?</p>
-              <div class="score-group" data-target="score_proposito">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_proposito" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Vida social</label>
-              <p class="field-help">Como você avalia a qualidade das suas relações sociais e senso de comunidade?</p>
-              <div class="score-group" data-target="score_social">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_social" type="hidden" required />
-            </div>
-
-            <div class="field">
-              <label>Estresse</label>
-              <p class="field-help">Como você avalia seu nível de estresse e sua capacidade de gerenciá-lo?</p>
-              <div class="score-group" data-target="score_estresse">
-                <button type="button" class="score-btn" data-value="1">1</button>
-                <button type="button" class="score-btn" data-value="2">2</button>
-                <button type="button" class="score-btn" data-value="3">3</button>
-                <button type="button" class="score-btn" data-value="4">4</button>
-                <button type="button" class="score-btn" data-value="5">5</button>
-                <button type="button" class="score-btn" data-value="6">6</button>
-                <button type="button" class="score-btn" data-value="7">7</button>
-                <button type="button" class="score-btn" data-value="8">8</button>
-                <button type="button" class="score-btn" data-value="9">9</button>
-                <button type="button" class="score-btn" data-value="10">10</button>
-              </div>
-              <input id="score_estresse" type="hidden" required />
-            </div>
-          </div>
-
-          <!-- ETAPA 5 -->
-          <div class="form-step hidden" data-step="5">
-            <div class="field">
-              <label>Quão urgente é mudar sua situação atual?</label>
-              <select id="urgencia" required>
-                <option value="">Selecione</option>
-                <option value="alta">Quero começar agora</option>
-                <option value="media">Quero começar em breve</option>
-                <option value="baixa">Estou apenas avaliando</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="comprometimento">De 0 a 10, quanto você está disposto(a) a seguir um plano hoje?</label>
-              <input id="comprometimento" type="number" min="0" max="10" required />
-            </div>
-
-            <div class="field">
-              <label>Você investiria em acompanhamento para acelerar resultados?</label>
-              <select id="investimento" required>
-                <option value="">Selecione</option>
-                <option value="sim">Sim</option>
-                <option value="depende">Depende do valor</option>
-                <option value="nao">Prefiro tentar sozinho</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>O que mais te sabota hoje?</label>
-              <select id="sabotagem" required>
-                <option value="">Selecione</option>
-                <option value="tempo">Falta de tempo</option>
-                <option value="disciplina">Falta de disciplina</option>
-                <option value="emocional">Ansiedade/emocional</option>
-                <option value="cansaco">Cansaço</option>
-                <option value="direcao">Falta de direção</option>
-                <option value="outro">Outro</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>Qual seu principal objetivo físico?</label>
-              <select id="objetivo_fisico" required>
-                <option value="">Selecione</option>
-                <option value="emagrecimento">Emagrecimento</option>
-                <option value="massa">Ganho de massa</option>
-                <option value="saude">Melhorar saúde</option>
-                <option value="energia">Mais energia/disposição</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- ETAPA 6 -->
-          <div class="form-step hidden" data-step="6">
-            <div class="field">
-              <label for="desafio_atual">Maior desafio atual</label>
-              <textarea id="desafio_atual" required></textarea>
-            </div>
-
-            <div class="field">
-              <label for="meta_6_meses">Meta para 6 meses</label>
-              <textarea id="meta_6_meses" required></textarea>
-            </div>
-          </div>
-
-          <!-- ETAPA 7 -->
-          <div class="form-step hidden" data-step="7">
-            <div class="field">
-              <label>Você sabe seu peso e altura atualmente? (opcional)</label>
-              <p class="field-help">Essas informações ajudam a enriquecer a leitura inicial do seu contexto físico.</p>
-            </div>
-
-            <div class="grid grid-2">
-              <div class="field">
-                <label for="peso">Peso (kg)</label>
-                <input id="peso" type="number" min="1" step="0.1" placeholder="Ex: 78" />
-              </div>
-
-              <div class="field">
-                <label for="altura">Altura (cm)</label>
-                <input id="altura" type="number" min="1" step="1" placeholder="Ex: 175" />
-              </div>
-            </div>
-          </div>
-
-          <div class="actions form-nav">
-            <button type="button" class="btn secondary hidden" id="prev-step-btn">Voltar</button>
-            <button type="button" class="btn" id="next-step-btn">Avançar</button>
-            <button type="submit" class="btn hidden" id="submit-btn">Enviar respostas</button>
-          </div>
-        </form>
+        </section>
       </div>
-    </section>
+    </main>
+  </div>
 
-    <section class="card hidden" id="success-card">
-      <div class="card-header">
-        <h3>Recebido com sucesso</h3>
-      </div>
-      <div class="card-body">
-        <p>Obrigado por responder o pré-diagnóstico.</p>
-        <p class="muted">Recebemos suas respostas e em breve entraremos em contato.</p>
-      </div>
-    </section>
-  </main>
-
-  <script src="../assets/js/storage.js?v=12"></script>
-  <script src="../assets/js/calculos.js?v=12"></script>
-  <script src="../assets/js/formulario-publico.js?v=12"></script>
+  <script src="../assets/js/storage.js?v=48"></script>
+  <script src="../assets/js/lancamentos.js?v=48"></script>
 </body>
 </html>
