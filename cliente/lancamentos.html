@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lançamentos | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=45" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=47" />
 </head>
 <body>
   <div class="app-shell">
@@ -58,6 +58,8 @@
 
         <section class="lancamentos-grid">
           <div class="lancamentos-col-main">
+
+            <!-- BASE DO PRÉ -->
             <section class="card">
               <div class="card-header">
                 <h3>Base do pré-diagnóstico</h3>
@@ -130,6 +132,7 @@
               </div>
             </section>
 
+            <!-- ESTRUTURA DA SESSÃO -->
             <section class="card">
               <div class="card-header">
                 <h3>Estrutura da sessão</h3>
@@ -171,6 +174,7 @@
               </div>
             </section>
 
+            <!-- AVALIAÇÃO FÍSICA -->
             <section class="card">
               <div class="card-header">
                 <h3>Avaliação física</h3>
@@ -365,6 +369,7 @@
               </div>
             </section>
 
+            <!-- RADAR -->
             <section class="card">
               <div class="card-header">
                 <h3>Radar revisado</h3>
@@ -376,14 +381,9 @@
 
                 <div class="radar-grid">
                   <div class="radar-card radar-movimento">
-                    <div class="radar-card-head">
-                      <strong>Movimento</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Movimento</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-movimento">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-movimento">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-movimento">Revisado</label>
                         <input id="radar-revisado-movimento" type="number" min="0" max="10" />
@@ -392,14 +392,9 @@
                   </div>
 
                   <div class="radar-card radar-alimentacao">
-                    <div class="radar-card-head">
-                      <strong>Alimentação</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Alimentação</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-alimentacao">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-alimentacao">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-alimentacao">Revisado</label>
                         <input id="radar-revisado-alimentacao" type="number" min="0" max="10" />
@@ -408,14 +403,9 @@
                   </div>
 
                   <div class="radar-card radar-sono">
-                    <div class="radar-card-head">
-                      <strong>Sono</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Sono</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-sono">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-sono">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-sono">Revisado</label>
                         <input id="radar-revisado-sono" type="number" min="0" max="10" />
@@ -424,14 +414,9 @@
                   </div>
 
                   <div class="radar-card radar-proposito">
-                    <div class="radar-card-head">
-                      <strong>Propósito</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Propósito</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-proposito">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-proposito">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-proposito">Revisado</label>
                         <input id="radar-revisado-proposito" type="number" min="0" max="10" />
@@ -440,14 +425,9 @@
                   </div>
 
                   <div class="radar-card radar-social">
-                    <div class="radar-card-head">
-                      <strong>Social</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Social</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-social">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-social">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-social">Revisado</label>
                         <input id="radar-revisado-social" type="number" min="0" max="10" />
@@ -456,14 +436,9 @@
                   </div>
 
                   <div class="radar-card radar-estresse">
-                    <div class="radar-card-head">
-                      <strong>Estresse</strong>
-                    </div>
+                    <div class="radar-card-head"><strong>Estresse</strong></div>
                     <div class="radar-values">
-                      <div class="radar-pre">
-                        <span>Pré</span>
-                        <strong id="radar-pre-estresse">—</strong>
-                      </div>
+                      <div class="radar-pre"><span>Pré</span><strong id="radar-pre-estresse">—</strong></div>
                       <div class="radar-revisado">
                         <label for="radar-revisado-estresse">Revisado</label>
                         <input id="radar-revisado-estresse" type="number" min="0" max="10" />
@@ -479,11 +454,15 @@
               </div>
             </section>
 
+            <!-- DIAGNÓSTICO COMPLETO ALINHADO AO PROTOCOLO -->
             <section class="card">
               <div class="card-header">
                 <h3>Diagnóstico completo</h3>
               </div>
               <div class="card-body">
+
+                <h4 class="subsection-title">Síntese do diagnóstico</h4>
+
                 <div class="grid cols-2">
                   <div class="field">
                     <label for="diag-gargalo">Gargalo principal</label>
@@ -491,18 +470,8 @@
                   </div>
 
                   <div class="field">
-                    <label for="diag-perfil">Perfil de entrada</label>
-                    <input id="diag-perfil" type="text" placeholder="Ex.: iniciante inconsistente" />
-                  </div>
-
-                  <div class="field">
-                    <label for="diag-triagem">Triagem física</label>
-                    <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar, baixa resistência..." />
-                  </div>
-
-                  <div class="field">
                     <label for="diag-prioridade">Prioridade imediata</label>
-                    <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono e treinar 3x" />
+                    <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono, treinar 3x, ajustar alimentação..." />
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
@@ -512,13 +481,150 @@
 
                   <div class="field" style="grid-column: 1 / -1;">
                     <label for="diag-sintese">Síntese diagnóstica</label>
-                    <textarea id="diag-sintese" placeholder="Síntese consolidada do diagnóstico..."></textarea>
+                    <textarea id="diag-sintese" placeholder="Resuma em 3–4 frases o padrão identificado e o que você leu nas entrelinhas..."></textarea>
+                  </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Gaps prioritários identificados</h4>
+
+                <div class="grid cols-3">
+                  <div class="field">
+                    <label for="gap1-pilar">1º GAP — Pilar</label>
+                    <input id="gap1-pilar" type="text" placeholder="Ex.: Sono" />
+                  </div>
+                  <div class="field">
+                    <label for="gap1-causa">1º GAP — Causa raiz</label>
+                    <input id="gap1-causa" type="text" placeholder="Ex.: rotina noturna desorganizada" />
+                  </div>
+                  <div class="field">
+                    <label for="gap1-acao">1º GAP — Ação</label>
+                    <input id="gap1-acao" type="text" placeholder="Ex.: higiene do sono + reduzir telas" />
+                  </div>
+
+                  <div class="field">
+                    <label for="gap2-pilar">2º GAP — Pilar</label>
+                    <input id="gap2-pilar" type="text" placeholder="Ex.: Movimento" />
+                  </div>
+                  <div class="field">
+                    <label for="gap2-causa">2º GAP — Causa raiz</label>
+                    <input id="gap2-causa" type="text" placeholder="Ex.: falta de regularidade" />
+                  </div>
+                  <div class="field">
+                    <label for="gap2-acao">2º GAP — Ação</label>
+                    <input id="gap2-acao" type="text" placeholder="Ex.: treino mínimo 3x/semana" />
+                  </div>
+
+                  <div class="field">
+                    <label for="gap3-pilar">3º GAP — Pilar</label>
+                    <input id="gap3-pilar" type="text" placeholder="Ex.: Estresse" />
+                  </div>
+                  <div class="field">
+                    <label for="gap3-causa">3º GAP — Causa raiz</label>
+                    <input id="gap3-causa" type="text" placeholder="Ex.: sobrecarga crônica" />
+                  </div>
+                  <div class="field">
+                    <label for="gap3-acao">3º GAP — Ação</label>
+                    <input id="gap3-acao" type="text" placeholder="Ex.: ritual diário de pausa" />
+                  </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Perfil de entrada e plano do mês 1</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="diag-perfil-condicionamento">Nível de condicionamento</label>
+                    <select id="diag-perfil-condicionamento">
+                      <option value="">Selecionar</option>
+                      <option value="iniciante">Iniciante</option>
+                      <option value="intermediario">Intermediário</option>
+                      <option value="avancado">Avançado</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-perfil-plano">Plano fechado</label>
+                    <select id="diag-perfil-plano">
+                      <option value="">Selecionar</option>
+                      <option value="mensal">Mensal</option>
+                      <option value="trimestral">Trimestral</option>
+                      <option value="semestral">Semestral</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-perfil-formato">Formato</label>
+                    <select id="diag-perfil-formato">
+                      <option value="">Selecionar</option>
+                      <option value="presencial">Presencial</option>
+                      <option value="online">Online</option>
+                      <option value="hibrido">Híbrido</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="diag-triagem">Triagem física</label>
+                    <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar, baixa resistência..." />
+                  </div>
+
+                  <div class="field">
+                    <label for="foco-gap">Principal gap a trabalhar</label>
+                    <input id="foco-gap" type="text" placeholder="Ex.: Sono" />
+                  </div>
+
+                  <div class="field">
+                    <label for="foco-ambiente">Ajuste de ambiente urgente</label>
+                    <input id="foco-ambiente" type="text" placeholder="Ex.: retirar celular do quarto" />
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
-                    <label for="diag-conduta">Conduta inicial</label>
-                    <textarea id="diag-conduta" placeholder="Direcionamento inicial do caso..."></textarea>
+                    <label for="foco-habito">1º hábito de ancoragem</label>
+                    <input id="foco-habito" type="text" placeholder="Ex.: deitar 30 min mais cedo todos os dias" />
                   </div>
+                </div>
+
+                <div class="cliente-expand-divider"></div>
+
+                <h4 class="subsection-title">Combinados da sessão</h4>
+
+                <div class="grid cols-2">
+                  <label class="checkbox-field">
+                    <input id="comb-plano-enviado" type="checkbox" />
+                    <span>Plano do Mês 1 enviado no MFIT em até 48h</span>
+                  </label>
+
+                  <label class="checkbox-field">
+                    <input id="comb-termo" type="checkbox" />
+                    <span>Termo de compromisso assinado</span>
+                  </label>
+
+                  <label class="checkbox-field">
+                    <input id="comb-checkin" type="checkbox" />
+                    <span>Check-in semanal explicado e aceito</span>
+                  </label>
+
+                  <div class="field">
+                    <label for="comb-proxima-sessao">Próxima sessão de fase agendada</label>
+                    <input id="comb-proxima-sessao" type="date" />
+                  </div>
+
+                  <div class="field">
+                    <label for="comb-protocolo-aplicado">Protocolo de avaliação física aplicado</label>
+                    <select id="comb-protocolo-aplicado">
+                      <option value="">Selecionar</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                    </select>
+                  </div>
+
+                  <label class="checkbox-field">
+                    <input id="comb-lead-convertido" type="checkbox" />
+                    <span>Lead convertido para cliente no sistema</span>
+                  </label>
                 </div>
 
                 <div class="cliente-section-actions">
@@ -529,6 +635,7 @@
             </section>
           </div>
 
+          <!-- COLUNA LATERAL -->
           <div class="lancamentos-col-side">
             <section class="card">
               <div class="card-header">
@@ -583,7 +690,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=45"></script>
-  <script src="../assets/js/lancamentos.js?v=45"></script>
+  <script src="../assets/js/storage.js?v=47"></script>
+  <script src="../assets/js/lancamentos.js?v=47"></script>
 </body>
 </html>
