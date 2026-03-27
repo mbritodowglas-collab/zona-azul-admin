@@ -210,6 +210,33 @@ window.ZAPlanejamento = (() => {
     return cliente?.planejamento || {};
   }
 
+  function ensurePlanejamentoStructure(planejamento = {}) {
+    return {
+      id: planejamento.id || `plan_${Date.now()}`,
+      titulo: planejamento.titulo || "",
+      status: planejamento.status || "ativo",
+      createdAt: planejamento.createdAt || new Date().toISOString(),
+      updatedAt: planejamento.updatedAt || "",
+      archivedAt: planejamento.archivedAt || null,
+      estrategia: planejamento.estrategia || {},
+      habitos: planejamento.habitos || {},
+      nutricional: planejamento.nutricional || {},
+      treino: planejamento.treino || {},
+      cardio: planejamento.cardio || {},
+      observacoes: planejamento.observacoes || {},
+      resumoGerado: planejamento.resumoGerado || "",
+      notasTreinador: Array.isArray(planejamento.notasTreinador) ? planejamento.notasTreinador : []
+    };
+  }
+
+  function getStatus() {
+    return ensurePlanejamentoStructure(getPlanejamentoAtual()).status;
+  }
+
+  function isArchived() {
+    return getStatus() === "arquivado";
+  }
+
   function renderHeader() {
     setText("planner-avatar", getInitials(cliente?.nome || "Cliente"));
     setText("planner-nome", cliente?.nome || "Planejamento");
@@ -244,13 +271,15 @@ window.ZAPlanejamento = (() => {
   }
 
   function renderPlanejamento() {
-    const planejamento = getPlanejamentoAtual();
+    const planejamento = ensurePlanejamentoStructure(getPlanejamentoAtual());
     const estrategia = planejamento.estrategia || {};
     const habitos = planejamento.habitos || {};
+    const nutricional = planejamento.nutricional || {};
     const treino = planejamento.treino || {};
     const cardio = planejamento.cardio || {};
     const observacoes = planejamento.observacoes || {};
 
+    setValue("estrategia-titulo", planejamento.titulo || "");
     setValue("estrategia-fase", estrategia.fase || "");
     setValue("estrategia-formato", estrategia.formato || "");
     setValue("estrategia-objetivo-30d", estrategia.objetivo30d || "");
@@ -271,6 +300,16 @@ window.ZAPlanejamento = (() => {
     setValue("ritual-anti-sabotagem", habitos.ritualAntiSabotagem || "");
     setValue("frequencia-checkin", habitos.frequenciaCheckin || "");
     setValue("regra-minima", habitos.regraMinima || "");
+
+    setValue("nutri-objetivo", nutricional.objetivo || "");
+    setValue("nutri-foco-principal", nutricional.focoPrincipal || "");
+    setValue("nutri-regra-minima", nutricional.regraMinima || "");
+    setValue("nutri-refeicoes-prioritarias", nutricional.refeicoesPrioritarias || "");
+    setValue("nutri-dias-corridos", nutricional.estrategiaDiasCorridos || "");
+    setValue("nutri-fim-semana", nutricional.estrategiaFimDeSemana || "");
+    setValue("nutri-sabotadores", nutricional.sabotadores || "");
+    setValue("nutri-resposta-recaida", nutricional.respostaRecaidas || "");
+    setValue("nutri-observacoes", nutricional.observacoes || "");
 
     setValue("treino-objetivo", treino.objetivoCiclo || "");
     setValue("treino-frequencia", treino.frequenciaSemanal || "");
@@ -312,48 +351,122 @@ window.ZAPlanejamento = (() => {
     const updated = planejamento.updatedAt ? formatDate(planejamento.updatedAt) : "—";
     setText("estrategia-updated", `Última atualização: ${updated}`);
     setText("habitos-updated", `Última atualização: ${updated}`);
+    setText("nutricional-updated", `Última atualização: ${updated}`);
     setText("treino-updated", `Última atualização: ${updated}`);
     setText("cardio-updated", `Última atualização: ${updated}`);
     setText("observacoes-updated", `Última atualização: ${updated}`);
 
     renderStatus();
+    renderNotes();
+    applyPlanningState();
   }
 
   function renderStatus() {
     const root = document.getElementById("status-planejamento");
     const badgesRoot = document.getElementById("status-badges");
-    const planejamento = getPlanejamentoAtual();
+    const pill = document.getElementById("planejamento-status-pill");
+    const planejamento = ensurePlanejamentoStructure(getPlanejamentoAtual());
 
-    if (!root || !badgesRoot) return;
+    if (!root || !badgesRoot || !pill) return;
 
-    if (!planejamento || !planejamento.updatedAt) {
+    const isEmpty = !cliente?.planejamento || Object.keys(cliente.planejamento).length === 0 || !planejamento.updatedAt;
+
+    if (isEmpty) {
       root.textContent = "Planejamento ainda não salvo.";
       badgesRoot.innerHTML = "";
+      pill.textContent = "Ativo";
+      pill.className = "status-pill status-ativo";
       return;
     }
 
+    const archivedText = planejamento.archivedAt ? ` | arquivado em ${formatDateTime(planejamento.archivedAt)}` : "";
     root.innerHTML = `
-      <strong style="display:block; margin-bottom:8px; color:#fff;">Planejamento ativo</strong>
-      <span style="display:block;">Última gravação: ${formatDateTime(planejamento.updatedAt)}</span>
+      <strong style="display:block; margin-bottom:8px; color:#fff;">Planejamento ${planejamento.status}</strong>
+      <span style="display:block;">Última gravação: ${formatDateTime(planejamento.updatedAt)}${archivedText}</span>
     `;
+
+    pill.textContent = planejamento.status === "arquivado" ? "Arquivado" : "Ativo";
+    pill.className = `status-pill ${planejamento.status === "arquivado" ? "status-arquivado" : "status-ativo"}`;
 
     const badges = [];
     if (planejamento.estrategia?.focoCentral) badges.push("Estratégia definida");
     if (planejamento.habitos?.habitoAncora) badges.push("Hábito âncora definido");
+    if (planejamento.nutricional?.focoPrincipal) badges.push("Nutrição direcionada");
     if (planejamento.treino?.objetivoCiclo) badges.push("Ciclo de treino definido");
     if (planejamento.treino?.mes1?.programa) badges.push("Mês 1 escrito");
     if (planejamento.treino?.mes2?.programa) badges.push("Mês 2 escrito");
     if (planejamento.treino?.mes3?.programa) badges.push("Mês 3 escrito");
     if (planejamento.cardio?.modalidade) badges.push("Cardio definido");
     if (planejamento.resumoGerado) badges.push("Resumo gerado");
+    if ((planejamento.notasTreinador || []).length) badges.push(`${planejamento.notasTreinador.length} nota(s)`);
 
     badgesRoot.innerHTML = badges
       .map((badge) => `<span class="planner-badge">${badge}</span>`)
       .join("");
   }
 
-  function buildPlanejamentoPayload() {
+  function renderNotes() {
+    const root = document.getElementById("notes-list");
+    if (!root) return;
+
+    const planejamento = ensurePlanejamentoStructure(getPlanejamentoAtual());
+    const notes = Array.isArray(planejamento.notasTreinador) ? planejamento.notasTreinador : [];
+
+    if (!notes.length) {
+      root.innerHTML = `<div class="empty-state-box">Nenhuma nota registrada ainda.</div>`;
+      return;
+    }
+
+    root.innerHTML = notes
+      .slice()
+      .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0))
+      .map((note) => `
+        <div class="note-item">
+          <div class="note-top">
+            <div class="note-meta">
+              <strong>${capitalize(note.tipo || "observacao")}</strong>
+              <span>${formatDateTime(note.data)}</span>
+            </div>
+            ${isArchived() ? "" : `<button type="button" class="cliente-btn cliente-btn-secundario" data-delete-note="${note.id}">Excluir</button>`}
+          </div>
+          <div class="note-text">${escapeHtml(note.texto || "")}</div>
+        </div>
+      `)
+      .join("");
+
+    if (!isArchived()) {
+      root.querySelectorAll("[data-delete-note]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const noteId = button.getAttribute("data-delete-note");
+          deleteNote(noteId);
+        });
+      });
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  function capitalize(value) {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function buildPlanejamentoPayload(existing = null) {
+    const previous = ensurePlanejamentoStructure(existing || getPlanejamentoAtual());
+
     return {
+      id: previous.id || `plan_${Date.now()}`,
+      titulo: val("estrategia-titulo"),
+      status: previous.status || "ativo",
+      createdAt: previous.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      archivedAt: previous.archivedAt || null,
+
       estrategia: {
         fase: val("estrategia-fase"),
         formato: val("estrategia-formato"),
@@ -375,6 +488,18 @@ window.ZAPlanejamento = (() => {
         ritualAntiSabotagem: val("ritual-anti-sabotagem"),
         frequenciaCheckin: val("frequencia-checkin"),
         regraMinima: val("regra-minima")
+      },
+
+      nutricional: {
+        objetivo: val("nutri-objetivo"),
+        focoPrincipal: val("nutri-foco-principal"),
+        regraMinima: val("nutri-regra-minima"),
+        refeicoesPrioritarias: val("nutri-refeicoes-prioritarias"),
+        estrategiaDiasCorridos: val("nutri-dias-corridos"),
+        estrategiaFimDeSemana: val("nutri-fim-semana"),
+        sabotadores: val("nutri-sabotadores"),
+        respostaRecaidas: val("nutri-resposta-recaida"),
+        observacoes: val("nutri-observacoes")
       },
 
       treino: {
@@ -425,11 +550,16 @@ window.ZAPlanejamento = (() => {
       },
 
       resumoGerado: val("planejamento-resumo"),
-      updatedAt: new Date().toISOString()
+      notasTreinador: Array.isArray(previous.notasTreinador) ? previous.notasTreinador : []
     };
   }
 
   function savePlanejamento() {
+    if (isArchived()) {
+      showFeedback("O planejamento está arquivado. Reative para editar.", "Edição bloqueada", "🔒");
+      return;
+    }
+
     const payload = buildPlanejamentoPayload();
 
     const updatedCliente = {
@@ -451,6 +581,11 @@ window.ZAPlanejamento = (() => {
   }
 
   function hydrateFromDiagnostico() {
+    if (isArchived()) {
+      showFeedback("O planejamento está arquivado. Reative para editar.", "Edição bloqueada", "🔒");
+      return;
+    }
+
     const diagnostico = getDiagnosticoAtual();
     const planejamento = getPlanejamentoAtual();
 
@@ -466,12 +601,7 @@ window.ZAPlanejamento = (() => {
     setValue("estrategia-objetivo-30d", firstFilled(val("estrategia-objetivo-30d"), prioridade));
     setValue("estrategia-foco-central", firstFilled(val("estrategia-foco-central"), focoGap, focoHabito, gargalo));
     setValue("estrategia-risco", firstFilled(val("estrategia-risco"), gargalo));
-    setValue("estrategia-diretriz", firstFilled(
-      val("estrategia-diretriz"),
-      diagnostico.sintese,
-      diagnostico.leitura
-    ));
-
+    setValue("estrategia-diretriz", firstFilled(val("estrategia-diretriz"), diagnostico.sintese, diagnostico.leitura));
     setValue("pilar-1", firstFilled(val("pilar-1"), gaps?.[0]?.pilar));
     setValue("pilar-2", firstFilled(val("pilar-2"), gaps?.[1]?.pilar));
     setValue("pilar-3", firstFilled(val("pilar-3"), gaps?.[2]?.pilar));
@@ -507,6 +637,15 @@ window.ZAPlanejamento = (() => {
       `Meta de passos / movimento: ${payload.habitos.metaPassos || "—"}.`,
       `Meta alimentar: ${payload.habitos.metaAlimentacao || "—"}.`,
       `Regra mínima: ${payload.habitos.regraMinima || "—"}.`,
+      "",
+      `Nutricional: ${payload.nutricional.focoPrincipal || "—"}.`,
+      `Objetivo nutricional: ${payload.nutricional.objetivo || "—"}.`,
+      `Regra alimentar mínima: ${payload.nutricional.regraMinima || "—"}.`,
+      `Refeições prioritárias: ${payload.nutricional.refeicoesPrioritarias || "—"}.`,
+      `Estratégia para dias corridos: ${payload.nutricional.estrategiaDiasCorridos || "—"}.`,
+      `Estratégia para fim de semana: ${payload.nutricional.estrategiaFimDeSemana || "—"}.`,
+      `Sabotadores: ${payload.nutricional.sabotadores || "—"}.`,
+      `Resposta para recaídas: ${payload.nutricional.respostaRecaidas || "—"}.`,
       "",
       `Treino - ciclo de 3 meses: ${payload.treino.objetivoCiclo || "—"} | frequência ${payload.treino.frequenciaSemanal || "—"} | estrutura geral ${payload.treino.estruturaGeral || "—"} | duração ${payload.treino.duracaoMedia || "—"}.`,
       `Local: ${payload.treino.local || "—"}. Intensidade alvo: ${payload.treino.intensidadeAlvo || "—"}.`,
@@ -548,6 +687,229 @@ window.ZAPlanejamento = (() => {
     } catch {
       showFeedback("Não consegui copiar automaticamente, mas o texto já está pronto no campo.", "Cópia manual", "⚠");
     }
+  }
+
+  function saveNote() {
+    if (isArchived()) {
+      showFeedback("O planejamento está arquivado. Reative para registrar notas.", "Edição bloqueada", "🔒");
+      return;
+    }
+
+    const texto = val("nota-texto");
+    const tipo = val("nota-tipo") || "observacao";
+
+    if (!texto) {
+      showFeedback("Escreva a nota antes de salvar.", "Campo obrigatório", "⚠");
+      return;
+    }
+
+    const planejamento = ensurePlanejamentoStructure(getPlanejamentoAtual());
+
+    planejamento.notasTreinador.unshift({
+      id: `nota_${Date.now()}`,
+      data: new Date().toISOString(),
+      tipo,
+      texto
+    });
+
+    planejamento.updatedAt = new Date().toISOString();
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento,
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+
+    if (!ok) {
+      showFeedback("Não foi possível salvar a nota.", "Erro ao salvar", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    setValue("nota-texto", "");
+    setValue("nota-tipo", "lembrete");
+    renderPlanejamento();
+    showFeedback("Nota do treinador salva.", "Nota registrada", "📝");
+  }
+
+  function deleteNote(noteId) {
+    if (!noteId || isArchived()) return;
+
+    const confirmed = window.confirm("Deseja excluir esta nota?");
+    if (!confirmed) return;
+
+    const planejamento = ensurePlanejamentoStructure(getPlanejamentoAtual());
+    planejamento.notasTreinador = (planejamento.notasTreinador || []).filter(
+      (note) => String(note.id) !== String(noteId)
+    );
+    planejamento.updatedAt = new Date().toISOString();
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento,
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+    if (!ok) {
+      showFeedback("Não foi possível excluir a nota.", "Erro ao excluir", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    renderPlanejamento();
+    showFeedback("Nota excluída com sucesso.", "Nota removida", "🗑️");
+  }
+
+  function archivePlanning() {
+    const planejamentoAtual = getPlanejamentoAtual();
+    const empty = !planejamentoAtual || Object.keys(planejamentoAtual).length === 0;
+
+    if (empty) {
+      showFeedback("Salve um planejamento antes de arquivar.", "Nada para arquivar", "⚠");
+      return;
+    }
+
+    if (isArchived()) {
+      showFeedback("Esse planejamento já está arquivado.", "Sem mudança", "📁");
+      return;
+    }
+
+    const confirmed = window.confirm("Deseja arquivar este planejamento? Ele ficará bloqueado para edição.");
+    if (!confirmed) return;
+
+    const planejamento = ensurePlanejamentoStructure(planejamentoAtual);
+    planejamento.status = "arquivado";
+    planejamento.archivedAt = new Date().toISOString();
+    planejamento.updatedAt = new Date().toISOString();
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento,
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+    if (!ok) {
+      showFeedback("Não foi possível arquivar o planejamento.", "Erro ao arquivar", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    renderPlanejamento();
+    showFeedback("Planejamento arquivado com sucesso.", "Planejamento arquivado", "📁");
+  }
+
+  function reactivatePlanning() {
+    const planejamentoAtual = getPlanejamentoAtual();
+    const empty = !planejamentoAtual || Object.keys(planejamentoAtual).length === 0;
+
+    if (empty) {
+      showFeedback("Não há planejamento salvo para reativar.", "Nada para reativar", "⚠");
+      return;
+    }
+
+    if (!isArchived()) {
+      showFeedback("O planejamento já está ativo.", "Sem mudança", "✅");
+      return;
+    }
+
+    const confirmed = window.confirm("Deseja reativar este planejamento para edição?");
+    if (!confirmed) return;
+
+    const planejamento = ensurePlanejamentoStructure(planejamentoAtual);
+    planejamento.status = "ativo";
+    planejamento.archivedAt = null;
+    planejamento.updatedAt = new Date().toISOString();
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento,
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+    if (!ok) {
+      showFeedback("Não foi possível reativar o planejamento.", "Erro ao reativar", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    renderPlanejamento();
+    showFeedback("Planejamento reativado com sucesso.", "Planejamento ativo", "🔓");
+  }
+
+  function deletePlanning() {
+    const planejamentoAtual = getPlanejamentoAtual();
+    const empty = !planejamentoAtual || Object.keys(planejamentoAtual).length === 0;
+
+    if (empty) {
+      showFeedback("Não há planejamento salvo para excluir.", "Nada para excluir", "⚠");
+      return;
+    }
+
+    const confirmed = window.confirm("Deseja excluir completamente este planejamento? Essa ação remove o plano salvo do cliente.");
+    if (!confirmed) return;
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento: {},
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+    if (!ok) {
+      showFeedback("Não foi possível excluir o planejamento.", "Erro ao excluir", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    renderPlanejamento();
+    showFeedback("Planejamento excluído com sucesso.", "Planejamento removido", "🗑️");
+  }
+
+  function applyPlanningState() {
+    const editableArea = document.getElementById("planner-editable-area");
+    const noteFormWrap = document.getElementById("note-form-wrap");
+
+    const archived = isArchived();
+
+    editableArea?.classList.toggle("planner-locked", archived);
+    noteFormWrap?.classList.toggle("planner-locked", archived);
+
+    const saveButtons = [
+      document.getElementById("salvar-planejamento-btn"),
+      document.getElementById("salvar-planejamento-topo-btn"),
+      document.getElementById("puxar-diagnostico-btn"),
+      document.getElementById("salvar-nota-btn"),
+      document.getElementById("gerar-resumo-btn")
+    ];
+
+    saveButtons.forEach((button) => {
+      if (button) button.disabled = archived;
+    });
+
+    const archiveButtons = [
+      document.getElementById("arquivar-planejamento-btn"),
+      document.getElementById("arquivar-planejamento-topo-btn")
+    ];
+
+    const reactivateButtons = [
+      document.getElementById("reativar-planejamento-btn"),
+      document.getElementById("reativar-planejamento-topo-btn")
+    ];
+
+    archiveButtons.forEach((button) => {
+      if (!button) return;
+      button.classList.toggle("hidden", archived);
+    });
+
+    reactivateButtons.forEach((button) => {
+      if (!button) return;
+      button.classList.toggle("hidden", !archived);
+    });
   }
 
   function initAccordions() {
@@ -611,6 +973,15 @@ window.ZAPlanejamento = (() => {
     document.getElementById("puxar-diagnostico-btn")?.addEventListener("click", hydrateFromDiagnostico);
     document.getElementById("gerar-resumo-btn")?.addEventListener("click", generateResumo);
     document.getElementById("copiar-resumo-btn")?.addEventListener("click", copyResumo);
+    document.getElementById("salvar-nota-btn")?.addEventListener("click", saveNote);
+
+    document.getElementById("arquivar-planejamento-btn")?.addEventListener("click", archivePlanning);
+    document.getElementById("arquivar-planejamento-topo-btn")?.addEventListener("click", archivePlanning);
+
+    document.getElementById("reativar-planejamento-btn")?.addEventListener("click", reactivatePlanning);
+    document.getElementById("reativar-planejamento-topo-btn")?.addEventListener("click", reactivatePlanning);
+
+    document.getElementById("excluir-planejamento-btn")?.addEventListener("click", deletePlanning);
   }
 
   function init() {
