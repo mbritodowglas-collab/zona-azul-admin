@@ -522,27 +522,24 @@
                 <button class="planner-toggle" type="button" aria-expanded="false">
                   <div>
                     <h3>Planejamento de treino</h3>
-                    <p>Estrutura semanal, volume operacional e lógica de progressão.</p>
+                    <p>Estrutura do ciclo de 3 meses e programa escrito de cada mês.</p>
                   </div>
                   <span class="planner-icon">⌄</span>
                 </button>
               </div>
 
               <div class="card-body planner-panel">
+                <h4 class="subsection-title">Visão macro do ciclo</h4>
+
                 <div class="grid cols-2">
                   <div class="field">
-                    <label for="treino-objetivo">Objetivo do bloco</label>
-                    <input id="treino-objetivo" type="text" placeholder="Ex.: adaptação + constância" />
+                    <label for="treino-objetivo">Objetivo do ciclo de 3 meses</label>
+                    <input id="treino-objetivo" type="text" placeholder="Ex.: emagrecimento com ganho de consistência e base muscular" />
                   </div>
 
                   <div class="field">
-                    <label for="treino-frequencia">Frequência semanal</label>
+                    <label for="treino-frequencia">Frequência semanal base</label>
                     <input id="treino-frequencia" type="text" placeholder="Ex.: 3x por semana" />
-                  </div>
-
-                  <div class="field">
-                    <label for="treino-divisao">Divisão / estrutura</label>
-                    <input id="treino-divisao" type="text" placeholder="Ex.: full body, ABC, superior/inferior..." />
                   </div>
 
                   <div class="field">
@@ -556,28 +553,91 @@
                   </div>
 
                   <div class="field">
-                    <label for="treino-intensidade">Intensidade alvo</label>
-                    <input id="treino-intensidade" type="text" placeholder="Ex.: moderada, RPE 6–7" />
+                    <label for="treino-intensidade">Intensidade alvo geral</label>
+                    <input id="treino-intensidade" type="text" placeholder="Ex.: moderada, RPE 6–8" />
                   </div>
 
                   <div class="field">
                     <label for="treino-progressao">Critério de progressão</label>
-                    <input id="treino-progressao" type="text" placeholder="Ex.: aumentar carga quando bater topo da faixa" />
+                    <input id="treino-progressao" type="text" placeholder="Ex.: aumentar carga quando fechar faixa alvo" />
                   </div>
 
                   <div class="field">
                     <label for="treino-restricoes">Restrições ou cuidados</label>
-                    <input id="treino-restricoes" type="text" placeholder="Ex.: dor lombar, joelho, baixa mobilidade..." />
+                    <input id="treino-restricoes" type="text" placeholder="Ex.: dor lombar, baixa mobilidade, joelho..." />
+                  </div>
+
+                  <div class="field">
+                    <label for="treino-divisao">Estrutura geral base</label>
+                    <input id="treino-divisao" type="text" placeholder="Ex.: full body / ABC / superior-inferior" />
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
-                    <label for="treino-estrutura-semanal">Estrutura semanal resumida</label>
-                    <textarea id="treino-estrutura-semanal" placeholder="Ex.: Seg: full body A | Qua: full body B | Sex: full body C"></textarea>
+                    <label for="treino-observacoes">Observações técnicas do ciclo</label>
+                    <textarea id="treino-observacoes" placeholder="Anote aqui as regras técnicas gerais do ciclo de 3 meses..."></textarea>
+                  </div>
+                </div>
+
+                <div class="planner-divider"></div>
+
+                <h4 class="subsection-title">Mês 1</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="mes1-foco">Foco do mês 1</label>
+                    <input id="mes1-foco" type="text" placeholder="Ex.: adaptação, aderência e técnica" />
+                  </div>
+
+                  <div class="field">
+                    <label for="mes1-divisao">Divisão do mês 1</label>
+                    <input id="mes1-divisao" type="text" placeholder="Ex.: full body 3x" />
                   </div>
 
                   <div class="field" style="grid-column: 1 / -1;">
-                    <label for="treino-observacoes">Observações técnicas</label>
-                    <textarea id="treino-observacoes" placeholder="Anote aqui as regras técnicas que não podem escapar na condução do treino..."></textarea>
+                    <label for="mes1-programa">Programa do mês 1</label>
+                    <textarea id="mes1-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 1 por extenso..."></textarea>
+                  </div>
+                </div>
+
+                <div class="planner-divider"></div>
+
+                <h4 class="subsection-title">Mês 2</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="mes2-foco">Foco do mês 2</label>
+                    <input id="mes2-foco" type="text" placeholder="Ex.: progressão de volume e consolidação" />
+                  </div>
+
+                  <div class="field">
+                    <label for="mes2-divisao">Divisão do mês 2</label>
+                    <input id="mes2-divisao" type="text" placeholder="Ex.: ABC 4x" />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="mes2-programa">Programa do mês 2</label>
+                    <textarea id="mes2-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 2 por extenso..."></textarea>
+                  </div>
+                </div>
+
+                <div class="planner-divider"></div>
+
+                <h4 class="subsection-title">Mês 3</h4>
+
+                <div class="grid cols-2">
+                  <div class="field">
+                    <label for="mes3-foco">Foco do mês 3</label>
+                    <input id="mes3-foco" type="text" placeholder="Ex.: intensificação e fechamento do bloco" />
+                  </div>
+
+                  <div class="field">
+                    <label for="mes3-divisao">Divisão do mês 3</label>
+                    <input id="mes3-divisao" type="text" placeholder="Ex.: ABCD" />
+                  </div>
+
+                  <div class="field" style="grid-column: 1 / -1;">
+                    <label for="mes3-programa">Programa do mês 3</label>
+                    <textarea id="mes3-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 3 por extenso..."></textarea>
                   </div>
                 </div>
 
