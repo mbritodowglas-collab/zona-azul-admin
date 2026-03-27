@@ -471,11 +471,21 @@ window.ZAPlanejamento = (() => {
         const title = firstFilled(plan.titulo, plan.estrategia?.focoCentral, "Planejamento arquivado");
         const archivedAt = plan.archivedAt ? formatDateTime(plan.archivedAt) : "Data não informada";
         const cycle = firstFilled(plan.treino?.objetivoCiclo, plan.estrategia?.objetivo30d, "Sem descrição");
+
         return `
           <div class="archived-item">
             <strong>${escapeHtml(title)}</strong>
             <span>Arquivado em: ${archivedAt}</span>
             <span>Resumo: ${escapeHtml(cycle)}</span>
+
+            <div class="planner-inline-actions" style="margin-top: 12px;">
+              <a
+                class="cliente-btn cliente-btn-secundario"
+                href="./plano-cliente.html?id=${encodeURIComponent(clienteId)}&archived=${encodeURIComponent(plan.id)}"
+              >
+                Abrir PDF
+              </a>
+            </div>
           </div>
         `;
       })
