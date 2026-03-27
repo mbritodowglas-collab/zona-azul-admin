@@ -272,16 +272,27 @@ window.ZAPlanejamento = (() => {
     setValue("frequencia-checkin", habitos.frequenciaCheckin || "");
     setValue("regra-minima", habitos.regraMinima || "");
 
-    setValue("treino-objetivo", treino.objetivoBloco || "");
+    setValue("treino-objetivo", treino.objetivoCiclo || "");
     setValue("treino-frequencia", treino.frequenciaSemanal || "");
-    setValue("treino-divisao", treino.divisao || "");
+    setValue("treino-divisao", treino.estruturaGeral || "");
     setValue("treino-duracao", treino.duracaoMedia || "");
     setValue("treino-local", treino.local || "");
     setValue("treino-intensidade", treino.intensidadeAlvo || "");
     setValue("treino-progressao", treino.criterioProgressao || "");
     setValue("treino-restricoes", treino.restricoes || "");
-    setValue("treino-estrutura-semanal", treino.estruturaSemanal || "");
     setValue("treino-observacoes", treino.observacoesTecnicas || "");
+
+    setValue("mes1-foco", treino.mes1?.foco || "");
+    setValue("mes1-divisao", treino.mes1?.divisao || "");
+    setValue("mes1-programa", treino.mes1?.programa || "");
+
+    setValue("mes2-foco", treino.mes2?.foco || "");
+    setValue("mes2-divisao", treino.mes2?.divisao || "");
+    setValue("mes2-programa", treino.mes2?.programa || "");
+
+    setValue("mes3-foco", treino.mes3?.foco || "");
+    setValue("mes3-divisao", treino.mes3?.divisao || "");
+    setValue("mes3-programa", treino.mes3?.programa || "");
 
     setValue("cardio-modalidade", cardio.modalidade || "");
     setValue("cardio-frequencia", cardio.frequencia || "");
@@ -329,7 +340,10 @@ window.ZAPlanejamento = (() => {
     const badges = [];
     if (planejamento.estrategia?.focoCentral) badges.push("Estratégia definida");
     if (planejamento.habitos?.habitoAncora) badges.push("Hábito âncora definido");
-    if (planejamento.treino?.frequenciaSemanal) badges.push("Treino estruturado");
+    if (planejamento.treino?.objetivoCiclo) badges.push("Ciclo de treino definido");
+    if (planejamento.treino?.mes1?.programa) badges.push("Mês 1 escrito");
+    if (planejamento.treino?.mes2?.programa) badges.push("Mês 2 escrito");
+    if (planejamento.treino?.mes3?.programa) badges.push("Mês 3 escrito");
     if (planejamento.cardio?.modalidade) badges.push("Cardio definido");
     if (planejamento.resumoGerado) badges.push("Resumo gerado");
 
@@ -350,6 +364,7 @@ window.ZAPlanejamento = (() => {
         diretrizTecnica: val("estrategia-diretriz"),
         pilares: [val("pilar-1"), val("pilar-2"), val("pilar-3")].filter(Boolean)
       },
+
       habitos: {
         habitoAncora: val("habito-ancora"),
         ajusteAmbiente: val("ajuste-ambiente"),
@@ -361,18 +376,37 @@ window.ZAPlanejamento = (() => {
         frequenciaCheckin: val("frequencia-checkin"),
         regraMinima: val("regra-minima")
       },
+
       treino: {
-        objetivoBloco: val("treino-objetivo"),
+        objetivoCiclo: val("treino-objetivo"),
         frequenciaSemanal: val("treino-frequencia"),
-        divisao: val("treino-divisao"),
+        estruturaGeral: val("treino-divisao"),
         duracaoMedia: val("treino-duracao"),
         local: val("treino-local"),
         intensidadeAlvo: val("treino-intensidade"),
         criterioProgressao: val("treino-progressao"),
         restricoes: val("treino-restricoes"),
-        estruturaSemanal: val("treino-estrutura-semanal"),
-        observacoesTecnicas: val("treino-observacoes")
+        observacoesTecnicas: val("treino-observacoes"),
+
+        mes1: {
+          foco: val("mes1-foco"),
+          divisao: val("mes1-divisao"),
+          programa: val("mes1-programa")
+        },
+
+        mes2: {
+          foco: val("mes2-foco"),
+          divisao: val("mes2-divisao"),
+          programa: val("mes2-programa")
+        },
+
+        mes3: {
+          foco: val("mes3-foco"),
+          divisao: val("mes3-divisao"),
+          programa: val("mes3-programa")
+        }
       },
+
       cardio: {
         modalidade: val("cardio-modalidade"),
         frequencia: val("cardio-frequencia"),
@@ -382,12 +416,14 @@ window.ZAPlanejamento = (() => {
         estrategiaRecuperacao: val("recuperacao-estrategia"),
         observacoes: val("cardio-observacoes")
       },
+
       observacoes: {
         tomComunicacao: val("comunicacao-tom"),
         dataRevisao: val("momento-revisao"),
         alertasInternos: val("alertas-internos"),
         mensagemInterna: val("mensagem-interna")
       },
+
       resumoGerado: val("planejamento-resumo"),
       updatedAt: new Date().toISOString()
     };
@@ -437,4 +473,174 @@ window.ZAPlanejamento = (() => {
     ));
 
     setValue("pilar-1", firstFilled(val("pilar-1"), gaps?.[0]?.pilar));
-    setValue("pilar-2", firstFilled(val("pilar-2
+    setValue("pilar-2", firstFilled(val("pilar-2"), gaps?.[1]?.pilar));
+    setValue("pilar-3", firstFilled(val("pilar-3"), gaps?.[2]?.pilar));
+
+    setValue("habito-ancora", firstFilled(val("habito-ancora"), focoHabito));
+    setValue("ajuste-ambiente", firstFilled(val("ajuste-ambiente"), focoAmbiente));
+
+    setValue("treino-objetivo", firstFilled(val("treino-objetivo"), prioridade));
+    setValue("treino-restricoes", firstFilled(val("treino-restricoes"), diagnostico.triagem));
+    setValue("comunicacao-tom", firstFilled(val("comunicacao-tom"), "direto e acolhedor"));
+
+    renderStatus();
+    showFeedback("Campos estratégicos puxados do diagnóstico completo.", "Diagnóstico importado", "⚡");
+  }
+
+  function generateResumo() {
+    const payload = buildPlanejamentoPayload();
+
+    const resumo = [
+      `Cliente: ${cliente?.nome || "—"}`,
+      `Objetivo: ${getObjetivo()}`,
+      "",
+      `Estratégia macro: ${payload.estrategia.focoCentral || "—"}.`,
+      `Meta de 30 dias: ${payload.estrategia.objetivo30d || "—"}.`,
+      `Indicador de sucesso: ${payload.estrategia.indicadorSucesso || "—"}.`,
+      `Risco principal: ${payload.estrategia.riscoPrincipal || "—"}.`,
+      "",
+      `Pilares priorizados: ${payload.estrategia.pilares?.length ? payload.estrategia.pilares.join(", ") : "—"}.`,
+      `Hábito âncora: ${payload.habitos.habitoAncora || "—"}.`,
+      `Ajuste de ambiente: ${payload.habitos.ajusteAmbiente || "—"}.`,
+      `Meta de sono: ${payload.habitos.metaSono || "—"}.`,
+      `Meta de hidratação: ${payload.habitos.metaHidratacao || "—"}.`,
+      `Meta de passos / movimento: ${payload.habitos.metaPassos || "—"}.`,
+      `Meta alimentar: ${payload.habitos.metaAlimentacao || "—"}.`,
+      `Regra mínima: ${payload.habitos.regraMinima || "—"}.`,
+      "",
+      `Treino - ciclo de 3 meses: ${payload.treino.objetivoCiclo || "—"} | frequência ${payload.treino.frequenciaSemanal || "—"} | estrutura geral ${payload.treino.estruturaGeral || "—"} | duração ${payload.treino.duracaoMedia || "—"}.`,
+      `Local: ${payload.treino.local || "—"}. Intensidade alvo: ${payload.treino.intensidadeAlvo || "—"}.`,
+      `Critério de progressão: ${payload.treino.criterioProgressao || "—"}.`,
+      `Restrições / cuidados: ${payload.treino.restricoes || "—"}.`,
+      `Mês 1: foco ${payload.treino.mes1?.foco || "—"} | divisão ${payload.treino.mes1?.divisao || "—"}.`,
+      `Programa mês 1: ${payload.treino.mes1?.programa || "—"}.`,
+      `Mês 2: foco ${payload.treino.mes2?.foco || "—"} | divisão ${payload.treino.mes2?.divisao || "—"}.`,
+      `Programa mês 2: ${payload.treino.mes2?.programa || "—"}.`,
+      `Mês 3: foco ${payload.treino.mes3?.foco || "—"} | divisão ${payload.treino.mes3?.divisao || "—"}.`,
+      `Programa mês 3: ${payload.treino.mes3?.programa || "—"}.`,
+      "",
+      `Cardio: ${payload.cardio.modalidade || "—"} | frequência ${payload.cardio.frequencia || "—"} | duração ${payload.cardio.duracao || "—"} | intensidade ${payload.cardio.intensidade || "—"}.`,
+      `Meta de NEAT: ${payload.cardio.metaNeat || "—"}.`,
+      `Recuperação: ${payload.cardio.estrategiaRecuperacao || "—"}.`,
+      "",
+      `Tom de comunicação: ${payload.observacoes.tomComunicacao || "—"}.`,
+      `Data sugerida de revisão: ${payload.observacoes.dataRevisao ? formatDate(payload.observacoes.dataRevisao) : "—"}.`,
+      `Alertas internos: ${payload.observacoes.alertasInternos || "—"}.`,
+      `Mensagem interna do treinador: ${payload.observacoes.mensagemInterna || "—"}.`
+    ].join("\n");
+
+    setValue("planejamento-resumo", resumo);
+    renderStatus();
+    showFeedback("Resumo operacional gerado.", "Resumo pronto", "📄");
+  }
+
+  async function copyResumo() {
+    const texto = val("planejamento-resumo");
+
+    if (!texto) {
+      showFeedback("Gere um resumo antes de copiar.", "Nada para copiar", "⚠");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(texto);
+      showFeedback("Resumo copiado para a área de transferência.", "Copiado", "📋");
+    } catch {
+      showFeedback("Não consegui copiar automaticamente, mas o texto já está pronto no campo.", "Cópia manual", "⚠");
+    }
+  }
+
+  function initAccordions() {
+    const accordions = Array.from(document.querySelectorAll(".planner-accordion"));
+    if (!accordions.length) return;
+
+    const STORAGE_KEY = "za_planejamento_open_accordion";
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    function openAccordion(targetAccordion) {
+      accordions.forEach((accordion) => {
+        const toggle = accordion.querySelector(".planner-toggle");
+        const isTarget = accordion === targetAccordion;
+
+        accordion.classList.toggle("is-open", isTarget);
+        if (toggle) {
+          toggle.setAttribute("aria-expanded", isTarget ? "true" : "false");
+        }
+      });
+
+      const name = targetAccordion?.dataset?.accordion || "";
+      if (name) {
+        localStorage.setItem(STORAGE_KEY, name);
+      }
+    }
+
+    accordions.forEach((accordion, index) => {
+      const toggle = accordion.querySelector(".planner-toggle");
+      if (!toggle) return;
+
+      toggle.addEventListener("click", () => {
+        const isOpen = accordion.classList.contains("is-open");
+
+        if (isOpen) {
+          accordion.classList.remove("is-open");
+          toggle.setAttribute("aria-expanded", "false");
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
+
+        openAccordion(accordion);
+      });
+
+      const shouldOpen =
+        (saved && accordion.dataset.accordion === saved) ||
+        (!saved && index === 0);
+
+      if (shouldOpen) {
+        accordion.classList.add("is-open");
+        toggle.setAttribute("aria-expanded", "true");
+      } else {
+        accordion.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function bindEvents() {
+    document.getElementById("salvar-planejamento-btn")?.addEventListener("click", savePlanejamento);
+    document.getElementById("salvar-planejamento-topo-btn")?.addEventListener("click", savePlanejamento);
+    document.getElementById("puxar-diagnostico-btn")?.addEventListener("click", hydrateFromDiagnostico);
+    document.getElementById("gerar-resumo-btn")?.addEventListener("click", generateResumo);
+    document.getElementById("copiar-resumo-btn")?.addEventListener("click", copyResumo);
+  }
+
+  function init() {
+    clienteId = getQueryParam("id");
+    ensureFeedbackModal();
+
+    if (!clienteId) {
+      document.getElementById("planejamento-page")?.classList.add("hidden");
+      document.getElementById("planejamento-not-found")?.classList.remove("hidden");
+      return;
+    }
+
+    cliente = getClienteById(clienteId);
+
+    if (!cliente) {
+      document.getElementById("planejamento-page")?.classList.add("hidden");
+      document.getElementById("planejamento-not-found")?.classList.remove("hidden");
+      return;
+    }
+
+    renderHeader();
+    renderSummary();
+    renderPlanejamento();
+    bindEvents();
+    initAccordions();
+  }
+
+  return { init };
+})();
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.ZAPlanejamento.init();
+});
