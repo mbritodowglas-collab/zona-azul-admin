@@ -1,6 +1,8 @@
 window.ZAPlanoCliente = (() => {
   let clienteId = null;
+  let archivedId = null;
   let cliente = null;
+  let planejamentoSelecionado = null;
 
   function getQueryParam(name) {
     const url = new URL(window.location.href);
@@ -57,34 +59,54 @@ window.ZAPlanoCliente = (() => {
     );
   }
 
-  function getPlanejamento() {
+  function getPlanejamentoAtivo() {
     return cliente?.planejamento || {};
   }
 
+  function getPlanejamentosArquivados() {
+    return Array.isArray(cliente?.planejamentosArquivados)
+      ? cliente.planejamentosArquivados
+      : [];
+  }
+
+  function resolvePlanejamento() {
+    if (!cliente) return null;
+
+    if (archivedId) {
+      return (
+        getPlanejamentosArquivados().find(
+          (item) => String(item.id) === String(archivedId)
+        ) || null
+      );
+    }
+
+    const ativo = getPlanejamentoAtivo();
+    if (ativo && Object.keys(ativo).length > 0) return ativo;
+
+    return null;
+  }
+
   function hasPlanning() {
-    const planejamento = getPlanejamento();
-    return !!planejamento && Object.keys(planejamento).length > 0;
+    return !!planejamentoSelecionado;
   }
 
   function renderMeta() {
-    const planejamento = getPlanejamento();
-
     setText("meta-cliente", cliente?.nome || "Cliente");
     setText("meta-objetivo", getObjetivo());
-    setText("meta-data", formatDate(planejamento?.updatedAt || new Date().toISOString()));
+    setText("meta-data", formatDate(planejamentoSelecionado?.updatedAt || planejamentoSelecionado?.archivedAt || new Date().toISOString()));
 
     setText(
       "plan-cover-subtitle",
       firstFilled(
-        planejamento?.titulo,
-        planejamento?.estrategia?.focoCentral,
-        "Documento de direcionamento do processo."
+        planejamentoSelecionado?.titulo,
+        planejamentoSelecionado?.estrategia?.focoCentral,
+        archivedId ? "Planejamento arquivado para consulta." : "Documento de direcionamento do processo."
       )
     );
   }
 
   function renderVisaoGeral() {
-    const estrategia = getPlanejamento().estrategia || {};
+    const estrategia = planejamentoSelecionado?.estrategia || {};
 
     setText("visao-meta-30d", estrategia.objetivo30d);
     setText("visao-foco-central", estrategia.focoCentral);
@@ -93,7 +115,7 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderHabitos() {
-    const habitos = getPlanejamento().habitos || {};
+    const habitos = planejamentoSelecionado?.habitos || {};
 
     setText("habito-ancora-view", habitos.habitoAncora);
     setText("habito-ambiente-view", habitos.ajusteAmbiente);
@@ -107,7 +129,7 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderNutricional() {
-    const nutricional = getPlanejamento().nutricional || {};
+    const nutricional = planejamentoSelecionado?.nutricional || {};
 
     setText("nutri-objetivo-view", nutricional.objetivo);
     setText("nutri-foco-view", nutricional.focoPrincipal);
@@ -120,7 +142,7 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderTreino() {
-    const treino = getPlanejamento().treino || {};
+    const treino = planejamentoSelecionado?.treino || {};
 
     setText("treino-objetivo-view", treino.objetivoCiclo);
     setText("treino-frequencia-view", treino.frequenciaSemanal);
@@ -149,7 +171,7 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderCardio() {
-    const cardio = getPlanejamento().cardio || {};
+    const cardio = planejamentoSelecionado?.cardio || {};
 
     setText("cardio-modalidade-view", cardio.modalidade);
     setText("cardio-frequencia-view", cardio.frequencia);
@@ -161,7 +183,7 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderProximosPassos() {
-    const observacoes = getPlanejamento().observacoes || {};
+    const observacoes = planejamentoSelecionado?.observacoes || {};
 
     setText("proxima-revisao-view", formatDate(observacoes.dataRevisao));
     setText("tom-comunicacao-view", observacoes.tomComunicacao);
@@ -204,6 +226,7 @@ window.ZAPlanoCliente = (() => {
 
   function init() {
     clienteId = getQueryParam("id");
+    archivedId = getQueryParam("archived");
 
     if (!clienteId) {
       render();
@@ -212,6 +235,8 @@ window.ZAPlanoCliente = (() => {
     }
 
     cliente = getClienteById(clienteId);
+    planejamentoSelecionado = resolvePlanejamento();
+
     render();
     bindEvents();
   }
