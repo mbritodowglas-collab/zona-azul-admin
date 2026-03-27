@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planejamento | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=57" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=58" />
 
   <style>
     body {
@@ -356,6 +356,33 @@
       line-height: 1.6;
     }
 
+    .archived-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .archived-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .archived-item strong {
+      display: block;
+      color: #fff;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .archived-item span {
+      display: block;
+      color: rgba(235,240,255,0.66);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     @media (max-width: 1100px) {
       .planner-summary-grid {
         grid-template-columns: 1fr 1fr;
@@ -428,10 +455,9 @@
 
           <div class="planner-actions">
             <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+            <a id="abrir-plano-cliente-btn" class="cliente-btn cliente-btn-secundario" href="./plano-cliente.html">Versão cliente / PDF</a>
             <button id="puxar-diagnostico-btn" type="button" class="cliente-btn cliente-btn-secundario">Puxar diagnóstico</button>
             <button id="salvar-planejamento-topo-btn" type="button" class="cliente-btn cliente-btn-abrir">Salvar planejamento</button>
-            <button id="arquivar-planejamento-topo-btn" type="button" class="cliente-btn cliente-btn-secundario">Arquivar</button>
-            <button id="reativar-planejamento-topo-btn" type="button" class="cliente-btn cliente-btn-secundario hidden">Reativar</button>
           </div>
         </section>
 
@@ -1004,7 +1030,7 @@
               </div>
               <div class="card-body">
                 <div id="status-planejamento" class="empty-state-box">
-                  Planejamento ainda não salvo.
+                  Nenhum planejamento ativo no momento.
                 </div>
 
                 <div class="badge-row" id="status-badges"></div>
@@ -1018,7 +1044,6 @@
               <div class="card-body">
                 <div class="planner-inline-actions">
                   <button id="arquivar-planejamento-btn" type="button" class="cliente-btn cliente-btn-secundario">Arquivar planejamento</button>
-                  <button id="reativar-planejamento-btn" type="button" class="cliente-btn cliente-btn-secundario hidden">Reativar planejamento</button>
                 </div>
 
                 <div class="danger-zone" style="margin-top: 16px;">
@@ -1032,13 +1057,24 @@
                 </div>
               </div>
             </section>
+
+            <section class="card">
+              <div class="card-header">
+                <h3>Planejamentos arquivados</h3>
+              </div>
+              <div class="card-body">
+                <div id="archived-list" class="archived-list">
+                  <div class="empty-state-box">Nenhum planejamento arquivado ainda.</div>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
       </div>
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=57"></script>
-  <script src="../assets/js/planejamento.js?v=57"></script>
+  <script src="../assets/js/storage.js?v=58"></script>
+  <script src="../assets/js/planejamento.js?v=58"></script>
 </body>
 </html>
