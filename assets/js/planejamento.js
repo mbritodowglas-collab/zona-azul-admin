@@ -11,12 +11,12 @@ window.ZAPlanejamento = (() => {
     return window.ZAStorage?.getClientes?.() || [];
   }
 
-  function setClientes(clientes) {
-    return window.ZAStorage?.setClientes?.(clientes);
-  }
-
   function getClienteById(id) {
     return getClientes().find((item) => String(item.id) === String(id)) || null;
+  }
+
+  function updateCliente(updatedCliente) {
+    return window.ZAStorage?.updateCliente?.(updatedCliente);
   }
 
   function setText(id, value) {
@@ -24,12 +24,26 @@ window.ZAPlanejamento = (() => {
     if (el) el.textContent = value || "—";
   }
 
+  function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value ?? "";
+  }
+
   function formatDate(dateValue) {
     if (!dateValue) return "—";
     try {
       return new Date(dateValue).toLocaleDateString("pt-BR");
-    } catch (error) {
-      return dateValue;
+    } catch {
+      return String(dateValue);
+    }
+  }
+
+  function formatDateTime(dateValue) {
+    if (!dateValue) return "—";
+    try {
+      return new Date(dateValue).toLocaleString("pt-BR");
+    } catch {
+      return String(dateValue);
     }
   }
 
@@ -39,126 +53,388 @@ window.ZAPlanejamento = (() => {
     return ((parts[0]?.[0] || "C") + (parts[1]?.[0] || "")).toUpperCase();
   }
 
-  function renderCabecalho() {
-    setText("cliente-nome-topo", cliente?.nome || "Planejamento");
-    setText("cliente-subtitulo", "Estratégia comportamental e programação de treino.");
-    setText("cliente-nome", cliente?.nome || "Cliente");
-    setText("cliente-email", cliente?.email || "—");
-    setText("cliente-objetivo", cliente?.objetivo || cliente?.objetivo_principal || "Objetivo principal");
+  function firstFilled(...values) {
+    for (const value of values) {
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        return value;
+      }
+    }
+    return "";
+  }
 
-    const avatar = document.getElementById("cliente-avatar");
-    if (avatar) avatar.textContent = getInitials(cliente?.nome || "Cliente");
+  function val(id) {
+    const el = document.getElementById(id);
+    return el?.value?.trim?.() ?? el?.value ?? "";
+  }
+
+  function ensureFeedbackModal() {
+    if (document.getElementById("za-feedback-overlay")) return;
+
+    const style = document.createElement("style");
+    style.id = "za-feedback-style";
+    style.textContent = `
+      .za-feedback-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(6, 10, 24, 0.72);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 9999;
+      }
+      .za-feedback-overlay.hidden { display: none; }
+      .za-feedback-modal {
+        width: min(100%, 420px);
+        background: linear-gradient(180deg, rgba(25,31,56,0.98), rgba(15,20,39,0.98));
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+        padding: 22px 20px 18px;
+        color: #f5f7ff;
+      }
+      .za-feedback-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .za-feedback-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: rgba(120, 130, 255, 0.16);
+        border: 1px solid rgba(138, 147, 255, 0.25);
+      }
+      .za-feedback-title {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      .za-feedback-message {
+        margin: 10px 0 0;
+        color: rgba(230,235,255,0.88);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      .za-feedback-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 18px;
+      }
+      .za-feedback-btn {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        color: #ffffff;
+        background: linear-gradient(135deg, #6d73ff, #8d72ff);
+        box-shadow: 0 10px 24px rgba(109,115,255,0.25);
+      }
+      .za-feedback-btn:active { transform: scale(0.98); }
+    `;
+    document.head.appendChild(style);
+
+    const overlay = document.createElement("div");
+    overlay.id = "za-feedback-overlay";
+    overlay.className = "za-feedback-overlay hidden";
+    overlay.innerHTML = `
+      <div class="za-feedback-modal" role="dialog" aria-modal="true" aria-labelledby="za-feedback-title">
+        <div class="za-feedback-head">
+          <div class="za-feedback-icon" id="za-feedback-icon">✓</div>
+          <h3 class="za-feedback-title" id="za-feedback-title">Tudo certo</h3>
+        </div>
+        <p class="za-feedback-message" id="za-feedback-message"></p>
+        <div class="za-feedback-actions">
+          <button type="button" class="za-feedback-btn" id="za-feedback-ok">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) hideFeedback();
+    });
+
+    document.getElementById("za-feedback-ok")?.addEventListener("click", hideFeedback);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") hideFeedback();
+    });
+  }
+
+  function showFeedback(message, title = "Tudo certo", icon = "✓") {
+    ensureFeedbackModal();
+
+    const overlay = document.getElementById("za-feedback-overlay");
+    const titleEl = document.getElementById("za-feedback-title");
+    const iconEl = document.getElementById("za-feedback-icon");
+    const messageEl = document.getElementById("za-feedback-message");
+
+    if (titleEl) titleEl.textContent = title;
+    if (iconEl) iconEl.textContent = icon;
+    if (messageEl) messageEl.textContent = message;
+    overlay?.classList.remove("hidden");
+  }
+
+  function hideFeedback() {
+    document.getElementById("za-feedback-overlay")?.classList.add("hidden");
+  }
+
+  function getObjetivo() {
+    return (
+      firstFilled(
+        cliente?.dadosBaseEditados?.objetivo,
+        cliente?.preDiagnostico?.objetivo,
+        cliente?.preDiagnostico?.objetivo_principal,
+        cliente?.preDiagnostico?.objetivo_fisico,
+        cliente?.objetivo
+      ) || "Objetivo não informado"
+    );
+  }
+
+  function getDiagnosticoAtual() {
+    return cliente?.analiseCaso?.diagnosticoCompleto || {};
+  }
+
+  function getPlanejamentoAtual() {
+    return cliente?.planejamento || {};
+  }
+
+  function renderHeader() {
+    setText("planner-avatar", getInitials(cliente?.nome || "Cliente"));
+    setText("planner-nome", cliente?.nome || "Planejamento");
+    setText("planner-sub", `Objetivo central: ${getObjetivo()}`);
 
     const voltar = document.getElementById("voltar-cliente-link");
-    if (voltar) {
+    if (voltar && clienteId) {
       voltar.href = `../cliente/index.html?id=${encodeURIComponent(clienteId)}`;
     }
   }
 
-  function renderPlanejamento() {
-    document.getElementById("plan-objetivo-central").value = cliente?.objetivoCentral || "";
-    document.getElementById("plan-foco-mes").value = cliente?.focoMes || "";
-    document.getElementById("plan-direcao-comportamental").value = cliente?.direcaoComportamental || "";
-    document.getElementById("plan-habitos-chave").value = cliente?.habitosChave || "";
-    document.getElementById("plan-observacoes").value = cliente?.planejamentoObservacoes || "";
+  function renderSummary() {
+    const diagnostico = getDiagnosticoAtual();
 
-    const updatedEl = document.getElementById("plan-updated");
-    if (updatedEl) {
-      updatedEl.textContent = `Última atualização: ${cliente?.planejamentoUpdatedAt ? formatDate(cliente.planejamentoUpdatedAt) : "—"}`;
-    }
+    setText("summary-objetivo", getObjetivo());
+    setText("summary-gargalo", diagnostico.gargalo || "—");
+    setText("summary-prioridade", diagnostico.prioridade || "—");
+    setText(
+      "summary-foco",
+      firstFilled(
+        diagnostico?.focoMes1?.gap,
+        diagnostico?.focoMes1?.habito,
+        diagnostico?.focoMes1?.ambiente
+      ) || "—"
+    );
+
+    setText("side-objetivo", getObjetivo());
+    setText("side-gargalo", diagnostico.gargalo || "—");
+    setText("side-prioridade", diagnostico.prioridade || "—");
+    setText("side-habito", diagnostico?.focoMes1?.habito || "—");
+    setText("side-ambiente", diagnostico?.focoMes1?.ambiente || "—");
   }
 
-  function renderTreino() {
-    document.getElementById("treino-fase").value = cliente?.treinoFase || cliente?.faseAtual || "";
-    document.getElementById("treino-frequencia").value = cliente?.treinoFrequencia || "";
-    document.getElementById("treino-divisao").value = cliente?.treinoDivisao || "";
-    document.getElementById("treino-objetivo-ciclo").value = cliente?.treinoObjetivoCiclo || "";
-    document.getElementById("treino-resumo").value = cliente?.treinoResumo || "";
-    document.getElementById("treino-orientacoes-mfit").value = cliente?.treinoOrientacoesMfit || "";
+  function renderPlanejamento() {
+    const planejamento = getPlanejamentoAtual();
+    const estrategia = planejamento.estrategia || {};
+    const habitos = planejamento.habitos || {};
+    const treino = planejamento.treino || {};
+    const cardio = planejamento.cardio || {};
+    const observacoes = planejamento.observacoes || {};
 
-    const updatedEl = document.getElementById("treino-updated");
-    if (updatedEl) {
-      updatedEl.textContent = `Última atualização: ${cliente?.treinosUpdatedAt ? formatDate(cliente.treinosUpdatedAt) : "—"}`;
+    setValue("estrategia-fase", estrategia.fase || "");
+    setValue("estrategia-formato", estrategia.formato || "");
+    setValue("estrategia-objetivo-30d", estrategia.objetivo30d || "");
+    setValue("estrategia-foco-central", estrategia.focoCentral || "");
+    setValue("estrategia-indicador-sucesso", estrategia.indicadorSucesso || "");
+    setValue("estrategia-risco", estrategia.riscoPrincipal || "");
+    setValue("estrategia-diretriz", estrategia.diretrizTecnica || "");
+    setValue("pilar-1", estrategia.pilares?.[0] || "");
+    setValue("pilar-2", estrategia.pilares?.[1] || "");
+    setValue("pilar-3", estrategia.pilares?.[2] || "");
+
+    setValue("habito-ancora", habitos.habitoAncora || "");
+    setValue("ajuste-ambiente", habitos.ajusteAmbiente || "");
+    setValue("meta-sono", habitos.metaSono || "");
+    setValue("meta-hidratacao", habitos.metaHidratacao || "");
+    setValue("meta-passos", habitos.metaPassos || "");
+    setValue("meta-alimentacao", habitos.metaAlimentacao || "");
+    setValue("ritual-anti-sabotagem", habitos.ritualAntiSabotagem || "");
+    setValue("frequencia-checkin", habitos.frequenciaCheckin || "");
+    setValue("regra-minima", habitos.regraMinima || "");
+
+    setValue("treino-objetivo", treino.objetivoBloco || "");
+    setValue("treino-frequencia", treino.frequenciaSemanal || "");
+    setValue("treino-divisao", treino.divisao || "");
+    setValue("treino-duracao", treino.duracaoMedia || "");
+    setValue("treino-local", treino.local || "");
+    setValue("treino-intensidade", treino.intensidadeAlvo || "");
+    setValue("treino-progressao", treino.criterioProgressao || "");
+    setValue("treino-restricoes", treino.restricoes || "");
+    setValue("treino-estrutura-semanal", treino.estruturaSemanal || "");
+    setValue("treino-observacoes", treino.observacoesTecnicas || "");
+
+    setValue("cardio-modalidade", cardio.modalidade || "");
+    setValue("cardio-frequencia", cardio.frequencia || "");
+    setValue("cardio-duracao", cardio.duracao || "");
+    setValue("cardio-intensidade", cardio.intensidade || "");
+    setValue("neat-meta", cardio.metaNeat || "");
+    setValue("recuperacao-estrategia", cardio.estrategiaRecuperacao || "");
+    setValue("cardio-observacoes", cardio.observacoes || "");
+
+    setValue("comunicacao-tom", observacoes.tomComunicacao || "");
+    setValue("momento-revisao", observacoes.dataRevisao || "");
+    setValue("alertas-internos", observacoes.alertasInternos || "");
+    setValue("mensagem-interna", observacoes.mensagemInterna || "");
+
+    setValue("planejamento-resumo", planejamento.resumoGerado || "");
+
+    const updated = planejamento.updatedAt ? formatDate(planejamento.updatedAt) : "—";
+    setText("estrategia-updated", `Última atualização: ${updated}`);
+    setText("habitos-updated", `Última atualização: ${updated}`);
+    setText("treino-updated", `Última atualização: ${updated}`);
+    setText("cardio-updated", `Última atualização: ${updated}`);
+    setText("observacoes-updated", `Última atualização: ${updated}`);
+
+    renderStatus();
+  }
+
+  function renderStatus() {
+    const root = document.getElementById("status-planejamento");
+    const badgesRoot = document.getElementById("status-badges");
+    const planejamento = getPlanejamentoAtual();
+
+    if (!root || !badgesRoot) return;
+
+    if (!planejamento || !planejamento.updatedAt) {
+      root.textContent = "Planejamento ainda não salvo.";
+      badgesRoot.innerHTML = "";
+      return;
     }
+
+    root.innerHTML = `
+      <strong style="display:block; margin-bottom:8px; color:#fff;">Planejamento ativo</strong>
+      <span style="display:block;">Última gravação: ${formatDateTime(planejamento.updatedAt)}</span>
+    `;
+
+    const badges = [];
+    if (planejamento.estrategia?.focoCentral) badges.push("Estratégia definida");
+    if (planejamento.habitos?.habitoAncora) badges.push("Hábito âncora definido");
+    if (planejamento.treino?.frequenciaSemanal) badges.push("Treino estruturado");
+    if (planejamento.cardio?.modalidade) badges.push("Cardio definido");
+    if (planejamento.resumoGerado) badges.push("Resumo gerado");
+
+    badgesRoot.innerHTML = badges
+      .map((badge) => `<span class="planner-badge">${badge}</span>`)
+      .join("");
+  }
+
+  function buildPlanejamentoPayload() {
+    return {
+      estrategia: {
+        fase: val("estrategia-fase"),
+        formato: val("estrategia-formato"),
+        objetivo30d: val("estrategia-objetivo-30d"),
+        focoCentral: val("estrategia-foco-central"),
+        indicadorSucesso: val("estrategia-indicador-sucesso"),
+        riscoPrincipal: val("estrategia-risco"),
+        diretrizTecnica: val("estrategia-diretriz"),
+        pilares: [val("pilar-1"), val("pilar-2"), val("pilar-3")].filter(Boolean)
+      },
+      habitos: {
+        habitoAncora: val("habito-ancora"),
+        ajusteAmbiente: val("ajuste-ambiente"),
+        metaSono: val("meta-sono"),
+        metaHidratacao: val("meta-hidratacao"),
+        metaPassos: val("meta-passos"),
+        metaAlimentacao: val("meta-alimentacao"),
+        ritualAntiSabotagem: val("ritual-anti-sabotagem"),
+        frequenciaCheckin: val("frequencia-checkin"),
+        regraMinima: val("regra-minima")
+      },
+      treino: {
+        objetivoBloco: val("treino-objetivo"),
+        frequenciaSemanal: val("treino-frequencia"),
+        divisao: val("treino-divisao"),
+        duracaoMedia: val("treino-duracao"),
+        local: val("treino-local"),
+        intensidadeAlvo: val("treino-intensidade"),
+        criterioProgressao: val("treino-progressao"),
+        restricoes: val("treino-restricoes"),
+        estruturaSemanal: val("treino-estrutura-semanal"),
+        observacoesTecnicas: val("treino-observacoes")
+      },
+      cardio: {
+        modalidade: val("cardio-modalidade"),
+        frequencia: val("cardio-frequencia"),
+        duracao: val("cardio-duracao"),
+        intensidade: val("cardio-intensidade"),
+        metaNeat: val("neat-meta"),
+        estrategiaRecuperacao: val("recuperacao-estrategia"),
+        observacoes: val("cardio-observacoes")
+      },
+      observacoes: {
+        tomComunicacao: val("comunicacao-tom"),
+        dataRevisao: val("momento-revisao"),
+        alertasInternos: val("alertas-internos"),
+        mensagemInterna: val("mensagem-interna")
+      },
+      resumoGerado: val("planejamento-resumo"),
+      updatedAt: new Date().toISOString()
+    };
   }
 
   function savePlanejamento() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
+    const payload = buildPlanejamentoPayload();
 
-    clientes[index] = {
-      ...clientes[index],
-      objetivoCentral: document.getElementById("plan-objetivo-central")?.value.trim() || "",
-      focoMes: document.getElementById("plan-foco-mes")?.value.trim() || "",
-      direcaoComportamental: document.getElementById("plan-direcao-comportamental")?.value.trim() || "",
-      habitosChave: document.getElementById("plan-habitos-chave")?.value.trim() || "",
-      planejamentoObservacoes: document.getElementById("plan-observacoes")?.value.trim() || "",
-      planejamentoUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    const updatedCliente = {
+      ...cliente,
+      planejamento: payload,
+      updatedAt: new Date().toISOString()
     };
 
-    setClientes(clientes);
-    cliente = clientes[index];
-    alert("Planejamento salvo.");
-    renderPlanejamento();
-  }
+    const ok = updateCliente(updatedCliente);
 
-  function saveTreino() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
-    clientes[index] = {
-      ...clientes[index],
-      treinoFase: document.getElementById("treino-fase")?.value.trim() || "",
-      faseAtual: document.getElementById("treino-fase")?.value.trim() || clientes[index].faseAtual || "",
-      treinoFrequencia: document.getElementById("treino-frequencia")?.value.trim() || "",
-      treinoDivisao: document.getElementById("treino-divisao")?.value.trim() || "",
-      treinoObjetivoCiclo: document.getElementById("treino-objetivo-ciclo")?.value.trim() || "",
-      treinoResumo: document.getElementById("treino-resumo")?.value.trim() || "",
-      treinoOrientacoesMfit: document.getElementById("treino-orientacoes-mfit")?.value.trim() || "",
-      treinosUpdatedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setClientes(clientes);
-    cliente = clientes[index];
-    alert("Programação de treino salva.");
-    renderTreino();
-  }
-
-  function bindEvents() {
-    document.getElementById("salvar-planejamento-btn")?.addEventListener("click", savePlanejamento);
-    document.getElementById("salvar-treino-btn")?.addEventListener("click", saveTreino);
-  }
-
-  function init() {
-    clienteId = getQueryParam("id");
-
-    if (!clienteId) {
-      document.getElementById("planejamento-page")?.classList.add("hidden");
-      document.getElementById("cliente-not-found")?.classList.remove("hidden");
+    if (!ok) {
+      showFeedback("Não foi possível salvar o planejamento.", "Erro ao salvar", "⚠");
       return;
     }
 
-    cliente = getClienteById(clienteId);
-
-    if (!cliente) {
-      document.getElementById("planejamento-page")?.classList.add("hidden");
-      document.getElementById("cliente-not-found")?.classList.remove("hidden");
-      return;
-    }
-
-    renderCabecalho();
+    cliente = updatedCliente;
     renderPlanejamento();
-    renderTreino();
-    bindEvents();
+    showFeedback("Planejamento salvo com sucesso.", "Plano atualizado", "🧠");
   }
 
-  return { init };
-})();
+  function hydrateFromDiagnostico() {
+    const diagnostico = getDiagnosticoAtual();
+    const planejamento = getPlanejamentoAtual();
 
-document.addEventListener("DOMContentLoaded", () => {
-  window.ZAPlanejamento.init();
-});
+    const gargalo = diagnostico.gargalo || "";
+    const prioridade = diagnostico.prioridade || "";
+    const focoGap = diagnostico?.focoMes1?.gap || "";
+    const focoHabito = diagnostico?.focoMes1?.habito || "";
+    const focoAmbiente = diagnostico?.focoMes1?.ambiente || "";
+
+    const gaps = Array.isArray(diagnostico.gaps) ? diagnostico.gaps : [];
+
+    setValue("estrategia-formato", firstFilled(val("estrategia-formato"), diagnostico?.perfil?.formato, planejamento?.estrategia?.formato));
+    setValue("estrategia-objetivo-30d", firstFilled(val("estrategia-objetivo-30d"), prioridade));
+    setValue("estrategia-foco-central", firstFilled(val("estrategia-foco-central"), focoGap, focoHabito, gargalo));
+    setValue("estrategia-risco", firstFilled(val("estrategia-risco"), gargalo));
+    setValue("estrategia-diretriz", firstFilled(
+      val("estrategia-diretriz"),
+      diagnostico.sintese,
+      diagnostico.leitura
+    ));
+
+    setValue("pilar-1", firstFilled(val("pilar-1"), gaps?.[0]?.pilar));
+    setValue("pilar-2", firstFilled(val("pilar-2
