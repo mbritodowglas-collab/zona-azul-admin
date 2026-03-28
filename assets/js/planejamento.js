@@ -86,7 +86,7 @@ window.ZAPlanejamento = (() => {
       }
       .za-feedback-overlay.hidden { display: none; }
       .za-feedback-modal {
-        width: min(100%, 420px);
+        width: min(100%, 460px);
         background: linear-gradient(180deg, rgba(25,31,56,0.98), rgba(15,20,39,0.98));
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 24px;
@@ -127,6 +127,7 @@ window.ZAPlanejamento = (() => {
       .za-feedback-actions {
         display: flex;
         justify-content: flex-end;
+        gap: 10px;
         margin-top: 18px;
       }
       .za-feedback-btn {
@@ -137,10 +138,41 @@ window.ZAPlanejamento = (() => {
         font-weight: 700;
         cursor: pointer;
         color: #ffffff;
+      }
+      .za-feedback-btn-primary {
         background: linear-gradient(135deg, #6d73ff, #8d72ff);
         box-shadow: 0 10px 24px rgba(109,115,255,0.25);
       }
+      .za-feedback-btn-secondary {
+        background: rgba(255,255,255,0.08);
+      }
       .za-feedback-btn:active { transform: scale(0.98); }
+      .za-feedback-field {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .za-feedback-field label {
+        color: rgba(230,235,255,0.88);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .za-feedback-field select,
+      .za-feedback-field textarea {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        color: #fff;
+        padding: 12px 14px;
+        font: inherit;
+        outline: none;
+        box-sizing: border-box;
+      }
+      .za-feedback-field textarea {
+        min-height: 92px;
+        resize: vertical;
+      }
     `;
     document.head.appendChild(style);
 
@@ -153,9 +185,11 @@ window.ZAPlanejamento = (() => {
           <div class="za-feedback-icon" id="za-feedback-icon">✓</div>
           <h3 class="za-feedback-title" id="za-feedback-title">Tudo certo</h3>
         </div>
-        <p class="za-feedback-message" id="za-feedback-message"></p>
-        <div class="za-feedback-actions">
-          <button type="button" class="za-feedback-btn" id="za-feedback-ok">OK</button>
+        <div id="za-feedback-body">
+          <p class="za-feedback-message" id="za-feedback-message"></p>
+        </div>
+        <div class="za-feedback-actions" id="za-feedback-actions">
+          <button type="button" class="za-feedback-btn za-feedback-btn-primary" id="za-feedback-ok">OK</button>
         </div>
       </div>
     `;
@@ -178,16 +212,94 @@ window.ZAPlanejamento = (() => {
     const overlay = document.getElementById("za-feedback-overlay");
     const titleEl = document.getElementById("za-feedback-title");
     const iconEl = document.getElementById("za-feedback-icon");
-    const messageEl = document.getElementById("za-feedback-message");
+    const bodyEl = document.getElementById("za-feedback-body");
+    const actionsEl = document.getElementById("za-feedback-actions");
 
     if (titleEl) titleEl.textContent = title;
     if (iconEl) iconEl.textContent = icon;
-    if (messageEl) messageEl.textContent = message;
+    if (bodyEl) {
+      bodyEl.innerHTML = `<p class="za-feedback-message" id="za-feedback-message">${message}</p>`;
+    }
+    if (actionsEl) {
+      actionsEl.innerHTML = `<button type="button" class="za-feedback-btn za-feedback-btn-primary" id="za-feedback-ok">OK</button>`;
+      document.getElementById("za-feedback-ok")?.addEventListener("click", hideFeedback);
+    }
+
     overlay?.classList.remove("hidden");
   }
 
   function hideFeedback() {
     document.getElementById("za-feedback-overlay")?.classList.add("hidden");
+  }
+
+  function askCycleClosingData() {
+    return new Promise((resolve) => {
+      ensureFeedbackModal();
+
+      const overlay = document.getElementById("za-feedback-overlay");
+      const titleEl = document.getElementById("za-feedback-title");
+      const iconEl = document.getElementById("za-feedback-icon");
+      const bodyEl = document.getElementById("za-feedback-body");
+      const actionsEl = document.getElementById("za-feedback-actions");
+
+      if (titleEl) titleEl.textContent = "Encerramento do ciclo";
+      if (iconEl) iconEl.textContent = "🏁";
+
+      if (bodyEl) {
+        bodyEl.innerHTML = `
+          <p class="za-feedback-message">
+            Antes de arquivar, registre como esse ciclo terminou.
+          </p>
+
+          <div class="za-feedback-field">
+            <label for="za-cycle-status">Status do ciclo</label>
+            <select id="za-cycle-status">
+              <option value="completo">Completo</option>
+              <option value="parcial">Parcial</option>
+              <option value="abandonado">Abandonado</option>
+            </select>
+          </div>
+
+          <div class="za-feedback-field">
+            <label for="za-cycle-result">Resultado do ciclo</label>
+            <textarea id="za-cycle-result" placeholder="Ex.: perdeu 3kg, passou a treinar 3x na semana, melhorou a rotina de sono."></textarea>
+          </div>
+
+          <div class="za-feedback-field">
+            <label for="za-cycle-note">Observação de encerramento</label>
+            <textarea id="za-cycle-note" placeholder="Ex.: respondeu bem ao foco de constância, mas ainda precisa consolidar alimentação no fim de semana."></textarea>
+          </div>
+        `;
+      }
+
+      if (actionsEl) {
+        actionsEl.innerHTML = `
+          <button type="button" class="za-feedback-btn za-feedback-btn-secondary" id="za-cycle-cancel">Cancelar</button>
+          <button type="button" class="za-feedback-btn za-feedback-btn-primary" id="za-cycle-confirm">Arquivar</button>
+        `;
+      }
+
+      overlay?.classList.remove("hidden");
+
+      document.getElementById("za-cycle-cancel")?.addEventListener("click", () => {
+        hideFeedback();
+        resolve(null);
+      });
+
+      document.getElementById("za-cycle-confirm")?.addEventListener("click", () => {
+        const statusCiclo = document.getElementById("za-cycle-status")?.value || "completo";
+        const resultadoCiclo = document.getElementById("za-cycle-result")?.value?.trim?.() || "";
+        const observacaoEncerramento = document.getElementById("za-cycle-note")?.value?.trim?.() || "";
+
+        hideFeedback();
+        resolve({
+          statusCiclo,
+          resultadoCiclo,
+          observacaoEncerramento,
+          encerradoEm: new Date().toISOString()
+        });
+      });
+    });
   }
 
   function getObjetivo() {
@@ -222,6 +334,12 @@ window.ZAPlanejamento = (() => {
       createdAt: planejamento.createdAt || new Date().toISOString(),
       updatedAt: planejamento.updatedAt || "",
       archivedAt: planejamento.archivedAt || null,
+      encerramento: planejamento.encerramento || {
+        statusCiclo: "",
+        resultadoCiclo: "",
+        observacaoEncerramento: "",
+        encerradoEm: ""
+      },
       estrategia: planejamento.estrategia || {},
       habitos: planejamento.habitos || {},
       nutricional: planejamento.nutricional || {},
@@ -382,7 +500,7 @@ window.ZAPlanejamento = (() => {
       `;
       badgesRoot.innerHTML = "";
       pill.textContent = "Sem planejamento ativo";
-      pill.className = "status-pill status-arquivado";
+      pill.className = "status-pill status-vazio";
       return;
     }
 
@@ -471,12 +589,19 @@ window.ZAPlanejamento = (() => {
         const title = firstFilled(plan.titulo, plan.estrategia?.focoCentral, "Planejamento arquivado");
         const archivedAt = plan.archivedAt ? formatDateTime(plan.archivedAt) : "Data não informada";
         const cycle = firstFilled(plan.treino?.objetivoCiclo, plan.estrategia?.objetivo30d, "Sem descrição");
+        const statusCiclo = plan?.encerramento?.statusCiclo || "parcial";
+        const resultadoCiclo = firstFilled(plan?.encerramento?.resultadoCiclo, "Sem resultado registrado");
 
         return `
           <div class="archived-item">
             <strong>${escapeHtml(title)}</strong>
             <span>Arquivado em: ${archivedAt}</span>
             <span>Resumo: ${escapeHtml(cycle)}</span>
+            <span>Resultado: ${escapeHtml(resultadoCiclo)}</span>
+
+            <div class="cycle-pill ${escapeHtml(statusCiclo)}">
+              ${escapeHtml(capitalize(statusCiclo))}
+            </div>
 
             <div class="planner-inline-actions" style="margin-top: 12px;">
               <a
@@ -485,11 +610,26 @@ window.ZAPlanejamento = (() => {
               >
                 Abrir PDF
               </a>
+
+              <button
+                type="button"
+                class="cliente-btn cliente-btn-secundario"
+                data-duplicate-plan="${plan.id}"
+              >
+                Duplicar
+              </button>
             </div>
           </div>
         `;
       })
       .join("");
+
+    root.querySelectorAll("[data-duplicate-plan]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const planId = button.getAttribute("data-duplicate-plan");
+        duplicateArchivedPlanning(planId);
+      });
+    });
   }
 
   function escapeHtml(value) {
@@ -514,6 +654,12 @@ window.ZAPlanejamento = (() => {
       createdAt: previous.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       archivedAt: null,
+      encerramento: previous.encerramento || {
+        statusCiclo: "",
+        resultadoCiclo: "",
+        observacaoEncerramento: "",
+        encerradoEm: ""
+      },
 
       estrategia: {
         fase: val("estrategia-fase"),
@@ -801,7 +947,7 @@ window.ZAPlanejamento = (() => {
     showFeedback("Nota excluída com sucesso.", "Nota removida", "🗑️");
   }
 
-  function archivePlanning() {
+  async function archivePlanning() {
     const planejamentoAtual = getPlanejamentoAtual();
 
     if (!planejamentoAtual || Object.keys(planejamentoAtual).length === 0) {
@@ -809,13 +955,14 @@ window.ZAPlanejamento = (() => {
       return;
     }
 
-    const confirmed = window.confirm("Deseja finalizar e arquivar este planejamento?");
-    if (!confirmed) return;
+    const encerramento = await askCycleClosingData();
+    if (!encerramento) return;
 
     const planejamento = ensurePlanejamentoStructure(planejamentoAtual);
     planejamento.status = "arquivado";
     planejamento.archivedAt = new Date().toISOString();
     planejamento.updatedAt = new Date().toISOString();
+    planejamento.encerramento = encerramento;
 
     const historico = Array.isArray(cliente.planejamentosArquivados)
       ? cliente.planejamentosArquivados
@@ -839,7 +986,65 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Planejamento finalizado e novo ciclo liberado.", "Ciclo encerrado", "🔥");
+    showFeedback("Planejamento finalizado, classificado e novo ciclo liberado.", "Ciclo encerrado", "🏁");
+  }
+
+  function duplicateArchivedPlanning(planId) {
+    if (!planId) return;
+
+    const archived = getPlanejamentosArquivados();
+    const source = archived.find((item) => String(item.id) === String(planId));
+
+    if (!source) {
+      showFeedback("Não encontrei esse planejamento arquivado.", "Arquivo não encontrado", "⚠");
+      return;
+    }
+
+    if (hasPlanning()) {
+      const confirmedReplace = window.confirm(
+        "Já existe um planejamento ativo. Deseja substituí-lo pelo planejamento duplicado?"
+      );
+      if (!confirmedReplace) return;
+    }
+
+    const confirmed = window.confirm(
+      "Deseja duplicar este planejamento arquivado para iniciar um novo ciclo?"
+    );
+    if (!confirmed) return;
+
+    const duplicated = {
+      ...source,
+      id: `plan_${Date.now()}`,
+      titulo: source.titulo ? `${source.titulo} (novo ciclo)` : "Novo ciclo",
+      status: "ativo",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      archivedAt: null,
+      encerramento: {
+        statusCiclo: "",
+        resultadoCiclo: "",
+        observacaoEncerramento: "",
+        encerradoEm: ""
+      },
+      notasTreinador: []
+    };
+
+    const updatedCliente = {
+      ...cliente,
+      planejamento: duplicated,
+      updatedAt: new Date().toISOString()
+    };
+
+    const ok = updateCliente(updatedCliente);
+
+    if (!ok) {
+      showFeedback("Não foi possível duplicar o planejamento.", "Erro ao duplicar", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
+    renderPlanejamento();
+    showFeedback("Planejamento duplicado e carregado como novo ciclo.", "Novo ciclo criado", "♻️");
   }
 
   function deletePlanning() {
