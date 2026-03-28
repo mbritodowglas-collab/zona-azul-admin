@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planejamento | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=58" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=59" />
 
   <style>
     body {
@@ -320,7 +320,7 @@
       border: 1px solid rgba(34,197,94,0.22);
     }
 
-    .status-pill.status-arquivado {
+    .status-pill.status-vazio {
       background: rgba(234,179,8,0.12);
       color: #fde68a;
       border: 1px solid rgba(234,179,8,0.22);
@@ -369,6 +369,66 @@
       color: rgba(235,240,255,0.66);
       font-size: 13px;
       line-height: 1.5;
+    }
+
+    .cycle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 10px;
+      width: fit-content;
+    }
+
+    .cycle-pill.completo {
+      background: rgba(34,197,94,0.14);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.22);
+    }
+
+    .cycle-pill.parcial {
+      background: rgba(245,158,11,0.14);
+      color: #fcd34d;
+      border: 1px solid rgba(245,158,11,0.22);
+    }
+
+    .cycle-pill.abandonado {
+      background: rgba(239,68,68,0.14);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.22);
+    }
+
+    .za-feedback-field {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .za-feedback-field label {
+      color: rgba(230,235,255,0.88);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .za-feedback-field select,
+    .za-feedback-field textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .za-feedback-field textarea {
+      min-height: 92px;
+      resize: vertical;
     }
 
     @media (max-width: 1100px) {
@@ -1062,7 +1122,7 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=58"></script>
-  <script src="../assets/js/planejamento.js?v=58"></script>
+  <script src="../assets/js/storage.js?v=59"></script>
+  <script src="../assets/js/planejamento.js?v=59"></script>
 </body>
 </html>
