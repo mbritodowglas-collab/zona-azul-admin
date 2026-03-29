@@ -1,37 +1,52 @@
-(() => {
-  const tableBody = document.getElementById("leads-table-body");
-  const emptyLeads = document.getElementById("empty-leads");
-  const publicFormLinkBox = document.getElementById("public-form-link-box");
-
-  const actionModal = document.getElementById("action-modal");
-  const actionModalTitle = document.getElementById("action-modal-title");
-  const actionModalSubtitle = document.getElementById("action-modal-subtitle");
-  const actionModalText = document.getElementById("action-modal-text");
-  const cancelActionBtn = document.getElementById("cancel-action-btn");
-  const confirmActionBtn = document.getElementById("confirm-action-btn");
-
+window.ZAPreDiagnostico = (() => {
   let pendingAction = null;
 
+  function getElements() {
+    return {
+      tableBody: document.getElementById("leads-table-body"),
+      emptyLeads: document.getElementById("empty-leads"),
+      publicFormLinkBox: document.getElementById("public-form-link-box"),
+      actionModal: document.getElementById("action-modal"),
+      actionModalTitle: document.getElementById("action-modal-title"),
+      actionModalSubtitle: document.getElementById("action-modal-subtitle"),
+      actionModalText: document.getElementById("action-modal-text"),
+      cancelActionBtn: document.getElementById("cancel-action-btn"),
+      confirmActionBtn: document.getElementById("confirm-action-btn"),
+    };
+  }
+
   function openActionModal({ title, subtitle, text, confirmLabel = "Confirmar", onConfirm }) {
+    const {
+      actionModal,
+      actionModalTitle,
+      actionModalSubtitle,
+      actionModalText,
+      confirmActionBtn,
+    } = getElements();
+
+    if (!actionModal || !confirmActionBtn) return;
+
     pendingAction = onConfirm;
-    actionModalTitle.textContent = title;
-    actionModalSubtitle.textContent = subtitle;
-    actionModalText.textContent = text;
+    if (actionModalTitle) actionModalTitle.textContent = title;
+    if (actionModalSubtitle) actionModalSubtitle.textContent = subtitle;
+    if (actionModalText) actionModalText.textContent = text;
     confirmActionBtn.textContent = confirmLabel;
     actionModal.classList.remove("hidden");
   }
 
   function closeActionModal() {
+    const { actionModal } = getElements();
     pendingAction = null;
-    actionModal.classList.add("hidden");
+    actionModal?.classList.add("hidden");
   }
 
   function renderLeads() {
+    const { tableBody, emptyLeads } = getElements();
     if (!tableBody || !emptyLeads) return;
 
     const leads = window.ZAStorage
       .getLeads()
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
     tableBody.innerHTML = "";
 
@@ -105,7 +120,7 @@
 
             if (!converted) {
               closeActionModal();
-              alert("Não foi possível converter este lead.");
+              window.alert("Não foi possível converter este lead.");
               return;
             }
 
@@ -131,7 +146,7 @@
 
             if (!removed) {
               closeActionModal();
-              alert("Não foi possível excluir este lead.");
+              window.alert("Não foi possível excluir este lead.");
               return;
             }
 
@@ -144,6 +159,7 @@
   }
 
   function setPublicLink() {
+    const { publicFormLinkBox } = getElements();
     if (!publicFormLinkBox) return;
 
     const origin = window.location.origin;
@@ -152,20 +168,36 @@
     publicFormLinkBox.textContent = `${origin}${basePath}/formulario/`;
   }
 
-  cancelActionBtn?.addEventListener("click", closeActionModal);
+  function bindModalEvents() {
+    const { cancelActionBtn, confirmActionBtn, actionModal } = getElements();
 
-  confirmActionBtn?.addEventListener("click", () => {
-    if (typeof pendingAction === "function") {
-      pendingAction();
-    }
-  });
+    cancelActionBtn?.addEventListener("click", closeActionModal);
 
-  actionModal?.addEventListener("click", (event) => {
-    if (event.target === actionModal) {
-      closeActionModal();
-    }
-  });
+    confirmActionBtn?.addEventListener("click", () => {
+      if (typeof pendingAction === "function") {
+        pendingAction();
+      }
+    });
 
-  setPublicLink();
-  renderLeads();
+    actionModal?.addEventListener("click", (event) => {
+      if (event.target === actionModal) {
+        closeActionModal();
+      }
+    });
+  }
+
+  function init() {
+    bindModalEvents();
+    setPublicLink();
+    renderLeads();
+  }
+
+  return {
+    init
+  };
 })();
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.ZAStorage.init();
+  window.ZAPreDiagnostico.init();
+});
