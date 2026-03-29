@@ -67,6 +67,18 @@ window.ZAPlanejamento = (() => {
     return el?.value?.trim?.() ?? el?.value ?? "";
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  function capitalize(value) {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
   function ensureFeedbackModal() {
     if (document.getElementById("za-feedback-overlay")) return;
 
@@ -158,6 +170,7 @@ window.ZAPlanejamento = (() => {
         font-weight: 700;
       }
       .za-feedback-field select,
+      .za-feedback-field input,
       .za-feedback-field textarea {
         width: 100%;
         border-radius: 14px;
@@ -252,6 +265,11 @@ window.ZAPlanejamento = (() => {
           </p>
 
           <div class="za-feedback-field">
+            <label for="za-cycle-name">Nome do ciclo</label>
+            <input id="za-cycle-name" type="text" placeholder="Ex.: Ciclo 1, Base, Cutting, Consolidação..." />
+          </div>
+
+          <div class="za-feedback-field">
             <label for="za-cycle-status">Status do ciclo</label>
             <select id="za-cycle-status">
               <option value="completo">Completo</option>
@@ -287,12 +305,14 @@ window.ZAPlanejamento = (() => {
       });
 
       document.getElementById("za-cycle-confirm")?.addEventListener("click", () => {
+        const nomeCiclo = document.getElementById("za-cycle-name")?.value?.trim?.() || "";
         const statusCiclo = document.getElementById("za-cycle-status")?.value || "completo";
         const resultadoCiclo = document.getElementById("za-cycle-result")?.value?.trim?.() || "";
         const observacaoEncerramento = document.getElementById("za-cycle-note")?.value?.trim?.() || "";
 
         hideFeedback();
         resolve({
+          nomeCiclo,
           statusCiclo,
           resultadoCiclo,
           observacaoEncerramento,
@@ -335,6 +355,7 @@ window.ZAPlanejamento = (() => {
       updatedAt: planejamento.updatedAt || "",
       archivedAt: planejamento.archivedAt || null,
       encerramento: planejamento.encerramento || {
+        nomeCiclo: "",
         statusCiclo: "",
         resultadoCiclo: "",
         observacaoEncerramento: "",
@@ -586,7 +607,12 @@ window.ZAPlanejamento = (() => {
 
     root.innerHTML = archived
       .map((plan) => {
-        const title = firstFilled(plan.titulo, plan.estrategia?.focoCentral, "Planejamento arquivado");
+        const title = firstFilled(
+          plan?.encerramento?.nomeCiclo,
+          plan.titulo,
+          plan.estrategia?.focoCentral,
+          "Planejamento arquivado"
+        );
         const archivedAt = plan.archivedAt ? formatDateTime(plan.archivedAt) : "Data não informada";
         const cycle = firstFilled(plan.treino?.objetivoCiclo, plan.estrategia?.objetivo30d, "Sem descrição");
         const statusCiclo = plan?.encerramento?.statusCiclo || "parcial";
@@ -632,18 +658,6 @@ window.ZAPlanejamento = (() => {
     });
   }
 
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;");
-  }
-
-  function capitalize(value) {
-    if (!value) return "";
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  }
-
   function buildPlanejamentoPayload(existing = null) {
     const previous = ensurePlanejamentoStructure(existing || getPlanejamentoAtual());
 
@@ -655,6 +669,7 @@ window.ZAPlanejamento = (() => {
       updatedAt: new Date().toISOString(),
       archivedAt: null,
       encerramento: previous.encerramento || {
+        nomeCiclo: "",
         statusCiclo: "",
         resultadoCiclo: "",
         observacaoEncerramento: "",
@@ -1021,6 +1036,7 @@ window.ZAPlanejamento = (() => {
       updatedAt: new Date().toISOString(),
       archivedAt: null,
       encerramento: {
+        nomeCiclo: "",
         statusCiclo: "",
         resultadoCiclo: "",
         observacaoEncerramento: "",
