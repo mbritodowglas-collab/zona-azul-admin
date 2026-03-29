@@ -2,83 +2,55 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zona Azul Admin</title>
+
   <link rel="stylesheet" href="./assets/css/global.css" />
 </head>
+
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">ZA</div>
-        <div>
-          <h1>Zona Azul Admin</h1>
-          <p>Painel operacional</p>
-        </div>
+  <main class="container">
+    <h1>Painel Zona Azul</h1>
+
+    <div class="stats">
+      <div class="card">
+        <h3>Total Leads</h3>
+        <p id="stat-leads">0</p>
       </div>
 
-      <nav class="nav">
-        <a class="active" href="./index.html">Dashboard</a>
-        <a href="./pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="./clientes/">Clientes</a>
-      </nav>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2>Dashboard</h2>
-          <p>Visão geral do fluxo do protocolo.</p>
-        </div>
+      <div class="card">
+        <h3>Novos</h3>
+        <p id="stat-novos">0</p>
       </div>
 
-      <section class="grid grid-4">
-        <article class="stat-card">
-          <span class="stat-label">Leads totais</span>
-          <strong class="stat-value" id="stat-leads">0</strong>
-        </article>
+      <div class="card">
+        <h3>Convertidos</h3>
+        <p id="stat-convertidos">0</p>
+      </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Leads novos</span>
-          <strong class="stat-value" id="stat-novos">0</strong>
-        </article>
+      <div class="card">
+        <h3>Clientes Ativos</h3>
+        <p id="stat-clientes">0</p>
+      </div>
+    </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Convertidos</span>
-          <strong class="stat-value" id="stat-convertidos">0</strong>
-        </article>
+    <div class="links">
+      <a href="./pre-diagnostico/">Pré-diagnóstico</a>
+      <a href="./clientes/">Clientes</a>
+    </div>
 
-        <article class="stat-card">
-          <span class="stat-label">Clientes ativos</span>
-          <strong class="stat-value" id="stat-clientes">0</strong>
-        </article>
-      </section>
+    <div class="public-link">
+      <strong>Link público:</strong>
+      <div id="public-link-box"></div>
+    </div>
+  </main>
 
-      <section class="card">
-        <div class="card-header">
-          <h3>Atalhos</h3>
-        </div>
-        <div class="card-body">
-          <div class="actions">
-            <a class="btn" href="./pre-diagnostico/">Abrir Pré-diagnóstico</a>
-            <a class="btn secondary" href="./clientes/">Ver Clientes</a>
-          </div>
-        </div>
-      </section>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/supabase.js?v=1"></script>
+  <script src="./assets/js/storage.js?v=1"></script>
 
-      <section class="card">
-        <div class="card-header">
-          <h3>Link público</h3>
-        </div>
-        <div class="card-body">
-          <p class="muted">Use este link na sua landing page:</p>
-          <div class="code-box" id="public-link-box"></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script src="./assets/js/storage.js"></script>
-  <script src="./assets/js/dashboard.js"></script>
+  <!-- PAGE -->
+  <script src="./assets/js/dashboard.js?v=1"></script>
 </body>
 </html>
