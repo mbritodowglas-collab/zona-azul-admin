@@ -1186,6 +1186,7 @@ window.ZAPlanejamento = (() => {
   return { init };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.ZAStorage.init();
   window.ZAPlanejamento.init();
 });
