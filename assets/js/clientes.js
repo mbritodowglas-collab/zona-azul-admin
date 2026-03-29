@@ -14,11 +14,11 @@ window.ZAClientes = (() => {
 
   function getFilteredClientes(clientes) {
     if (currentFilter === "ativos") {
-      return clientes.filter((cliente) => cliente.status !== "arquivado");
+      return clientes.filter((cliente) => String(cliente.status || "ativo").toLowerCase() !== "arquivado");
     }
 
     if (currentFilter === "arquivados") {
-      return clientes.filter((cliente) => cliente.status === "arquivado");
+      return clientes.filter((cliente) => String(cliente.status || "").toLowerCase() === "arquivado");
     }
 
     return clientes;
@@ -42,7 +42,14 @@ window.ZAClientes = (() => {
 
     list.innerHTML = lista
       .map((cliente) => {
-        const isArchived = cliente.status === "arquivado";
+        const isArchived = String(cliente.status || "").toLowerCase() === "arquivado";
+        const objetivo =
+          cliente?.dadosBaseEditados?.objetivo ||
+          cliente?.preDiagnostico?.objetivo ||
+          cliente?.preDiagnostico?.objetivo_principal ||
+          cliente?.preDiagnostico?.objetivo_fisico ||
+          cliente?.objetivo ||
+          "—";
 
         return `
           <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition">
@@ -50,10 +57,18 @@ window.ZAClientes = (() => {
               ${cliente.nome || "-"}
             </td>
 
+            <td class="px-4 py-3 text-slate-600">
+              ${objetivo}
+            </td>
+
+            <td class="px-4 py-3">
+              ${isArchived ? "Arquivado" : "Ativo"}
+            </td>
+
             <td class="px-4 py-3">
               <div class="cliente-acoes">
                 <a
-                  href="../cliente/?id=${cliente.id}"
+                  href="../cliente/index.html?id=${encodeURIComponent(cliente.id)}"
                   class="cliente-btn cliente-btn-abrir"
                 >
                   Abrir
@@ -111,7 +126,6 @@ window.ZAClientes = (() => {
           data-filter="ativos"
           class="cliente-filtro-btn ${currentFilter === "ativos" ? "is-active" : ""}"
         >
-          <span class="cliente-filtro-icone">●</span>
           <span>Ativos</span>
         </button>
 
@@ -120,7 +134,6 @@ window.ZAClientes = (() => {
           data-filter="arquivados"
           class="cliente-filtro-btn ${currentFilter === "arquivados" ? "is-active" : ""}"
         >
-          <span class="cliente-filtro-icone">●</span>
           <span>Arquivados</span>
         </button>
 
@@ -129,7 +142,6 @@ window.ZAClientes = (() => {
           data-filter="todos"
           class="cliente-filtro-btn ${currentFilter === "todos" ? "is-active" : ""}"
         >
-          <span class="cliente-filtro-icone">●</span>
           <span>Todos</span>
         </button>
       </div>
@@ -180,7 +192,7 @@ window.ZAClientes = (() => {
   return {
     init,
     archive,
-    reactivate,
+    reactivate
   };
 })();
 
