@@ -122,6 +122,31 @@ window.ZAPlanoCliente = (() => {
     );
   }
 
+  function renderArchiveBadge() {
+    const root = document.getElementById("plan-archive-badge-wrap");
+    if (!root) return;
+
+    if (archivedId) {
+      const archivedDate = formatDate(
+        planejamentoSelecionado?.archivedAt ||
+        planejamentoSelecionado?.encerramento?.encerradoEm
+      );
+
+      root.innerHTML = `
+        <span class="plan-archive-badge archived">
+          Ciclo encerrado • ${archivedDate}
+        </span>
+      `;
+      return;
+    }
+
+    root.innerHTML = `
+      <span class="plan-archive-badge active">
+        Planejamento ativo
+      </span>
+    `;
+  }
+
   function renderEncerramento() {
     const encerramento = planejamentoSelecionado?.encerramento || {};
     const status = encerramento.statusCiclo || "";
@@ -259,6 +284,7 @@ window.ZAPlanoCliente = (() => {
     document.getElementById("plan-paper")?.classList.remove("hidden");
 
     renderMeta();
+    renderArchiveBadge();
     renderEncerramento();
     renderVisaoGeral();
     renderHabitos();
