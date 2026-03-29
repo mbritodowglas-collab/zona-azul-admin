@@ -101,6 +101,8 @@ window.ZAPlanoCliente = (() => {
   }
 
   function renderMeta() {
+    const nomeCiclo = planejamentoSelecionado?.encerramento?.nomeCiclo;
+
     setText("meta-cliente", cliente?.nome || "Cliente");
     setText("meta-objetivo", getObjetivo());
     setText(
@@ -111,6 +113,12 @@ window.ZAPlanoCliente = (() => {
         new Date().toISOString()
       )
     );
+
+    if (nomeCiclo) {
+      setText("plan-title", nomeCiclo);
+      setText("plan-cover-subtitle", archivedId ? "Planejamento arquivado para consulta." : "Documento de direcionamento do processo.");
+      return;
+    }
 
     setText(
       "plan-cover-subtitle",
