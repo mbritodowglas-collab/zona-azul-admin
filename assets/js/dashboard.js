@@ -18,7 +18,7 @@ window.ZADashboard = (() => {
         ? pathname
         : `${pathname}/`;
 
-    return `${origin}${basePath}formulario/`;
+    return `${origin}${basePath}formulario-publico/`;
   }
 
   function renderStats() {
