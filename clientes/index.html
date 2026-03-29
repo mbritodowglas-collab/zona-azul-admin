@@ -2,65 +2,40 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clientes | Zona Azul Admin</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=21" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes | Zona Azul</title>
+
+  <link rel="stylesheet" href="../assets/css/global.css" />
 </head>
+
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">ZA</div>
-        <div>
-          <h1>Zona Azul Admin</h1>
-          <p>Operação do cliente</p>
-        </div>
-      </div>
+  <main class="container">
+    <h1>Clientes</h1>
 
-      <nav class="nav">
-        <a href="../index.html">Dashboard</a>
-        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a class="active" href="./index.html">Clientes</a>
-      </nav>
-    </aside>
+    <div id="clientes-filters"></div>
 
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2>Clientes</h2>
-          <p>Clientes convertidos a partir do pré-diagnóstico.</p>
-        </div>
-      </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
 
-      <section class="card">
-        <div class="card-header">
-          <h3>Lista de clientes</h3>
-        </div>
+      <tbody id="clientes-table-body"></tbody>
+    </table>
 
-        <div class="card-body">
-          <div id="clientes-filters" class="clientes-filtros-wrap"></div>
+    <div id="empty-clientes" class="hidden">
+      Nenhum cliente encontrado.
+    </div>
+  </main>
 
-          <div id="empty-clientes" class="empty-state hidden">
-            Nenhum cliente encontrado nesse filtro.
-          </div>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
 
-          <div class="table-wrap" id="clientes-table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="clientes-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script src="../assets/js/storage.js?v=21"></script>
-  <script src="../assets/js/clientes.js?v=21"></script>
+  <!-- PAGE -->
+  <script src="../assets/js/clientes.js?v=1"></script>
 </body>
 </html>
