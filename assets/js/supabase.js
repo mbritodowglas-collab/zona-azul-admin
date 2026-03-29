@@ -1,19 +1,52 @@
-// 🔗 Configuração Supabase
+// assets/js/supabase.js
+
 const SUPABASE_URL = "https://qrwzzgnyzsomugranmnu.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M";
 
-// 🚀 Inicializa cliente
-window.supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+window.ZASupabase = (() => {
+  let client = null;
 
-// 🧪 Teste rápido (opcional)
-window.testSupabase = async () => {
-  const { data, error } = await supabaseClient
-    .from("clientes")
-    .select("*");
+  function isReady() {
+    return typeof window.supabase !== "undefined";
+  }
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-};
+  function getClient() {
+    if (!isReady()) {
+      console.warn("[ZASupabase] SDK do Supabase não carregado.");
+      return null;
+    }
+
+    if (!client) {
+      client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+
+    return client;
+  }
+
+  async function testConnection() {
+    const supabaseClient = getClient();
+    if (!supabaseClient) {
+      return { ok: false, error: "Supabase SDK não disponível." };
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from("clientes")
+        .select("id")
+        .limit(1);
+
+      if (error) {
+        return { ok: false, error: error.message || String(error) };
+      }
+
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: err?.message || String(err) };
+    }
+  }
+
+  return {
+    getClient,
+    testConnection
+  };
+})();
