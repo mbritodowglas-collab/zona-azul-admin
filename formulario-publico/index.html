@@ -3,173 +3,568 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pré-Diagnóstico | Zona Azul</title>
+  <title>Pré-diagnóstico | Zona Azul</title>
 
   <link rel="stylesheet" href="../assets/css/global.css?v=1" />
 
   <style>
     body {
-      background: linear-gradient(180deg, #0b1120, #020617);
+      margin: 0;
       min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(99,102,241,0.16), transparent 28%),
+        linear-gradient(180deg, #091120, #020617 78%);
+      font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .public-wrap {
-      width: 100%;
-      max-width: 720px;
       padding: 20px;
     }
 
-    .form-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 24px;
-      padding: 24px;
+    .public-shell {
+      width: 100%;
+      max-width: 760px;
     }
 
-    .hidden {
+    .public-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 28px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+      overflow: hidden;
+    }
+
+    .public-card.hidden {
       display: none;
     }
 
-    .progress-bar {
-      height: 6px;
-      background: rgba(255,255,255,0.1);
+    .public-head {
+      padding: 22px 22px 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
       border-radius: 999px;
-      margin-bottom: 20px;
+      background: rgba(255,255,255,0.08);
       overflow: hidden;
     }
 
     .progress-fill {
-      height: 100%;
       width: 0%;
+      height: 100%;
+      border-radius: inherit;
       background: linear-gradient(90deg, #6366f1, #3b82f6);
-      transition: width 0.3s ease;
+      transition: width 0.28s ease;
+    }
+
+    .step-indicator {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(226,232,240,0.66);
+      font-weight: 800;
     }
 
     .step-title {
-      font-size: 22px;
+      margin: 0;
       color: #fff;
-      margin-bottom: 10px;
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .step-subtitle {
+      margin: 0;
+      color: rgba(226,232,240,0.74);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .public-form {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .form-step.hidden {
+      display: none;
+    }
+
+    .step-block {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      color: #e5eefc;
+      font-size: 13px;
       font-weight: 700;
     }
 
-    .step-description {
-      color: rgba(226,232,240,0.7);
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-
-    .form-group {
-      display: grid;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    label {
-      color: #e2e8f0;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    input, select {
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(0,0,0,0.4);
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.34);
       color: #fff;
-      font-size: 14px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font: inherit;
+      outline: none;
     }
 
-    .actions {
+    .field textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.6;
+    }
+
+    .help-text {
+      color: rgba(226,232,240,0.62);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .option-group,
+    .score-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option-card,
+    .score-btn {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      border-radius: 18px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      text-align: left;
+    }
+
+    .option-card:hover,
+    .score-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,0.38);
+      background: rgba(99,102,241,0.10);
+    }
+
+    .option-card.selected,
+    .score-btn.selected {
+      border-color: rgba(99,102,241,0.54);
+      background: rgba(99,102,241,0.18);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.20) inset;
+    }
+
+    .score-scale {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .score-btn {
+      text-align: center;
+      font-weight: 800;
+      padding: 14px 0;
+    }
+
+    .step-actions {
       display: flex;
       justify-content: space-between;
-      margin-top: 20px;
+      gap: 12px;
+      padding-top: 6px;
+      flex-wrap: wrap;
     }
 
     .btn {
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: none;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
-      font-weight: 700;
+      min-width: 120px;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.10);
+      color: #fff;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #6366f1, #3b82f6);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.1);
       color: #fff;
+      box-shadow: 0 12px 24px rgba(59,130,246,0.22);
     }
 
     .success-card {
+      padding: 36px 24px;
       text-align: center;
-      padding: 40px 20px;
+      display: grid;
+      gap: 12px;
     }
 
     .success-card h2 {
-      color: #22c55e;
-      margin-bottom: 10px;
+      margin: 0;
+      color: #86efac;
+      font-size: 28px;
+    }
+
+    .success-card p {
+      margin: 0;
+      color: rgba(226,232,240,0.76);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 700px) {
+      .grid.cols-2,
+      .grid.cols-3,
+      .score-scale {
+        grid-template-columns: 1fr;
+      }
+
+      .step-title {
+        font-size: 28px;
+      }
+
+      .btn {
+        flex: 1 1 auto;
+      }
     }
   </style>
 </head>
-
 <body>
-  <div class="public-wrap">
+  <div class="public-shell">
+    <div class="public-card" id="form-card">
+      <div class="public-head">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
 
-    <!-- FORM -->
-    <div class="form-card" id="form-card">
-      <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
+        <div class="step-indicator" id="step-indicator">Etapa 1 de 7</div>
+        <h1 class="step-title" id="step-title">Identificação</h1>
+        <p class="step-subtitle" id="step-subtitle">Vamos começar com seus dados básicos.</p>
       </div>
 
-      <form id="public-pre-form">
+      <form id="public-pre-form" class="public-form">
+        <!-- ETAPA 1 -->
+        <section class="form-step" data-step="1">
+          <div class="step-block">
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" type="text" required />
+              </div>
 
-        <div id="step-container">
-          <div class="step-title" id="step-title">Pré-diagnóstico</div>
-          <div class="step-description">
-            Responda para analisarmos seu perfil e montar seu plano.
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" required />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Data de nascimento</label>
+                <div class="grid cols-3">
+                  <input id="nascimento_dia" type="number" min="1" max="31" placeholder="Dia" required />
+                  <select id="nascimento_mes" required>
+                    <option value="">Mês</option>
+                    <option value="1">Jan</option>
+                    <option value="2">Fev</option>
+                    <option value="3">Mar</option>
+                    <option value="4">Abr</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Jun</option>
+                    <option value="7">Jul</option>
+                    <option value="8">Ago</option>
+                    <option value="9">Set</option>
+                    <option value="10">Out</option>
+                    <option value="11">Nov</option>
+                    <option value="12">Dez</option>
+                  </select>
+                  <input id="nascimento_ano" type="number" min="1900" max="2100" placeholder="Ano" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="genero">Gênero</label>
+                <select id="genero" required>
+                  <option value="">Selecionar</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="feminino">Feminino</option>
+                  <option value="nao_informar">Prefere não informar</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="cidade">Cidade</label>
+                <input id="cidade" type="text" required />
+              </div>
+
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="origem">Como chegou até nós?</label>
+                <input id="origem" type="text" placeholder="Ex.: Instagram, indicação, YouTube..." required />
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" name="nome" required />
+        <!-- ETAPA 2 -->
+        <section class="form-step hidden" data-step="2">
+          <div class="step-block">
+            <div class="field">
+              <label>Já fez acompanhamento com personal ou nutricionista?</label>
+              <div class="option-group" data-target="exp_personal">
+                <button type="button" class="option-card" data-value="nunca">Nunca</button>
+                <button type="button" class="option-card" data-value="fez_nao_manteve">Já fiz, mas não mantive</button>
+                <button type="button" class="option-card" data-value="faz_atualmente">Faço atualmente</button>
+                <button type="button" class="option-card" data-value="fez_manteve">Já fiz e mantive</button>
+              </div>
+              <input id="exp_personal" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>Como foi sua experiência com emagrecimento ou mudança corporal?</label>
+              <div class="option-group" data-target="exp_emagrecimento">
+                <button type="button" class="option-card" data-value="nunca">Nunca tentei</button>
+                <button type="button" class="option-card" data-value="nao_funcionou">Já tentei, mas não funcionou</button>
+                <button type="button" class="option-card" data-value="funcionou_nao_manteve">Funcionou, mas não mantive</button>
+                <button type="button" class="option-card" data-value="em_processo">Estou em processo</button>
+              </div>
+              <input id="exp_emagrecimento" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label for="o_que_funcionou">O que já funcionou pra você no passado?</label>
+              <textarea id="o_que_funcionou" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="limitacoes_atuais">Tem dores, lesões ou limitações atuais?</label>
+              <textarea id="limitacoes_atuais" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="por_que_parou">Se já começou antes, por que parou?</label>
+              <textarea id="por_que_parou" required></textarea>
+            </div>
           </div>
+        </section>
 
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required />
+        <!-- ETAPA 3 -->
+        <section class="form-step hidden" data-step="3">
+          <div class="step-block">
+            <div class="field">
+              <label>De 0 a 10, como está seu MOVIMENTO hoje?</label>
+              <div class="help-text">0 = muito ruim / 10 = excelente</div>
+              <div class="score-group score-scale" data-target="score_movimento">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_movimento" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>De 0 a 10, como está sua ALIMENTAÇÃO hoje?</label>
+              <div class="score-group score-scale" data-target="score_alimentacao">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_alimentacao" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>De 0 a 10, como está seu SONO hoje?</label>
+              <div class="score-group score-scale" data-target="score_sono">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_sono" type="hidden" required />
+            </div>
           </div>
+        </section>
 
-          <div class="form-group">
-            <label>Objetivo</label>
-            <select name="objetivo">
-              <option value="emagrecimento">Emagrecimento</option>
-              <option value="hipertrofia">Hipertrofia</option>
-              <option value="condicionamento">Condicionamento</option>
-            </select>
+        <!-- ETAPA 4 -->
+        <section class="form-step hidden" data-step="4">
+          <div class="step-block">
+            <div class="field">
+              <label>De 0 a 10, como está seu PROPÓSITO / direção de vida hoje?</label>
+              <div class="score-group score-scale" data-target="score_proposito">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_proposito" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>De 0 a 10, como está sua VIDA SOCIAL / apoio hoje?</label>
+              <div class="score-group score-scale" data-target="score_social">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_social" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>De 0 a 10, como está seu ESTRESSE hoje?</label>
+              <div class="score-group score-scale" data-target="score_estresse">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="score_estresse" type="hidden" required />
+            </div>
           </div>
+        </section>
 
+        <!-- ETAPA 5 -->
+        <section class="form-step hidden" data-step="5">
+          <div class="step-block">
+            <div class="field">
+              <label>Nível de urgência para começar</label>
+              <div class="option-group" data-target="urgencia">
+                <button type="button" class="option-card" data-value="alta">Alta — quero começar agora</button>
+                <button type="button" class="option-card" data-value="media">Média — quero começar em breve</button>
+                <button type="button" class="option-card" data-value="baixa">Baixa — estou avaliando</button>
+              </div>
+              <input id="urgencia" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>De 0 a 10, quanto você está comprometido(a) agora?</label>
+              <div class="score-group score-scale" data-target="comprometimento">
+                <button type="button" class="score-btn" data-value="2">2</button>
+                <button type="button" class="score-btn" data-value="4">4</button>
+                <button type="button" class="score-btn" data-value="6">6</button>
+                <button type="button" class="score-btn" data-value="8">8</button>
+                <button type="button" class="score-btn" data-value="10">10</button>
+              </div>
+              <input id="comprometimento" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>Você investiria em acompanhamento para sair do ciclo de tentativa e erro?</label>
+              <div class="option-group" data-target="investimento">
+                <button type="button" class="option-card" data-value="sim">Sim</button>
+                <button type="button" class="option-card" data-value="depende">Depende do valor</button>
+                <button type="button" class="option-card" data-value="nao">Prefiro tentar sozinho(a)</button>
+              </div>
+              <input id="investimento" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>O que mais te sabota hoje?</label>
+              <div class="option-group" data-target="sabotagem">
+                <button type="button" class="option-card" data-value="tempo">Falta de tempo</button>
+                <button type="button" class="option-card" data-value="disciplina">Falta de disciplina</button>
+                <button type="button" class="option-card" data-value="emocional">Ansiedade / emocional</button>
+                <button type="button" class="option-card" data-value="cansaco">Cansaço</button>
+                <button type="button" class="option-card" data-value="direcao">Falta de direção</button>
+                <button type="button" class="option-card" data-value="outro">Outro</button>
+              </div>
+              <input id="sabotagem" type="hidden" required />
+            </div>
+
+            <div class="field">
+              <label>Qual é seu objetivo físico principal?</label>
+              <div class="option-group" data-target="objetivo_fisico">
+                <button type="button" class="option-card" data-value="emagrecimento">Emagrecimento</button>
+                <button type="button" class="option-card" data-value="massa">Ganho de massa</button>
+                <button type="button" class="option-card" data-value="saude">Melhorar saúde</button>
+                <button type="button" class="option-card" data-value="energia">Mais energia / disposição</button>
+              </div>
+              <input id="objetivo_fisico" type="hidden" required />
+            </div>
+          </div>
+        </section>
+
+        <!-- ETAPA 6 -->
+        <section class="form-step hidden" data-step="6">
+          <div class="step-block">
+            <div class="field">
+              <label for="desafio_atual">Qual é seu maior desafio hoje?</label>
+              <textarea id="desafio_atual" required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="meta_6_meses">Se tudo der certo, como você quer estar em 6 meses?</label>
+              <textarea id="meta_6_meses" required></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- ETAPA 7 -->
+        <section class="form-step hidden" data-step="7">
+          <div class="step-block">
+            <div class="help-text">
+              Essas informações são opcionais, mas ajudam a enriquecer sua leitura inicial.
+            </div>
+
+            <div class="grid cols-2">
+              <div class="field">
+                <label for="peso">Peso atual (kg)</label>
+                <input id="peso" type="number" step="0.1" />
+              </div>
+
+              <div class="field">
+                <label for="altura">Altura (cm)</label>
+                <input id="altura" type="number" step="0.1" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-secondary hidden" id="prev-step-btn">Voltar</button>
+          <button type="button" class="btn btn-primary" id="next-step-btn">Avançar</button>
+          <button type="submit" class="btn btn-primary hidden" id="submit-btn">Enviar</button>
         </div>
-
-        <div class="actions">
-          <button type="button" class="btn btn-secondary" id="prev-btn">Voltar</button>
-          <button type="submit" class="btn btn-primary">Enviar</button>
-        </div>
-
       </form>
     </div>
 
-    <!-- SUCCESS -->
-    <div class="form-card success-card hidden" id="success-card">
+    <div class="public-card success-card hidden" id="success-card">
       <h2>Pré-diagnóstico enviado</h2>
-      <p>Agora é só aguardar o contato.</p>
+      <p>Recebemos suas respostas. Agora o próximo passo é analisar seu perfil e montar a leitura inicial do seu caso.</p>
     </div>
-
   </div>
 
   <!-- CORE -->
@@ -178,8 +573,7 @@
   <script src="../assets/js/storage.js?v=1"></script>
   <script src="../assets/js/calculos.js?v=1"></script>
 
-  <!-- FORM PUBLICO -->
+  <!-- FORM -->
   <script src="../assets/js/formulario-publico.js?v=1"></script>
-
 </body>
 </html>
