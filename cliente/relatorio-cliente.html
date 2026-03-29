@@ -1,308 +1,375 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatório do Cliente | Zona Azul</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório do Cliente | Zona Azul</title>
 
-<link rel="stylesheet" href="../assets/css/global.css?v=54">
+  <link rel="stylesheet" href="../assets/css/global.css?v=56">
 
-<style>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #111827, #020617 70%);
+    }
 
-/* ===== BASE ===== */
-body {
-  background: radial-gradient(circle at top, #111827, #020617 70%);
-}
+    .report-wrap {
+      display: grid;
+      gap: 24px;
+    }
 
-/* ===== LAYOUT ===== */
-.report-wrap {
-  display: grid;
-  gap: 24px;
-}
+    .report-hero {
+      background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.15));
+      border-radius: 28px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
 
-/* ===== HERO ===== */
-.report-hero {
-  background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.15));
-  border-radius: 28px;
-  padding: 24px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
+    .report-hero-left {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
 
-.report-hero-left {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
+    .report-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 22px;
+      background: linear-gradient(135deg,#6d73ff,#8d72ff);
+      color: #fff;
+    }
 
-.report-avatar {
-  width: 70px;
-  height: 70px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 22px;
-  background: linear-gradient(135deg,#6d73ff,#8d72ff);
-}
+    .report-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+    }
 
-.report-title {
-  font-size: 26px;
-  font-weight: 700;
-}
+    .report-sub {
+      opacity: 0.7;
+      color: #fff;
+    }
 
-.report-sub {
-  opacity: 0.7;
-}
+    .report-card {
+      background: rgba(255,255,255,0.03);
+      border-radius: 26px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
 
-/* ===== CARD ===== */
-.report-card {
-  background: rgba(255,255,255,0.03);
-  border-radius: 26px;
-  overflow: hidden;
-}
+    .report-card-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
 
-.report-card-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+    .report-card-header h3 {
+      margin: 0;
+      color: #fff;
+    }
 
-.report-card-header h3 {
-  margin: 0;
-}
+    .report-card-body {
+      padding: 20px;
+    }
 
-.report-card-body {
-  padding: 20px;
-}
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+    }
 
-/* ===== SUMMARY ===== */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 16px;
-}
+    .summary-box {
+      background: rgba(255,255,255,0.04);
+      padding: 16px;
+      border-radius: 18px;
+    }
 
-.summary-box {
-  background: rgba(255,255,255,0.04);
-  padding: 16px;
-  border-radius: 18px;
-}
+    .summary-box h4 {
+      font-size: 13px;
+      opacity: 0.6;
+      color: #fff;
+      margin: 0 0 8px;
+    }
 
-.summary-box h4 {
-  font-size: 13px;
-  opacity: 0.6;
-}
+    .summary-box p {
+      font-weight: bold;
+      color: #fff;
+      margin: 0;
+    }
 
-.summary-box p {
-  font-weight: bold;
-}
+    .radar-canvas-wrap {
+      height: 350px;
+    }
 
-/* ===== RADAR ===== */
-.radar-canvas-wrap {
-  height: 350px;
-}
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 14px;
+    }
 
-/* ===== MÉTRICAS ===== */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 14px;
-}
+    .metric-card {
+      background: rgba(255,255,255,0.04);
+      padding: 16px;
+      border-radius: 18px;
+      color: #fff;
+    }
 
-.metric-card {
-  background: rgba(255,255,255,0.04);
-  padding: 16px;
-  border-radius: 18px;
-}
+    .metric-label {
+      display: block;
+      font-size: 13px;
+      opacity: 0.72;
+      margin-bottom: 12px;
+    }
 
-.metric-values {
-  display: flex;
-  justify-content: space-between;
-}
+    .metric-values {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-.metric-delta {
-  margin-top: 8px;
-  font-weight: bold;
-}
+    .metric-values small {
+      display: block;
+      opacity: 0.6;
+      margin-bottom: 4px;
+    }
 
-.delta-positive { color: #22c55e; }
-.delta-negative { color: #ef4444; }
-.delta-neutral { color: #eab308; }
+    .metric-values strong {
+      font-size: 18px;
+    }
 
-/* ===== PERIMETRIA ===== */
-.perimetria-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 14px;
-}
+    .metric-delta {
+      margin-top: 8px;
+      font-weight: bold;
+    }
 
-/* ===== DIAGNÓSTICO ===== */
-.text-box {
-  background: rgba(255,255,255,0.04);
-  padding: 16px;
-  border-radius: 18px;
-}
+    .delta-positive { color: #22c55e; }
+    .delta-negative { color: #ef4444; }
+    .delta-neutral { color: #eab308; }
 
-/* ===== TIMELINE ===== */
-.timeline {
-  display: grid;
-  gap: 10px;
-}
+    .perimetria-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 14px;
+    }
 
-.timeline-item {
-  background: rgba(255,255,255,0.04);
-  padding: 12px;
-  border-radius: 14px;
-}
+    .text-box {
+      background: rgba(255,255,255,0.04);
+      padding: 16px;
+      border-radius: 18px;
+      color: #fff;
+    }
 
-/* ===== RESPONSIVO ===== */
-@media(max-width:900px){
-  .summary-grid { grid-template-columns:1fr; }
-  .metrics-grid { grid-template-columns:1fr 1fr; }
-  .perimetria-grid { grid-template-columns:1fr 1fr; }
-}
+    .text-box h4 {
+      margin: 0 0 8px;
+    }
 
-@media(max-width:500px){
-  .metrics-grid,
-  .perimetria-grid {
-    grid-template-columns:1fr;
-  }
-}
+    .text-box p {
+      margin: 0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
 
-</style>
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      border-radius: 14px;
+      color: #fff;
+    }
+
+    .timeline-item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .report-empty {
+      background: rgba(255,255,255,0.04);
+      border-radius: 18px;
+      padding: 18px;
+      color: rgba(255,255,255,0.72);
+    }
+
+    @media(max-width:900px){
+      .summary-grid { grid-template-columns:1fr; }
+      .metrics-grid { grid-template-columns:1fr 1fr; }
+      .perimetria-grid { grid-template-columns:1fr 1fr; }
+    }
+
+    @media(max-width:500px){
+      .metrics-grid,
+      .perimetria-grid {
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: #0b1120 !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .main {
+        padding: 0 !important;
+      }
+
+      .report-card,
+      .report-hero {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="app-shell">
+    <main class="main">
+      <div class="report-wrap" id="relatorio-page">
 
-<div class="app-shell">
-<main class="main">
+        <div class="report-actions no-print">
+          <a id="voltar-cliente-link" href="../cliente/index.html" class="cliente-btn cliente-btn-secundario">Voltar ao cliente</a>
+          <button class="cliente-btn cliente-btn-abrir" id="print-report-btn" type="button">Imprimir / Salvar PDF</button>
+        </div>
 
-<div class="report-wrap">
+        <div id="relatorio-not-found" class="report-empty hidden">
+          Cliente não encontrado para este relatório.
+        </div>
 
-<!-- HERO -->
-<section class="report-hero">
-  <div class="report-hero-left">
-    <div class="report-avatar" id="report-avatar">C</div>
-    <div>
-      <div class="report-title" id="report-nome">Cliente</div>
-      <div class="report-sub" id="report-email"></div>
-      <div class="report-sub" id="report-meta"></div>
-    </div>
-  </div>
+        <section class="report-hero">
+          <div class="report-hero-left">
+            <div class="report-avatar" id="report-avatar">C</div>
+            <div>
+              <div class="report-title" id="report-nome">Cliente</div>
+              <div class="report-sub" id="report-email"></div>
+              <div class="report-sub" id="report-meta"></div>
+            </div>
+          </div>
 
-  <div>
-    <div class="report-sub" id="report-data-geracao"></div>
-  </div>
-</section>
+          <div>
+            <div class="report-sub" id="report-data-geracao"></div>
+          </div>
+        </section>
 
-<!-- RESUMO -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Resumo Estratégico</h3>
-  </div>
-  <div class="report-card-body">
-    <div class="summary-grid">
-      <div class="summary-box">
-        <h4>Objetivo</h4>
-        <p id="summary-objetivo"></p>
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Resumo Estratégico</h3>
+          </div>
+          <div class="report-card-body">
+            <div class="summary-grid">
+              <div class="summary-box">
+                <h4>Objetivo</h4>
+                <p id="summary-objetivo"></p>
+              </div>
+              <div class="summary-box">
+                <h4>Gargalo</h4>
+                <p id="summary-gargalo"></p>
+              </div>
+              <div class="summary-box">
+                <h4>Prioridade</h4>
+                <p id="summary-prioridade"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Radar Comparativo</h3>
+          </div>
+          <div class="report-card-body">
+            <div class="radar-canvas-wrap">
+              <canvas id="radar-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Composição Corporal</h3>
+          </div>
+          <div class="report-card-body">
+            <div id="metrics-grid" class="metrics-grid"></div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Evolução dos Indicadores</h3>
+          </div>
+          <div class="report-card-body">
+            <div style="height:350px;">
+              <canvas id="evolucao-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Perimetria</h3>
+          </div>
+          <div class="report-card-body">
+            <div id="perimetria-grid" class="perimetria-grid"></div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Leitura Técnica</h3>
+          </div>
+          <div class="report-card-body summary-grid">
+            <div class="text-box">
+              <h4>Leitura</h4>
+              <p id="diagnostico-leitura"></p>
+            </div>
+            <div class="text-box">
+              <h4>Síntese</h4>
+              <p id="diagnostico-sintese"></p>
+            </div>
+            <div class="text-box">
+              <h4>Foco</h4>
+              <p id="diagnostico-foco"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="report-card">
+          <div class="report-card-header">
+            <h3>Acompanhamentos</h3>
+          </div>
+          <div class="report-card-body">
+            <div id="timeline-list" class="timeline"></div>
+          </div>
+        </section>
+
       </div>
-      <div class="summary-box">
-        <h4>Gargalo</h4>
-        <p id="summary-gargalo"></p>
-      </div>
-      <div class="summary-box">
-        <h4>Prioridade</h4>
-        <p id="summary-prioridade"></p>
-      </div>
-    </div>
+    </main>
   </div>
-</section>
 
-<!-- RADAR -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Radar Comparativo</h3>
-  </div>
-  <div class="report-card-body">
-    <div class="radar-canvas-wrap">
-      <canvas id="radar-chart"></canvas>
-    </div>
-  </div>
-</section>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
 
-<!-- MÉTRICAS -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Composição Corporal</h3>
-  </div>
-  <div class="report-card-body">
-    <div id="metrics-grid" class="metrics-grid"></div>
-  </div>
-</section>
+  <!-- LIB -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- 📈 EVOLUÇÃO -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Evolução dos Indicadores</h3>
-  </div>
-  <div class="report-card-body">
-    <div style="height:350px;">
-      <canvas id="evolucao-chart"></canvas>
-    </div>
-  </div>
-</section>
-
-<!-- PERIMETRIA -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Perimetria</h3>
-  </div>
-  <div class="report-card-body">
-    <div id="perimetria-grid" class="perimetria-grid"></div>
-  </div>
-</section>
-
-<!-- DIAGNÓSTICO -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Leitura Técnica</h3>
-  </div>
-  <div class="report-card-body summary-grid">
-    <div class="text-box">
-      <h4>Leitura</h4>
-      <p id="diagnostico-leitura"></p>
-    </div>
-    <div class="text-box">
-      <h4>Síntese</h4>
-      <p id="diagnostico-sintese"></p>
-    </div>
-    <div class="text-box">
-      <h4>Foco</h4>
-      <p id="diagnostico-foco"></p>
-    </div>
-  </div>
-</section>
-
-<!-- TIMELINE -->
-<section class="report-card">
-  <div class="report-card-header">
-    <h3>Acompanhamentos</h3>
-  </div>
-  <div class="report-card-body">
-    <div id="timeline-list" class="timeline"></div>
-  </div>
-</section>
-
-</div>
-
-</main>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="../assets/js/storage.js?v=52"></script>
-<script src="../assets/js/relatorio-cliente.js?v=53"></script>
-
+  <!-- PAGE -->
+  <script src="../assets/js/relatorio-cliente.js?v=1"></script>
 </body>
 </html>
