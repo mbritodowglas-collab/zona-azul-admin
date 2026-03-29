@@ -29,12 +29,12 @@ window.ZALancamentos = (() => {
     return window.ZAStorage?.getClientes?.() || [];
   }
 
-  function setClientes(clientes) {
-    return window.ZAStorage?.setClientes?.(clientes);
-  }
-
   function getClienteById(id) {
     return getClientes().find((item) => String(item.id) === String(id)) || null;
+  }
+
+  function updateCliente(updatedCliente) {
+    return window.ZAStorage?.updateCliente?.(updatedCliente);
   }
 
   function getLeadById(id) {
@@ -121,7 +121,8 @@ window.ZALancamentos = (() => {
   }
 
   function val(id) {
-    return document.getElementById(id)?.value?.trim?.() ?? document.getElementById(id)?.value ?? "";
+    const el = document.getElementById(id);
+    return el?.value?.trim?.() ?? el?.value ?? "";
   }
 
   function checked(id) {
@@ -572,12 +573,8 @@ window.ZALancamentos = (() => {
   }
 
   function saveDadosBase() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
-    clientes[index] = {
-      ...clientes[index],
+    const updatedCliente = {
+      ...cliente,
       dadosBaseEditados: {
         nome: val("pre-nome-edit"),
         email: val("pre-email-edit"),
@@ -593,8 +590,13 @@ window.ZALancamentos = (() => {
       updatedAt: new Date().toISOString()
     };
 
-    setClientes(clientes);
-    cliente = clientes[index];
+    const ok = updateCliente(updatedCliente);
+    if (!ok) {
+      showFeedback("Não foi possível salvar os dados base.", "Erro", "⚠");
+      return;
+    }
+
+    cliente = updatedCliente;
     renderPre();
     showFeedback("Dados base salvos com sucesso.", "Base atualizada", "📝");
   }
@@ -868,10 +870,6 @@ window.ZALancamentos = (() => {
 
     calcularAvaliacao();
 
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
     const ids = [
       "peso","altura","cintura","quadril","pescoco","abdomen-marinha","imc","rcq","rce",
       "gordura-marinha","gordura-dobras","torax","abdomen","braco-direito","braco-esquerdo",
@@ -893,7 +891,7 @@ window.ZALancamentos = (() => {
     };
 
     let clienteAtualizado = {
-      ...clientes[index],
+      ...cliente,
       sessaoEAvaliacao: {
         sessao: sessaoAtual,
         avaliacao
@@ -907,10 +905,13 @@ window.ZALancamentos = (() => {
       buildAvaliacaoHistorica(sessaoAtual, avaliacao)
     );
 
-    clientes[index] = clienteAtualizado;
+    const ok = updateCliente(clienteAtualizado);
+    if (!ok) {
+      showFeedback("Não foi possível salvar sessão e avaliação.", "Erro", "⚠");
+      return;
+    }
 
-    setClientes(clientes);
-    cliente = clientes[index];
+    cliente = clienteAtualizado;
     renderSessaoEAvaliacao();
     showFeedback("Sessão e avaliação salvas com sucesso. Histórico atualizado também.", "Bloco atualizado", "📌");
   }
@@ -968,16 +969,12 @@ window.ZALancamentos = (() => {
   }
 
   function saveAnaliseCaso() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
     updateGapPilarsFromRadar();
 
     const radarRevisado = getRadarRevisadoFromInputs();
 
     let clienteAtualizado = {
-      ...clientes[index],
+      ...cliente,
       analiseCaso: {
         radarRevisado,
         diagnosticoCompleto: {
@@ -1042,10 +1039,13 @@ window.ZALancamentos = (() => {
       buildRadarHistorico(radarRevisado, tipoHistorico)
     );
 
-    clientes[index] = clienteAtualizado;
+    const ok = updateCliente(clienteAtualizado);
+    if (!ok) {
+      showFeedback("Não foi possível salvar a análise do caso.", "Erro", "⚠");
+      return;
+    }
 
-    setClientes(clientes);
-    cliente = clientes[index];
+    cliente = clienteAtualizado;
     renderAnaliseCaso();
     showFeedback("Análise do caso salva com sucesso. Gaps atualizados automaticamente pelo radar.", "Bloco atualizado", "🧠");
   }
@@ -1093,10 +1093,6 @@ window.ZALancamentos = (() => {
   }
 
   function saveAcompanhamento() {
-    const clientes = getClientes();
-    const index = clientes.findIndex((item) => String(item.id) === String(clienteId));
-    if (index === -1) return;
-
     const novo = {
       data: document.getElementById("acomp-data")?.value || "",
       aderencia: val("acomp-aderencia"),
@@ -1106,21 +1102,26 @@ window.ZALancamentos = (() => {
       createdAt: new Date().toISOString()
     };
 
-    const acompanhamentos = Array.isArray(clientes[index].acompanhamentos)
-      ? clientes[index].acompanhamentos
+    const acompanhamentos = Array.isArray(cliente.acompanhamentos)
+      ? [...cliente.acompanhamentos]
       : [];
 
     acompanhamentos.push(novo);
 
-    clientes[index] = {
-      ...clientes[index],
+    const clienteAtualizado = {
+      ...cliente,
       acompanhamentos,
       acompanhamentoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    setClientes(clientes);
-    cliente = clientes[index];
+    const ok = updateCliente(clienteAtualizado);
+    if (!ok) {
+      showFeedback("Não foi possível salvar o acompanhamento.", "Erro", "⚠");
+      return;
+    }
+
+    cliente = clienteAtualizado;
     renderAcompanhamentos();
     resetFormAcompanhamento();
     showFeedback("Acompanhamento salvo com sucesso.", "Acompanhamento atualizado", "📅");
@@ -1238,6 +1239,7 @@ window.ZALancamentos = (() => {
   return { init };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.ZAStorage.init();
   window.ZALancamentos.init();
 });
