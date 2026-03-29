@@ -22,6 +22,11 @@ window.ZAPlanoCliente = (() => {
     if (el) el.textContent = normalizeValue(value);
   }
 
+  function setHTML(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = value;
+  }
+
   function normalizeValue(value) {
     if (value === undefined || value === null || String(value).trim() === "") {
       return "—";
@@ -45,6 +50,11 @@ window.ZAPlanoCliente = (() => {
     } catch {
       return String(dateValue);
     }
+  }
+
+  function capitalize(value) {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
   function getObjetivo() {
@@ -93,7 +103,14 @@ window.ZAPlanoCliente = (() => {
   function renderMeta() {
     setText("meta-cliente", cliente?.nome || "Cliente");
     setText("meta-objetivo", getObjetivo());
-    setText("meta-data", formatDate(planejamentoSelecionado?.updatedAt || planejamentoSelecionado?.archivedAt || new Date().toISOString()));
+    setText(
+      "meta-data",
+      formatDate(
+        planejamentoSelecionado?.updatedAt ||
+        planejamentoSelecionado?.archivedAt ||
+        new Date().toISOString()
+      )
+    );
 
     setText(
       "plan-cover-subtitle",
@@ -103,6 +120,32 @@ window.ZAPlanoCliente = (() => {
         archivedId ? "Planejamento arquivado para consulta." : "Documento de direcionamento do processo."
       )
     );
+  }
+
+  function renderEncerramento() {
+    const encerramento = planejamentoSelecionado?.encerramento || {};
+    const status = encerramento.statusCiclo || "";
+    const resultado = encerramento.resultadoCiclo || "";
+    const observacao = encerramento.observacaoEncerramento || "";
+
+    if (!archivedId && !status && !resultado && !observacao) {
+      setText("encerramento-status-view", "Ciclo em andamento");
+      setText("encerramento-resultado-view", "Ainda não encerrado.");
+      setText("encerramento-observacao-view", "Sem observações de encerramento.");
+      return;
+    }
+
+    if (status) {
+      setHTML(
+        "encerramento-status-view",
+        `<span class="cycle-pill ${status}">${capitalize(status)}</span>`
+      );
+    } else {
+      setText("encerramento-status-view", "—");
+    }
+
+    setText("encerramento-resultado-view", resultado || "Sem resultado registrado.");
+    setText("encerramento-observacao-view", observacao || "Sem observação de encerramento.");
   }
 
   function renderVisaoGeral() {
@@ -216,6 +259,7 @@ window.ZAPlanoCliente = (() => {
     document.getElementById("plan-paper")?.classList.remove("hidden");
 
     renderMeta();
+    renderEncerramento();
     renderVisaoGeral();
     renderHabitos();
     renderNutricional();
