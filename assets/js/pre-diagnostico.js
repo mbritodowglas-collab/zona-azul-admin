@@ -165,7 +165,7 @@ window.ZAPreDiagnostico = (() => {
     const origin = window.location.origin;
     const basePath = window.location.pathname.split("/pre-diagnostico")[0];
 
-    publicFormLinkBox.textContent = `${origin}${basePath}/formulario/`;
+    publicFormLinkBox.textContent = `${origin}${basePath}/formulario-publico/`;
   }
 
   function bindModalEvents() {
