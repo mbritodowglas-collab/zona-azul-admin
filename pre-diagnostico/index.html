@@ -2,93 +2,56 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pré-diagnóstico | Zona Azul Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pré-Diagnóstico | Zona Azul</title>
+
   <link rel="stylesheet" href="../assets/css/global.css" />
 </head>
+
 <body>
-  <div class="app-shell">
-    <aside class="sidebar no-public">
-      <div class="brand">
-        <div class="brand-badge">ZA</div>
-        <div>
-          <h1>Zona Azul Admin</h1>
-          <p>Triagem e conversão</p>
-        </div>
-      </div>
+  <main class="container">
+    <h1>Pré-Diagnóstico</h1>
 
-      <nav class="nav">
-        <a href="../index.html">Dashboard</a>
-        <a class="active" href="./index.html">Pré-diagnóstico</a>
-        <a href="../clientes/">Clientes</a>
-      </nav>
-    </aside>
+    <div class="public-link">
+      <strong>Link do formulário:</strong>
+      <div id="public-form-link-box"></div>
+    </div>
 
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2>Pré-diagnóstico</h2>
-          <p>Leads captados pelo formulário público.</p>
-        </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Leads</th>
+        </tr>
+      </thead>
 
-        <div class="actions">
-          <a class="btn secondary" href="../formulario/" target="_blank">Abrir formulário público</a>
-        </div>
-      </div>
+      <tbody id="leads-table-body"></tbody>
+    </table>
 
-      <section class="card">
-        <div class="card-header">
-          <h3>Link público</h3>
-        </div>
-        <div class="card-body">
-          <p class="muted">Use este link na landing page:</p>
-          <div class="code-box" id="public-form-link-box"></div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-header">
-          <h3>Leads recebidos</h3>
-        </div>
-        <div class="card-body">
-          <div id="empty-leads" class="empty-state hidden">Nenhum lead recebido ainda.</div>
-
-          <div class="table-wrap" id="leads-table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Leads</th>
-                </tr>
-              </thead>
-              <tbody id="leads-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
+    <div id="empty-leads" class="hidden">
+      Nenhum lead encontrado.
+    </div>
+  </main>
 
   <!-- MODAL -->
-  <div class="modal-overlay hidden" id="action-modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 id="action-modal-title">Confirmar ação</h3>
-        <p class="muted" id="action-modal-subtitle">Revise antes de continuar.</p>
-      </div>
-
-      <div class="modal-body">
-        <p id="action-modal-text">Deseja continuar?</p>
-      </div>
+  <div id="action-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="action-modal-title"></h2>
+      <p id="action-modal-subtitle"></p>
+      <p id="action-modal-text"></p>
 
       <div class="modal-actions">
-        <button type="button" class="btn secondary" id="cancel-action-btn">Cancelar</button>
-        <button type="button" class="btn" id="confirm-action-btn">Confirmar</button>
+        <button id="cancel-action-btn">Cancelar</button>
+        <button id="confirm-action-btn">Confirmar</button>
       </div>
     </div>
   </div>
 
-  <script src="../assets/js/storage.js?v=9"></script>
-  <script src="../assets/js/calculos.js?v=9"></script>
-  <script src="../assets/js/pre-diagnostico.js?v=9"></script>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
+
+  <!-- PAGE -->
+  <script src="../assets/js/pre-diagnostico.js?v=1"></script>
 </body>
 </html>
