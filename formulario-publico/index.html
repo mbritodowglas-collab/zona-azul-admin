@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pré-Diagnóstico | Zona Azul</title>
+
+  <link rel="stylesheet" href="../assets/css/global.css?v=1" />
+
+  <style>
+    body {
+      background: linear-gradient(180deg, #0b1120, #020617);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .public-wrap {
+      width: 100%;
+      max-width: 720px;
+      padding: 20px;
+    }
+
+    .form-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #3b82f6);
+      transition: width 0.3s ease;
+    }
+
+    .step-title {
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .step-description {
+      color: rgba(226,232,240,0.7);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input, select {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .success-card {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-card h2 {
+      color: #22c55e;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="public-wrap">
+
+    <!-- FORM -->
+    <div class="form-card" id="form-card">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <form id="public-pre-form">
+
+        <div id="step-container">
+          <div class="step-title" id="step-title">Pré-diagnóstico</div>
+          <div class="step-description">
+            Responda para analisarmos seu perfil e montar seu plano.
+          </div>
+
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" name="nome" required />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label>Objetivo</label>
+            <select name="objetivo">
+              <option value="emagrecimento">Emagrecimento</option>
+              <option value="hipertrofia">Hipertrofia</option>
+              <option value="condicionamento">Condicionamento</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" id="prev-btn">Voltar</button>
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="form-card success-card hidden" id="success-card">
+      <h2>Pré-diagnóstico enviado</h2>
+      <p>Agora é só aguardar o contato.</p>
+    </div>
+
+  </div>
+
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
+  <script src="../assets/js/calculos.js?v=1"></script>
+
+  <!-- FORM PUBLICO -->
+  <script src="../assets/js/formulario-publico.js?v=1"></script>
+
+</body>
+</html>
