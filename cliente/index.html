@@ -4,135 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliente | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=55" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=56" />
 </head>
 <body>
 
-<div class="app-shell">
+  <div class="app-shell">
 
-  <aside class="sidebar">
-    <h1>Zona Azul</h1>
-    <nav>
-      <a href="../index.html">Dashboard</a>
-      <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-      <a href="../clientes/">Clientes</a>
-    </nav>
-  </aside>
+    <aside class="sidebar">
+      <h1>Zona Azul</h1>
+      <nav>
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
 
-  <main class="main">
+    <main class="main">
 
-    <div class="topbar">
-      <div>
-        <h2 id="cliente-nome">Cliente</h2>
-        <p id="cliente-objetivo">Objetivo</p>
+      <div class="topbar">
+        <div>
+          <h2 id="cliente-nome">Cliente</h2>
+          <p id="cliente-objetivo">Objetivo</p>
+        </div>
+
+        <div>
+          <button id="voltar-btn" type="button">Voltar</button>
+        </div>
       </div>
 
-      <div>
-        <button id="voltar-btn" type="button">Voltar</button>
-      </div>
-    </div>
+      <section class="grid-3">
 
-    <section class="grid-3">
+        <div class="card card-main">
+          <h3>🧩 Lançamentos</h3>
+          <p>Registrar diagnóstico, evolução e dados do cliente.</p>
+          <button data-open="lancamentos" type="button">Abrir</button>
+        </div>
 
-      <div class="card card-main">
-        <h3>🧩 Lançamentos</h3>
-        <p>Registrar diagnóstico, evolução e dados do cliente.</p>
-        <button data-open="lancamentos" type="button">Abrir</button>
-      </div>
+        <div class="card card-main">
+          <h3>📊 Relatório completo</h3>
+          <p>Visualizar análise consolidada do cliente.</p>
+          <button data-open="relatorio" type="button">Abrir relatório</button>
+        </div>
 
-      <div class="card card-main">
-        <h3>📊 Relatório completo</h3>
-        <p>Visualizar análise consolidada do cliente.</p>
-        <button data-open="relatorio" type="button">Abrir relatório</button>
-      </div>
+        <div class="card card-main">
+          <h3>🧠 Planejamento do treinador</h3>
+          <p>Definir estratégia, comportamento e treino.</p>
+          <button data-open="planejamento" type="button">Abrir planejamento</button>
+        </div>
 
-      <div class="card card-main">
-        <h3>🧠 Planejamento do treinador</h3>
-        <p>Definir estratégia, comportamento e treino.</p>
-        <button data-open="planejamento" type="button">Abrir planejamento</button>
-      </div>
+      </section>
 
-    </section>
+    </main>
 
-  </main>
+  </div>
 
-</div>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
 
-<script src="../assets/js/storage.js?v=55"></script>
-<script>
-  (function () {
-    const params = new URLSearchParams(window.location.search);
-    const clienteId = params.get("id");
-
-    function getClientes() {
-      return window.ZAStorage?.getClientes?.() || [];
-    }
-
-    function getClienteById(id) {
-      return getClientes().find((item) => String(item.id) === String(id)) || null;
-    }
-
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value || "—";
-    }
-
-    function firstFilled(...values) {
-      for (const value of values) {
-        if (value !== undefined && value !== null && String(value).trim() !== "") {
-          return value;
-        }
-      }
-      return "";
-    }
-
-    const cliente = clienteId ? getClienteById(clienteId) : null;
-
-    if (cliente) {
-      setText("cliente-nome", cliente.nome || "Cliente");
-      setText(
-        "cliente-objetivo",
-        firstFilled(
-          cliente?.dadosBaseEditados?.objetivo,
-          cliente?.preDiagnostico?.objetivo,
-          cliente?.preDiagnostico?.objetivo_principal,
-          cliente?.preDiagnostico?.objetivo_fisico,
-          cliente?.objetivo,
-          "Objetivo não informado"
-        )
-      );
-    } else {
-      setText("cliente-nome", "Cliente não encontrado");
-      setText("cliente-objetivo", "Verifique o ID do cliente");
-    }
-
-    document.getElementById("voltar-btn")?.addEventListener("click", () => {
-      window.location.href = "../clientes/";
-    });
-
-    document.querySelectorAll("[data-open]").forEach((button) => {
-      button.addEventListener("click", () => {
-        if (!clienteId) return;
-
-        const type = button.dataset.open;
-
-        if (type === "lancamentos") {
-          window.location.href = `./lancamentos.html?id=${encodeURIComponent(clienteId)}`;
-          return;
-        }
-
-        if (type === "relatorio") {
-          window.location.href = `./relatorio-cliente.html?id=${encodeURIComponent(clienteId)}`;
-          return;
-        }
-
-        if (type === "planejamento") {
-          window.location.href = `./planejamento.html?id=${encodeURIComponent(clienteId)}`;
-        }
-      });
-    });
-  })();
-</script>
-
+  <!-- PAGE -->
+  <script src="../assets/js/cliente-hub.js?v=1"></script>
 </body>
 </html>
