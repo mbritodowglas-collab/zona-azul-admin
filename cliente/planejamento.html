@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planejamento | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=59" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=60" />
 
   <style>
     body {
@@ -414,7 +414,8 @@
     }
 
     .za-feedback-field select,
-    .za-feedback-field textarea {
+    .za-feedback-field textarea,
+    .za-feedback-field input {
       width: 100%;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -1122,7 +1123,12 @@
     </main>
   </div>
 
-  <script src="../assets/js/storage.js?v=59"></script>
-  <script src="../assets/js/planejamento.js?v=59"></script>
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=1"></script>
+
+  <!-- PAGE -->
+  <script src="../assets/js/planejamento.js?v=1"></script>
 </body>
 </html>
