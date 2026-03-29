@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plano do Cliente | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=58" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=59" />
 
   <style>
     :root {
@@ -208,10 +208,6 @@
       white-space: pre-wrap;
     }
 
-    .plan-card p + p {
-      margin-top: 10px;
-    }
-
     .month-block {
       display: grid;
       gap: 12px;
@@ -270,6 +266,35 @@
       border-radius: 18px;
       color: var(--print-muted);
       background: #fff;
+    }
+
+    .cycle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .cycle-pill.completo {
+      background: rgba(34,197,94,0.14);
+      color: #15803d;
+      border: 1px solid rgba(34,197,94,0.22);
+    }
+
+    .cycle-pill.parcial {
+      background: rgba(245,158,11,0.14);
+      color: #b45309;
+      border: 1px solid rgba(245,158,11,0.22);
+    }
+
+    .cycle-pill.abandonado {
+      background: rgba(239,68,68,0.14);
+      color: #b91c1c;
+      border: 1px solid rgba(239,68,68,0.22);
     }
 
     @media (max-width: 860px) {
@@ -375,6 +400,30 @@
       </section>
 
       <section class="plan-body">
+        <section class="plan-section">
+          <div class="plan-section-head">
+            <h2>Fechamento do ciclo</h2>
+            <span>Leitura de encerramento</span>
+          </div>
+
+          <div class="plan-grid cols-3">
+            <div class="plan-card">
+              <small>Status do ciclo</small>
+              <div id="encerramento-status-view">—</div>
+            </div>
+
+            <div class="plan-card" style="grid-column: span 2;">
+              <small>Resultado do ciclo</small>
+              <p id="encerramento-resultado-view">—</p>
+            </div>
+          </div>
+
+          <div class="plan-card">
+            <small>Observação de encerramento</small>
+            <p id="encerramento-observacao-view">—</p>
+          </div>
+        </section>
+
         <section class="plan-section">
           <div class="plan-section-head">
             <h2>Visão geral</h2>
@@ -701,7 +750,7 @@
     </article>
   </div>
 
-  <script src="../assets/js/storage.js?v=58"></script>
-  <script src="../assets/js/plano-cliente.js?v=58"></script>
+  <script src="../assets/js/storage.js?v=59"></script>
+  <script src="../assets/js/plano-cliente.js?v=59"></script>
 </body>
 </html>
