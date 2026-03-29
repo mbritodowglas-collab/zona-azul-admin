@@ -184,6 +184,7 @@ window.ZAClientes = (() => {
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.ZAStorage.init();
   window.ZAClientes.init();
 });
