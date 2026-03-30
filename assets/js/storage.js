@@ -82,35 +82,57 @@ window.ZAStorage = (() => {
     return `cliente-generated:${Date.now()}`;
   }
 
+  function buildLeadRow(lead) {
+    return {
+      id: getLeadRowId(lead),
+      tipo: "lead",
+      data: lead,
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function buildClienteRow(cliente) {
+    return {
+      id: getClienteRowId(cliente),
+      tipo: "cliente",
+      data: cliente,
+      updated_at: new Date().toISOString()
+    };
+  }
+
   function buildSupabaseRows(data) {
     const rows = [];
 
     for (const lead of data.leads || []) {
-      rows.push({
-        id: getLeadRowId(lead),
-        tipo: "lead",
-        data: lead,
-        updated_at: new Date().toISOString()
-      });
+      rows.push(buildLeadRow(lead));
     }
 
     for (const cliente of data.clientes || []) {
-      rows.push({
-        id: getClienteRowId(cliente),
-        tipo: "cliente",
-        data: cliente,
-        updated_at: new Date().toISOString()
-      });
+      rows.push(buildClienteRow(cliente));
     }
 
     return rows;
   }
 
-  async function fetchRemoteData() {
+  function getAllExpectedIds(data) {
+    const ids = [];
+
+    for (const lead of data.leads || []) {
+      ids.push(getLeadRowId(lead));
+    }
+
+    for (const cliente of data.clientes || []) {
+      ids.push(getClienteRowId(cliente));
+    }
+
+    return ids;
+  }
+
+  async function fetchRemoteRows() {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.warn("[ZAStorage] Supabase indisponível no fetchRemoteData.");
-      return { ok: false, data: clone(getMemoryData()), error: "Supabase indisponível." };
+      console.warn("[ZAStorage] Supabase indisponível no fetchRemoteRows.");
+      return { ok: false, data: [], error: "Supabase indisponível." };
     }
 
     try {
@@ -121,78 +143,138 @@ window.ZAStorage = (() => {
 
       if (error) {
         console.error("[ZAStorage] Erro ao buscar remoto:", error);
-        return { ok: false, data: clone(getMemoryData()), error: error.message || String(error) };
+        return { ok: false, data: [], error: error.message || String(error) };
       }
 
-      const nextData = {
-        leads: [],
-        clientes: []
-      };
-
-      for (const row of data || []) {
-        if (row?.tipo === "lead") {
-          nextData.leads.push(row.data);
-        } else if (row?.tipo === "cliente") {
-          nextData.clientes.push(row.data);
-        }
-      }
-
-      console.log("[ZAStorage] Dados remotos carregados.", nextData);
-
-      return { ok: true, data: normalizeData(nextData) };
+      return { ok: true, data: Array.isArray(data) ? data : [] };
     } catch (err) {
-      console.error("[ZAStorage] Exceção no fetchRemoteData:", err);
-      return { ok: false, data: clone(getMemoryData()), error: err?.message || String(err) };
+      console.error("[ZAStorage] Exceção no fetchRemoteRows:", err);
+      return { ok: false, data: [], error: err?.message || String(err) };
     }
   }
 
-  async function pushAllToSupabase(data) {
+  function rowsToData(rows) {
+    const nextData = {
+      leads: [],
+      clientes: []
+    };
+
+    for (const row of rows || []) {
+      if (row?.tipo === "lead") {
+        nextData.leads.push(row.data);
+      } else if (row?.tipo === "cliente") {
+        nextData.clientes.push(row.data);
+      }
+    }
+
+    return normalizeData(nextData);
+  }
+
+  async function fetchRemoteData() {
+    const remote = await fetchRemoteRows();
+    if (!remote.ok) {
+      return { ok: false, data: clone(getMemoryData()), error: remote.error };
+    }
+
+    const nextData = rowsToData(remote.data);
+    console.log("[ZAStorage] Dados remotos carregados.", nextData);
+    return { ok: true, data: nextData };
+  }
+
+  async function upsertRows(rows) {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.warn("[ZAStorage] Supabase indisponível no pushAllToSupabase.");
+      console.warn("[ZAStorage] Supabase indisponível no upsertRows.");
       return { ok: false, error: "Supabase indisponível." };
     }
 
+    if (!rows.length) {
+      return { ok: true };
+    }
+
     try {
-      const rows = buildSupabaseRows(data);
-      console.log("[ZAStorage] Enviando linhas para Supabase:", rows);
-
-      const { error: deleteError } = await supabase
-        .from("clientes")
-        .delete()
-        .neq("id", "__never__");
-
-      if (deleteError) {
-        console.error("[ZAStorage] Erro ao limpar tabela:", deleteError);
-        return { ok: false, error: deleteError.message || String(deleteError) };
-      }
-
-      if (!rows.length) {
-        console.log("[ZAStorage] Nenhuma linha para enviar.");
-        return { ok: true };
-      }
-
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from("clientes")
         .upsert(rows, { onConflict: "id" });
 
-      if (insertError) {
-        console.error("[ZAStorage] Erro no upsert:", insertError);
-        return { ok: false, error: insertError.message || String(insertError) };
+      if (error) {
+        console.error("[ZAStorage] Erro no upsert:", error);
+        return { ok: false, error: error.message || String(error) };
       }
 
-      console.log("[ZAStorage] Sync com Supabase concluída.");
+      console.log("[ZAStorage] Upsert concluído:", rows.map((row) => row.id));
       return { ok: true };
     } catch (err) {
-      console.error("[ZAStorage] Exceção no pushAllToSupabase:", err);
+      console.error("[ZAStorage] Exceção no upsertRows:", err);
+      return { ok: false, error: err?.message || String(err) };
+    }
+  }
+
+  async function deleteRowsByIds(ids) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.warn("[ZAStorage] Supabase indisponível no deleteRowsByIds.");
+      return { ok: false, error: "Supabase indisponível." };
+    }
+
+    if (!ids.length) {
+      return { ok: true };
+    }
+
+    try {
+      const { error } = await supabase
+        .from("clientes")
+        .delete()
+        .in("id", ids);
+
+      if (error) {
+        console.error("[ZAStorage] Erro ao deletar linhas específicas:", error);
+        return { ok: false, error: error.message || String(error) };
+      }
+
+      console.log("[ZAStorage] Linhas removidas:", ids);
+      return { ok: true };
+    } catch (err) {
+      console.error("[ZAStorage] Exceção no deleteRowsByIds:", err);
       return { ok: false, error: err?.message || String(err) };
     }
   }
 
   async function syncNow() {
-    const data = clone(getMemoryData());
-    console.log("[ZAStorage] syncNow chamado.", data);
-    return pushAllToSupabase(data);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.warn("[ZAStorage] syncNow ignorado. Supabase indisponível.");
+      return { ok: false, error: "Supabase indisponível." };
+    }
+
+    const localData = clone(getMemoryData());
+    const localRows = buildSupabaseRows(localData);
+    const localIds = getAllExpectedIds(localData);
+
+    console.log("[ZAStorage] syncNow chamado.", {
+      localLeads: localData.leads.length,
+      localClientes: localData.clientes.length
+    });
+
+    const remote = await fetchRemoteRows();
+    if (!remote.ok) {
+      return { ok: false, error: remote.error };
+    }
+
+    const remoteIds = (remote.data || []).map((row) => row.id);
+    const idsToDelete = remoteIds.filter((id) => !localIds.includes(id));
+
+    const upsertResult = await upsertRows(localRows);
+    if (!upsertResult.ok) {
+      return upsertResult;
+    }
+
+    const deleteResult = await deleteRowsByIds(idsToDelete);
+    if (!deleteResult.ok) {
+      return deleteResult;
+    }
+
+    return { ok: true };
   }
 
   async function init(options = {}) {
@@ -228,7 +310,7 @@ window.ZAStorage = (() => {
         if (hasRemoteContent) {
           setMemoryData(remote.data);
         } else if (hasLocalContent) {
-          await pushAllToSupabase(localData);
+          await syncNow();
           setMemoryData(localData);
         }
       }
@@ -264,6 +346,7 @@ window.ZAStorage = (() => {
   function upsertLead(lead) {
     const data = getMemoryData();
     const email = String(lead?.email || "").toLowerCase().trim();
+
     const index = data.leads.findIndex(
       (item) => String(item?.email || "").toLowerCase().trim() === email
     );
@@ -289,6 +372,7 @@ window.ZAStorage = (() => {
   function convertLeadToCliente(email) {
     const data = getMemoryData();
     const emailNormalized = String(email || "").toLowerCase().trim();
+
     const leadIndex = data.leads.findIndex(
       (item) => String(item?.email || "").toLowerCase().trim() === emailNormalized
     );
@@ -338,6 +422,7 @@ window.ZAStorage = (() => {
 
     data.clientes.unshift(cliente);
     data.leads.splice(leadIndex, 1);
+
     console.log("[ZAStorage] Lead convertido em cliente:", cliente);
     saveData(data);
     return true;
@@ -346,6 +431,7 @@ window.ZAStorage = (() => {
   function archiveLead(email) {
     const data = getMemoryData();
     const emailNormalized = String(email || "").toLowerCase().trim();
+
     const leadIndex = data.leads.findIndex(
       (item) => String(item?.email || "").toLowerCase().trim() === emailNormalized
     );
