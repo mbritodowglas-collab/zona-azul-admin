@@ -36,6 +36,7 @@ window.ZAStorage = (() => {
   function writeLocalData(data) {
     try {
       localStorage.setItem(KEY, JSON.stringify(normalizeData(data)));
+      console.log("[ZAStorage] LocalStorage atualizado.");
     } catch (err) {
       console.warn("[ZAStorage] Erro ao salvar localStorage:", err);
     }
@@ -108,6 +109,7 @@ window.ZAStorage = (() => {
   async function fetchRemoteData() {
     const supabase = getSupabaseClient();
     if (!supabase) {
+      console.warn("[ZAStorage] Supabase indisponível no fetchRemoteData.");
       return { ok: false, data: clone(getMemoryData()), error: "Supabase indisponível." };
     }
 
@@ -118,6 +120,7 @@ window.ZAStorage = (() => {
         .order("updated_at", { ascending: false });
 
       if (error) {
+        console.error("[ZAStorage] Erro ao buscar remoto:", error);
         return { ok: false, data: clone(getMemoryData()), error: error.message || String(error) };
       }
 
@@ -134,8 +137,11 @@ window.ZAStorage = (() => {
         }
       }
 
+      console.log("[ZAStorage] Dados remotos carregados.", nextData);
+
       return { ok: true, data: normalizeData(nextData) };
     } catch (err) {
+      console.error("[ZAStorage] Exceção no fetchRemoteData:", err);
       return { ok: false, data: clone(getMemoryData()), error: err?.message || String(err) };
     }
   }
@@ -143,11 +149,13 @@ window.ZAStorage = (() => {
   async function pushAllToSupabase(data) {
     const supabase = getSupabaseClient();
     if (!supabase) {
+      console.warn("[ZAStorage] Supabase indisponível no pushAllToSupabase.");
       return { ok: false, error: "Supabase indisponível." };
     }
 
     try {
       const rows = buildSupabaseRows(data);
+      console.log("[ZAStorage] Enviando linhas para Supabase:", rows);
 
       const { error: deleteError } = await supabase
         .from("clientes")
@@ -155,10 +163,12 @@ window.ZAStorage = (() => {
         .neq("id", "__never__");
 
       if (deleteError) {
+        console.error("[ZAStorage] Erro ao limpar tabela:", deleteError);
         return { ok: false, error: deleteError.message || String(deleteError) };
       }
 
       if (!rows.length) {
+        console.log("[ZAStorage] Nenhuma linha para enviar.");
         return { ok: true };
       }
 
@@ -167,17 +177,21 @@ window.ZAStorage = (() => {
         .upsert(rows, { onConflict: "id" });
 
       if (insertError) {
+        console.error("[ZAStorage] Erro no upsert:", insertError);
         return { ok: false, error: insertError.message || String(insertError) };
       }
 
+      console.log("[ZAStorage] Sync com Supabase concluída.");
       return { ok: true };
     } catch (err) {
+      console.error("[ZAStorage] Exceção no pushAllToSupabase:", err);
       return { ok: false, error: err?.message || String(err) };
     }
   }
 
   async function syncNow() {
     const data = clone(getMemoryData());
+    console.log("[ZAStorage] syncNow chamado.", data);
     return pushAllToSupabase(data);
   }
 
@@ -195,6 +209,7 @@ window.ZAStorage = (() => {
       setMemoryData(localData);
 
       if (!isSupabaseAvailable()) {
+        console.warn("[ZAStorage] Supabase não disponível. Ficando em localStorage.");
         initialized = true;
         return clone(getMemoryData());
       }
@@ -266,6 +281,7 @@ window.ZAStorage = (() => {
       });
     }
 
+    console.log("[ZAStorage] Lead salvo localmente:", lead);
     saveData(data);
     return true;
   }
@@ -322,6 +338,7 @@ window.ZAStorage = (() => {
 
     data.clientes.unshift(cliente);
     data.leads.splice(leadIndex, 1);
+    console.log("[ZAStorage] Lead convertido em cliente:", cliente);
     saveData(data);
     return true;
   }
