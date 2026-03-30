@@ -351,22 +351,31 @@ window.ZAStorage = (() => {
       (item) => String(item?.email || "").toLowerCase().trim() === email
     );
 
+    let action = "created";
+
     if (index >= 0) {
       data.leads[index] = {
         ...data.leads[index],
         ...lead,
         email
       };
+      action = "updated";
     } else {
       data.leads.unshift({
         ...lead,
         email
       });
+      action = "created";
     }
 
-    console.log("[ZAStorage] Lead salvo localmente:", lead);
+    console.log("[ZAStorage] Lead salvo localmente:", lead, action);
     saveData(data);
-    return true;
+
+    return {
+      ok: true,
+      action,
+      lead: clone(lead)
+    };
   }
 
   function convertLeadToCliente(email) {
