@@ -112,25 +112,12 @@
     return true;
   }
 
-  nextBtn?.addEventListener("click", () => {
-    if (!validateCurrentStep(currentStep)) return;
+  function resetVisualSelections() {
+    document.querySelectorAll(".option-card").forEach(card => card.classList.remove("selected"));
+    document.querySelectorAll(".score-btn").forEach(card => card.classList.remove("selected"));
+  }
 
-    if (currentStep < totalSteps) {
-      currentStep += 1;
-      showStep(currentStep);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  });
-
-  prevBtn?.addEventListener("click", () => {
-    if (currentStep > 1) {
-      currentStep -= 1;
-      showStep(currentStep);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  });
-
-  form?.addEventListener("submit", (event) => {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const nascimentoDia = document.getElementById("nascimento_dia").value;
@@ -182,17 +169,62 @@
     }
 
     const lead = window.ZACalculos.criarLead(payload);
-    window.ZAStorage.upsertLead(lead);
+
+    console.log("[Formulario Publico] Lead gerado:", lead);
+
+    const saveResult = window.ZAStorage.upsertLead(lead);
+    const syncResult = await window.ZAStorage.syncNow();
+
+    console.log("[Formulario Publico] Resultado save:", saveResult);
+    console.log("[Formulario Publico] Resultado sync:", syncResult);
+
+    if (!syncResult?.ok) {
+      alert(`O lead foi salvo localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+      return;
+    }
 
     form.reset();
-    document.querySelectorAll(".option-card").forEach(card => card.classList.remove("selected"));
-    document.querySelectorAll(".score-btn").forEach(card => card.classList.remove("selected"));
+    resetVisualSelections();
+    currentStep = 1;
+    showStep(currentStep);
+
     formCard.classList.add("hidden");
     successCard.classList.remove("hidden");
+
+    if (saveResult?.action === "updated") {
+      console.log("[Formulario Publico] Lead atualizado no banco.");
+    } else {
+      console.log("[Formulario Publico] Lead criado no banco.");
+    }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  nextBtn?.addEventListener("click", () => {
+    if (!validateCurrentStep(currentStep)) return;
+
+    if (currentStep < totalSteps) {
+      currentStep += 1;
+      showStep(currentStep);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   });
 
-  setupOptionCards();
-  setupScoreButtons();
-  showStep(currentStep);
+  prevBtn?.addEventListener("click", () => {
+    if (currentStep > 1) {
+      currentStep -= 1;
+      showStep(currentStep);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  async function boot() {
+    await window.ZAStorage.init();
+    setupOptionCards();
+    setupScoreButtons();
+    showStep(currentStep);
+    form?.addEventListener("submit", handleSubmit);
+  }
+
+  boot();
 })();
