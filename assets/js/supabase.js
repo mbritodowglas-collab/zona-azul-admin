@@ -18,6 +18,7 @@ window.ZASupabase = (() => {
 
     if (!client) {
       client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log("[ZASupabase] Cliente criado.");
     }
 
     return client;
@@ -30,17 +31,20 @@ window.ZASupabase = (() => {
     }
 
     try {
-      const { error } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from("clientes")
-        .select("id")
+        .select("id, tipo")
         .limit(1);
 
       if (error) {
+        console.error("[ZASupabase] Falha no teste:", error);
         return { ok: false, error: error.message || String(error) };
       }
 
-      return { ok: true };
+      console.log("[ZASupabase] Conexão OK.", data);
+      return { ok: true, data };
     } catch (err) {
+      console.error("[ZASupabase] Exceção no teste:", err);
       return { ok: false, error: err?.message || String(err) };
     }
   }
