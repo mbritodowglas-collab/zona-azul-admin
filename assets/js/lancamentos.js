@@ -37,12 +37,6 @@ window.ZALancamentos = (() => {
     return window.ZAStorage?.updateCliente?.(updatedCliente);
   }
 
-  function getLeadById(id) {
-    const data = window.ZAStorage?.getData?.() || {};
-    const leads = data.leads || [];
-    return leads.find((item) => String(item.id) === String(id)) || null;
-  }
-
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value || "—";
@@ -277,30 +271,7 @@ window.ZALancamentos = (() => {
 
   function getPreDataFromCliente(clienteAtual) {
     if (!clienteAtual) return {};
-
-    if (isObject(clienteAtual.preDiagnostico)) {
-      return clienteAtual.preDiagnostico;
-    }
-
-    if (clienteAtual.leadId) {
-      const lead = getLeadById(clienteAtual.leadId);
-      if (!lead) return {};
-
-      const base = isObject(lead) ? lead : {};
-      const respostas = isObject(lead.respostas) ? lead.respostas : {};
-      const formData = isObject(lead.formData) ? lead.formData : {};
-      const dados = isObject(lead.dados) ? lead.dados : {};
-      const payload = isObject(lead.payload) ? lead.payload : {};
-
-      return {
-        ...base,
-        ...dados,
-        ...payload,
-        ...formData,
-        ...respostas
-      };
-    }
-
+    if (isObject(clienteAtual.preDiagnostico)) return clienteAtual.preDiagnostico;
     return {};
   }
 
@@ -354,8 +325,7 @@ window.ZALancamentos = (() => {
       pre?.dataNascimento,
       pre?.data_nascimento,
       pre?.nascimento,
-      pre?.birthDate,
-      pre?.data_nascimento
+      pre?.birthDate
     );
 
     if (rawDate) {
@@ -376,9 +346,7 @@ window.ZALancamentos = (() => {
   function getReferenceSex(pre) {
     const editados = getDadosBaseEditados();
     const valorEditado = editados.sexoReferencia || document.getElementById("pre-sexo-ref")?.value?.trim();
-
     if (valorEditado) return String(valorEditado).toLowerCase();
-
     return String(firstFilled(pre?.sexo, pre?.genero, pre?.sex, pre?.gender)).toLowerCase();
   }
 
@@ -407,13 +375,7 @@ window.ZALancamentos = (() => {
     if (editados.resumo) return editados.resumo;
 
     const blocos = [];
-    const restricoes = firstFilled(
-      pre?.limitacoes_atuais,
-      pre?.restricoes_medicas,
-      pre?.restricoes,
-      pre?.lesoes,
-      pre?.condicoes_saude
-    );
+    const restricoes = firstFilled(pre?.limitacoes_atuais, pre?.restricoes_medicas, pre?.restricoes, pre?.lesoes, pre?.condicoes_saude);
     const desafio = firstFilled(pre?.desafio_atual, pre?.maior_desafio, pre?.desafio);
     const meta = firstFilled(pre?.meta_6_meses, pre?.meta, pre?.metas);
     const parou = firstFilled(pre?.por_que_parou);
