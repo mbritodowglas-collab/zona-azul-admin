@@ -14,14 +14,35 @@ window.ZAClientes = (() => {
 
   function getFilteredClientes(clientes) {
     if (currentFilter === "ativos") {
-      return clientes.filter((cliente) => String(cliente.status || "ativo").toLowerCase() !== "arquivado");
+      return clientes.filter(
+        (cliente) => String(cliente.status || "ativo").toLowerCase() !== "arquivado"
+      );
     }
 
     if (currentFilter === "arquivados") {
-      return clientes.filter((cliente) => String(cliente.status || "").toLowerCase() === "arquivado");
+      return clientes.filter(
+        (cliente) => String(cliente.status || "").toLowerCase() === "arquivado"
+      );
     }
 
     return clientes;
+  }
+
+  function getObjetivo(cliente) {
+    return (
+      cliente?.dadosBaseEditados?.objetivo ||
+      cliente?.preDiagnostico?.objetivo ||
+      cliente?.preDiagnostico?.objetivo_principal ||
+      cliente?.preDiagnostico?.objetivo_fisico ||
+      cliente?.objetivo ||
+      "—"
+    );
+  }
+
+  function getStatusLabel(cliente) {
+    return String(cliente.status || "").toLowerCase() === "arquivado"
+      ? "Arquivado"
+      : "Ativo";
   }
 
   function renderLista(clientes) {
@@ -43,13 +64,6 @@ window.ZAClientes = (() => {
     list.innerHTML = lista
       .map((cliente) => {
         const isArchived = String(cliente.status || "").toLowerCase() === "arquivado";
-        const objetivo =
-          cliente?.dadosBaseEditados?.objetivo ||
-          cliente?.preDiagnostico?.objetivo ||
-          cliente?.preDiagnostico?.objetivo_principal ||
-          cliente?.preDiagnostico?.objetivo_fisico ||
-          cliente?.objetivo ||
-          "—";
 
         return `
           <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition">
@@ -58,11 +72,11 @@ window.ZAClientes = (() => {
             </td>
 
             <td class="px-4 py-3 text-slate-600">
-              ${objetivo}
+              ${getObjetivo(cliente)}
             </td>
 
             <td class="px-4 py-3">
-              ${isArchived ? "Arquivado" : "Ativo"}
+              ${getStatusLabel(cliente)}
             </td>
 
             <td class="px-4 py-3">
@@ -80,6 +94,7 @@ window.ZAClientes = (() => {
                       <button
                         type="button"
                         data-reactivate="${cliente.id}"
+                        data-nome="${cliente.nome || ""}"
                         class="cliente-btn cliente-btn-reativar"
                       >
                         Reativar
@@ -89,6 +104,7 @@ window.ZAClientes = (() => {
                       <button
                         type="button"
                         data-archive="${cliente.id}"
+                        data-nome="${cliente.nome || ""}"
                         class="cliente-btn cliente-btn-arquivar"
                       >
                         Arquivar
@@ -102,17 +118,7 @@ window.ZAClientes = (() => {
       })
       .join("");
 
-    list.querySelectorAll("[data-archive]").forEach((button) => {
-      button.addEventListener("click", () => {
-        archive(button.dataset.archive);
-      });
-    });
-
-    list.querySelectorAll("[data-reactivate]").forEach((button) => {
-      button.addEventListener("click", () => {
-        reactivate(button.dataset.reactivate);
-      });
-    });
+    bindActionButtons();
   }
 
   function renderFilters() {
@@ -155,8 +161,8 @@ window.ZAClientes = (() => {
     });
   }
 
-  function archive(id) {
-    const ok = window.confirm("Deseja arquivar este cliente?");
+  async function archive(id, nome = "") {
+    const ok = window.confirm(`Deseja arquivar ${nome || "este cliente"}?`);
     if (!ok) return;
 
     const archived = window.ZAStorage?.archiveCliente?.(id);
@@ -166,11 +172,18 @@ window.ZAClientes = (() => {
       return;
     }
 
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      window.alert(`Cliente arquivado localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+      return;
+    }
+
     init();
   }
 
-  function reactivate(id) {
-    const ok = window.confirm("Deseja reativar este cliente?");
+  async function reactivate(id, nome = "") {
+    const ok = window.confirm(`Deseja reativar ${nome || "este cliente"}?`);
     if (!ok) return;
 
     const reactivated = window.ZAStorage?.reactivateCliente?.(id);
@@ -180,7 +193,28 @@ window.ZAClientes = (() => {
       return;
     }
 
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      window.alert(`Cliente reativado localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+      return;
+    }
+
     init();
+  }
+
+  function bindActionButtons() {
+    document.querySelectorAll("[data-archive]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await archive(button.dataset.archive, button.dataset.nome || "");
+      });
+    });
+
+    document.querySelectorAll("[data-reactivate]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await reactivate(button.dataset.reactivate, button.dataset.nome || "");
+      });
+    });
   }
 
   function init() {
