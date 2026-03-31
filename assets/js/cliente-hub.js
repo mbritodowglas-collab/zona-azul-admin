@@ -20,6 +20,11 @@ window.ZAClienteHub = (() => {
     if (el) el.textContent = value || "—";
   }
 
+  function setHref(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.href = value;
+  }
+
   function firstFilled(...values) {
     for (const value of values) {
       if (value !== undefined && value !== null && String(value).trim() !== "") {
@@ -40,15 +45,38 @@ window.ZAClienteHub = (() => {
     );
   }
 
+  function getFase(clienteAtual) {
+    return firstFilled(
+      clienteAtual?.fase_nome,
+      clienteAtual?.planejamento?.estrategia?.fase,
+      "Fase não definida"
+    );
+  }
+
+  function getStatus(clienteAtual) {
+    return String(clienteAtual?.status || "ativo").toLowerCase() === "arquivado"
+      ? "Arquivado"
+      : "Ativo";
+  }
+
   function renderCliente() {
-    if (cliente) {
-      setText("cliente-nome", cliente.nome || "Cliente");
-      setText("cliente-objetivo", getObjetivo(cliente));
+    if (!cliente) {
+      setText("cliente-nome", "Cliente não encontrado");
+      setText("cliente-objetivo", "Verifique o ID do cliente");
+      setText("cliente-fase", "—");
+      setText("cliente-status", "—");
       return;
     }
 
-    setText("cliente-nome", "Cliente não encontrado");
-    setText("cliente-objetivo", "Verifique o ID do cliente");
+    setText("cliente-nome", cliente.nome || "Cliente");
+    setText("cliente-objetivo", getObjetivo(cliente));
+    setText("cliente-fase", getFase(cliente));
+    setText("cliente-status", getStatus(cliente));
+
+    setHref("abrir-lancamentos-link", `./lancamentos.html?id=${encodeURIComponent(clienteId)}`);
+    setHref("abrir-relatorio-link", `./relatorio-cliente.html?id=${encodeURIComponent(clienteId)}`);
+    setHref("abrir-planejamento-link", `./planejamento.html?id=${encodeURIComponent(clienteId)}`);
+    setHref("abrir-plano-cliente-link", `./plano-cliente.html?id=${encodeURIComponent(clienteId)}`);
   }
 
   function bindEvents() {
@@ -74,6 +102,11 @@ window.ZAClienteHub = (() => {
 
         if (type === "planejamento") {
           window.location.href = `./planejamento.html?id=${encodeURIComponent(clienteId)}`;
+          return;
+        }
+
+        if (type === "plano-cliente") {
+          window.location.href = `./plano-cliente.html?id=${encodeURIComponent(clienteId)}`;
         }
       });
     });
