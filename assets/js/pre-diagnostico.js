@@ -27,10 +27,12 @@ window.ZAPreDiagnostico = (() => {
     if (!actionModal || !confirmActionBtn) return;
 
     pendingAction = onConfirm;
+
     if (actionModalTitle) actionModalTitle.textContent = title;
     if (actionModalSubtitle) actionModalSubtitle.textContent = subtitle;
     if (actionModalText) actionModalText.textContent = text;
     confirmActionBtn.textContent = confirmLabel;
+
     actionModal.classList.remove("hidden");
   }
 
@@ -199,6 +201,7 @@ window.ZAPreDiagnostico = (() => {
 
     const origin = window.location.origin;
     const basePath = window.location.pathname.split("/pre-diagnostico")[0];
+
     publicFormLinkBox.textContent = `${origin}${basePath}/formulario-publico/`;
   }
 
@@ -220,7 +223,8 @@ window.ZAPreDiagnostico = (() => {
     });
   }
 
-  function init() {
+  async function init() {
+    await window.ZAStorage.init({ force: true });
     bindModalEvents();
     setPublicLink();
     renderLeads();
@@ -233,6 +237,5 @@ window.ZAPreDiagnostico = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZAPreDiagnostico.init();
+  await window.ZAPreDiagnostico.init();
 });
