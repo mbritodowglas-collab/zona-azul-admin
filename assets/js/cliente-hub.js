@@ -29,20 +29,21 @@ window.ZAClienteHub = (() => {
     return "";
   }
 
+  function getObjetivo(clienteAtual) {
+    return firstFilled(
+      clienteAtual?.dadosBaseEditados?.objetivo,
+      clienteAtual?.preDiagnostico?.objetivo,
+      clienteAtual?.preDiagnostico?.objetivo_principal,
+      clienteAtual?.preDiagnostico?.objetivo_fisico,
+      clienteAtual?.objetivo,
+      "Objetivo não informado"
+    );
+  }
+
   function renderCliente() {
     if (cliente) {
       setText("cliente-nome", cliente.nome || "Cliente");
-      setText(
-        "cliente-objetivo",
-        firstFilled(
-          cliente?.dadosBaseEditados?.objetivo,
-          cliente?.preDiagnostico?.objetivo,
-          cliente?.preDiagnostico?.objetivo_principal,
-          cliente?.preDiagnostico?.objetivo_fisico,
-          cliente?.objetivo,
-          "Objetivo não informado"
-        )
-      );
+      setText("cliente-objetivo", getObjetivo(cliente));
       return;
     }
 
@@ -78,9 +79,17 @@ window.ZAClienteHub = (() => {
     });
   }
 
-  function init() {
+  async function init() {
     clienteId = getQueryParam("id");
-    cliente = clienteId ? getClienteById(clienteId) : null;
+
+    if (!clienteId) {
+      renderCliente();
+      bindEvents();
+      return;
+    }
+
+    await window.ZAStorage.init({ force: true });
+    cliente = getClienteById(clienteId);
 
     renderCliente();
     bindEvents();
@@ -92,6 +101,5 @@ window.ZAClienteHub = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZAClienteHub.init();
+  await window.ZAClienteHub.init();
 });
