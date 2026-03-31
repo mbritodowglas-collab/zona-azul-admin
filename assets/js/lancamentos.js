@@ -259,6 +259,22 @@ window.ZALancamentos = (() => {
     document.getElementById("za-feedback-overlay")?.classList.add("hidden");
   }
 
+  async function syncAndHandle(successMessage) {
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      showFeedback(
+        `Salvou localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`,
+        "Falha de sincronização",
+        "⚠"
+      );
+      return false;
+    }
+
+    showFeedback(successMessage);
+    return true;
+  }
+
   function getPreDataFromCliente(clienteAtual) {
     if (!clienteAtual) return {};
 
@@ -338,7 +354,8 @@ window.ZALancamentos = (() => {
       pre?.dataNascimento,
       pre?.data_nascimento,
       pre?.nascimento,
-      pre?.birthDate
+      pre?.birthDate,
+      pre?.data_nascimento
     );
 
     if (rawDate) {
@@ -413,16 +430,6 @@ window.ZALancamentos = (() => {
     if (sabotagem) blocos.push(`Principal sabotagem: ${sabotagem}`);
     if (urgencia) blocos.push(`Urgência percebida: ${urgencia}`);
     if (investimento) blocos.push(`Investimento em acompanhamento: ${investimento}`);
-
-    if (!blocos.length) {
-      const fallback = firstFilled(
-        pre?.resumoPrediagnostico,
-        pre?.resumo_pre_diagnostico,
-        pre?.rotina,
-        pre?.maior_dificuldade
-      );
-      if (fallback) blocos.push(fallback);
-    }
 
     const radar = getRadarResumo(pre);
     if (radar && radar !== "Sem radar disponível.") {
@@ -572,7 +579,7 @@ window.ZALancamentos = (() => {
     }
   }
 
-  function saveDadosBase() {
+  async function saveDadosBase() {
     const updatedCliente = {
       ...cliente,
       dadosBaseEditados: {
@@ -598,7 +605,7 @@ window.ZALancamentos = (() => {
 
     cliente = updatedCliente;
     renderPre();
-    showFeedback("Dados base salvos com sucesso.", "Base atualizada", "📝");
+    await syncAndHandle("Dados base salvos com sucesso.");
   }
 
   function updateIdadeFromBirthInputs() {
@@ -632,9 +639,7 @@ window.ZALancamentos = (() => {
       fieldGorduraMarinha?.classList.remove("hidden");
       fieldGorduraDobras?.classList.add("hidden");
 
-      if (regraTexto) {
-        regraTexto.textContent = "Protocolo A: online com Marinha Americana.";
-      }
+      if (regraTexto) regraTexto.textContent = "Protocolo A: online com Marinha Americana.";
       return;
     }
 
@@ -646,10 +651,7 @@ window.ZALancamentos = (() => {
       fieldAbdomenMarinha?.classList.remove("hidden");
       fieldGorduraMarinha?.classList.remove("hidden");
       fieldGorduraDobras?.classList.add("hidden");
-
-      if (regraTexto) {
-        regraTexto.textContent = "Protocolo B: presencial sem dobras, com Marinha + perimetria + testes.";
-      }
+      if (regraTexto) regraTexto.textContent = "Protocolo B: presencial sem dobras, com Marinha + perimetria + testes.";
       return;
     }
 
@@ -659,10 +661,7 @@ window.ZALancamentos = (() => {
       fieldAbdomenMarinha?.classList.add("hidden");
       fieldGorduraMarinha?.classList.add("hidden");
       fieldGorduraDobras?.classList.remove("hidden");
-
-      if (regraTexto) {
-        regraTexto.textContent = "Protocolo C: presencial com dobras + perimetria + testes.";
-      }
+      if (regraTexto) regraTexto.textContent = "Protocolo C: presencial com dobras + perimetria + testes.";
       return;
     }
 
@@ -672,9 +671,7 @@ window.ZALancamentos = (() => {
     fieldGorduraMarinha?.classList.remove("hidden");
     fieldGorduraDobras?.classList.add("hidden");
 
-    if (regraTexto) {
-      regraTexto.textContent = "Selecione o tipo da sessão para liberar o protocolo.";
-    }
+    if (regraTexto) regraTexto.textContent = "Selecione o tipo da sessão para liberar o protocolo.";
   }
 
   function renderSessaoEAvaliacao() {
@@ -778,8 +775,7 @@ window.ZALancamentos = (() => {
       return false;
     }
 
-    const usaMarinha =
-      tipo === "online" || protocolo === "A" || protocolo === "B";
+    const usaMarinha = tipo === "online" || protocolo === "A" || protocolo === "B";
 
     if (usaMarinha && (!Number.isFinite(abdomenMarinha) || abdomenMarinha <= 0)) {
       showFeedback("Abdômen é obrigatório para o protocolo da Marinha Americana.", "Campo obrigatório", "⚠");
@@ -812,8 +808,7 @@ window.ZALancamentos = (() => {
     setValue("rcq", (cintura / quadril).toFixed(2));
     setValue("rce", (cintura / (altura * 100)).toFixed(2));
 
-    const usaMarinha =
-      tipo === "online" || protocolo === "A" || protocolo === "B";
+    const usaMarinha = tipo === "online" || protocolo === "A" || protocolo === "B";
 
     if (usaMarinha) {
       const gorduraMarinha = calculateMarineBodyFat(
@@ -854,7 +849,7 @@ window.ZALancamentos = (() => {
     showFeedback("Cálculos atualizados com sucesso.", "Avaliação calculada", "📊");
   }
 
-  function saveSessaoEAvaliacao() {
+  async function saveSessaoEAvaliacao() {
     const tipo = document.getElementById("sessao-tipo")?.value || "";
     const protocolo = document.getElementById("sessao-protocolo")?.value || "";
     const peso = num("peso");
@@ -913,7 +908,7 @@ window.ZALancamentos = (() => {
 
     cliente = clienteAtualizado;
     renderSessaoEAvaliacao();
-    showFeedback("Sessão e avaliação salvas com sucesso. Histórico atualizado também.", "Bloco atualizado", "📌");
+    await syncAndHandle("Sessão e avaliação salvas com sucesso. Histórico atualizado também.");
   }
 
   function renderAnaliseCaso() {
@@ -968,7 +963,7 @@ window.ZALancamentos = (() => {
     }
   }
 
-  function saveAnaliseCaso() {
+  async function saveAnaliseCaso() {
     updateGapPilarsFromRadar();
 
     const radarRevisado = getRadarRevisadoFromInputs();
@@ -982,39 +977,22 @@ window.ZALancamentos = (() => {
           prioridade: val("diag-prioridade"),
           leitura: val("diag-leitura"),
           sintese: val("diag-sintese"),
-
           gaps: [
-            {
-              pilar: val("gap1-pilar"),
-              causa: val("gap1-causa"),
-              acao: val("gap1-acao")
-            },
-            {
-              pilar: val("gap2-pilar"),
-              causa: val("gap2-causa"),
-              acao: val("gap2-acao")
-            },
-            {
-              pilar: val("gap3-pilar"),
-              causa: val("gap3-causa"),
-              acao: val("gap3-acao")
-            }
+            { pilar: val("gap1-pilar"), causa: val("gap1-causa"), acao: val("gap1-acao") },
+            { pilar: val("gap2-pilar"), causa: val("gap2-causa"), acao: val("gap2-acao") },
+            { pilar: val("gap3-pilar"), causa: val("gap3-causa"), acao: val("gap3-acao") }
           ],
-
           perfil: {
             condicionamento: val("diag-perfil-condicionamento"),
             plano: val("diag-perfil-plano"),
             formato: val("diag-perfil-formato")
           },
-
           triagem: val("diag-triagem"),
-
           focoMes1: {
             gap: val("foco-gap"),
             ambiente: val("foco-ambiente"),
             habito: val("foco-habito")
           },
-
           combinados: {
             planoEnviado: checked("comb-plano-enviado"),
             termoAssinado: checked("comb-termo"),
@@ -1047,7 +1025,7 @@ window.ZALancamentos = (() => {
 
     cliente = clienteAtualizado;
     renderAnaliseCaso();
-    showFeedback("Análise do caso salva com sucesso. Gaps atualizados automaticamente pelo radar.", "Bloco atualizado", "🧠");
+    await syncAndHandle("Análise do caso salva com sucesso. Gaps atualizados automaticamente pelo radar.");
   }
 
   function renderAcompanhamentos() {
@@ -1092,7 +1070,7 @@ window.ZALancamentos = (() => {
     setValue("acomp-ajustes", "");
   }
 
-  function saveAcompanhamento() {
+  async function saveAcompanhamento() {
     const novo = {
       data: document.getElementById("acomp-data")?.value || "",
       aderencia: val("acomp-aderencia"),
@@ -1124,7 +1102,7 @@ window.ZALancamentos = (() => {
     cliente = clienteAtualizado;
     renderAcompanhamentos();
     resetFormAcompanhamento();
-    showFeedback("Acompanhamento salvo com sucesso.", "Acompanhamento atualizado", "📅");
+    await syncAndHandle("Acompanhamento salvo com sucesso.");
   }
 
   function initAccordions() {
@@ -1140,15 +1118,11 @@ window.ZALancamentos = (() => {
         const isTarget = accordion === targetAccordion;
 
         accordion.classList.toggle("is-open", isTarget);
-        if (toggle) {
-          toggle.setAttribute("aria-expanded", isTarget ? "true" : "false");
-        }
+        if (toggle) toggle.setAttribute("aria-expanded", isTarget ? "true" : "false");
       });
 
       const name = targetAccordion?.dataset?.accordion || "";
-      if (name) {
-        localStorage.setItem(STORAGE_KEY, name);
-      }
+      if (name) localStorage.setItem(STORAGE_KEY, name);
     }
 
     accordions.forEach((accordion, index) => {
@@ -1208,7 +1182,7 @@ window.ZALancamentos = (() => {
     bindRadarGapEvents();
   }
 
-  function init() {
+  async function init() {
     clienteId = getQueryParam("id");
     ensureFeedbackModal();
 
@@ -1218,6 +1192,7 @@ window.ZALancamentos = (() => {
       return;
     }
 
+    await window.ZAStorage.init({ force: true });
     cliente = getClienteById(clienteId);
 
     if (!cliente) {
@@ -1240,6 +1215,5 @@ window.ZALancamentos = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZALancamentos.init();
+  await window.ZALancamentos.init();
 });
