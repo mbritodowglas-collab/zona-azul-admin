@@ -245,6 +245,22 @@ window.ZAPlanejamento = (() => {
     document.getElementById("za-feedback-overlay")?.classList.add("hidden");
   }
 
+  async function syncAndHandle(successMessage) {
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      showFeedback(
+        `Salvou localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`,
+        "Falha de sincronização",
+        "⚠"
+      );
+      return false;
+    }
+
+    showFeedback(successMessage);
+    return true;
+  }
+
   function askCycleClosingData() {
     return new Promise((resolve) => {
       ensureFeedbackModal();
@@ -587,9 +603,9 @@ window.ZAPlanejamento = (() => {
       .join("");
 
     root.querySelectorAll("[data-delete-note]").forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
         const noteId = button.getAttribute("data-delete-note");
-        deleteNote(noteId);
+        await deleteNote(noteId);
       });
     });
   }
@@ -651,9 +667,9 @@ window.ZAPlanejamento = (() => {
       .join("");
 
     root.querySelectorAll("[data-duplicate-plan]").forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
         const planId = button.getAttribute("data-duplicate-plan");
-        duplicateArchivedPlanning(planId);
+        await duplicateArchivedPlanning(planId);
       });
     });
   }
@@ -763,7 +779,7 @@ window.ZAPlanejamento = (() => {
     };
   }
 
-  function savePlanejamento() {
+  async function savePlanejamento() {
     const payload = buildPlanejamentoPayload();
 
     const updatedCliente = {
@@ -781,7 +797,7 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Planejamento salvo com sucesso.", "Plano atualizado", "🧠");
+    await syncAndHandle("Planejamento salvo com sucesso.");
   }
 
   function hydrateFromDiagnostico() {
@@ -793,7 +809,6 @@ window.ZAPlanejamento = (() => {
     const focoGap = diagnostico?.focoMes1?.gap || "";
     const focoHabito = diagnostico?.focoMes1?.habito || "";
     const focoAmbiente = diagnostico?.focoMes1?.ambiente || "";
-
     const gaps = Array.isArray(diagnostico.gaps) ? diagnostico.gaps : [];
 
     setValue("estrategia-formato", firstFilled(val("estrategia-formato"), diagnostico?.perfil?.formato, planejamento?.estrategia?.formato));
@@ -888,7 +903,7 @@ window.ZAPlanejamento = (() => {
     }
   }
 
-  function saveNote() {
+  async function saveNote() {
     if (!hasPlanning()) {
       showFeedback("Salve primeiro um planejamento para começar a registrar notas.", "Planejamento não iniciado", "⚠");
       return;
@@ -930,10 +945,10 @@ window.ZAPlanejamento = (() => {
     setValue("nota-texto", "");
     setValue("nota-tipo", "lembrete");
     renderPlanejamento();
-    showFeedback("Nota do treinador salva.", "Nota registrada", "📝");
+    await syncAndHandle("Nota do treinador salva.");
   }
 
-  function deleteNote(noteId) {
+  async function deleteNote(noteId) {
     if (!noteId || !hasPlanning()) return;
 
     const confirmed = window.confirm("Deseja excluir esta nota?");
@@ -959,7 +974,7 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Nota excluída com sucesso.", "Nota removida", "🗑️");
+    await syncAndHandle("Nota excluída com sucesso.");
   }
 
   async function archivePlanning() {
@@ -1001,10 +1016,10 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Planejamento finalizado, classificado e novo ciclo liberado.", "Ciclo encerrado", "🏁");
+    await syncAndHandle("Planejamento finalizado, classificado e novo ciclo liberado.");
   }
 
-  function duplicateArchivedPlanning(planId) {
+  async function duplicateArchivedPlanning(planId) {
     if (!planId) return;
 
     const archived = getPlanejamentosArquivados();
@@ -1060,10 +1075,10 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Planejamento duplicado e carregado como novo ciclo.", "Novo ciclo criado", "♻️");
+    await syncAndHandle("Planejamento duplicado e carregado como novo ciclo.");
   }
 
-  function deletePlanning() {
+  async function deletePlanning() {
     const planejamentoAtual = getPlanejamentoAtual();
     const empty = !planejamentoAtual || Object.keys(planejamentoAtual).length === 0;
 
@@ -1089,7 +1104,7 @@ window.ZAPlanejamento = (() => {
 
     cliente = updatedCliente;
     renderPlanejamento();
-    showFeedback("Planejamento excluído com sucesso.", "Planejamento removido", "🗑️");
+    await syncAndHandle("Planejamento excluído com sucesso.");
   }
 
   function initAccordions() {
@@ -1158,7 +1173,7 @@ window.ZAPlanejamento = (() => {
     document.getElementById("excluir-planejamento-btn")?.addEventListener("click", deletePlanning);
   }
 
-  function init() {
+  async function init() {
     clienteId = getQueryParam("id");
     ensureFeedbackModal();
 
@@ -1168,6 +1183,7 @@ window.ZAPlanejamento = (() => {
       return;
     }
 
+    await window.ZAStorage.init({ force: true });
     cliente = getClienteById(clienteId);
 
     if (!cliente) {
@@ -1187,6 +1203,5 @@ window.ZAPlanejamento = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZAPlanejamento.init();
+  await window.ZAPlanejamento.init();
 });
