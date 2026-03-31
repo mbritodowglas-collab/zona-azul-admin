@@ -40,14 +40,17 @@ window.ZAPreDiagnostico = (() => {
     actionModal?.classList.add("hidden");
   }
 
+  function getSortedLeads() {
+    return window.ZAStorage
+      .getLeads()
+      .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0));
+  }
+
   function renderLeads() {
     const { tableBody, emptyLeads } = getElements();
     if (!tableBody || !emptyLeads) return;
 
-    const leads = window.ZAStorage
-      .getLeads()
-      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
+    const leads = getSortedLeads();
     tableBody.innerHTML = "";
 
     if (!leads.length) {
@@ -63,7 +66,7 @@ window.ZAPreDiagnostico = (() => {
       tr.innerHTML = `
         <td>
           <div class="lead-row">
-            <span class="lead-name">${lead.nome}</span>
+            <span class="lead-name">${lead.nome || "Sem nome"}</span>
 
             <div class="lead-actions-inline">
               <a
@@ -76,8 +79,8 @@ window.ZAPreDiagnostico = (() => {
 
               <button
                 class="btn small btn-convert"
-                data-email="${lead.email}"
-                data-nome="${lead.nome}"
+                data-email="${lead.email || ""}"
+                data-nome="${lead.nome || ""}"
                 type="button"
               >
                 Converter
@@ -85,8 +88,8 @@ window.ZAPreDiagnostico = (() => {
 
               <button
                 class="btn-icon danger btn-delete"
-                data-email="${lead.email}"
-                data-nome="${lead.nome}"
+                data-email="${lead.email || ""}"
+                data-nome="${lead.nome || ""}"
                 title="Excluir lead"
                 aria-label="Excluir lead"
                 type="button"
@@ -104,6 +107,56 @@ window.ZAPreDiagnostico = (() => {
     bindActionButtons();
   }
 
+  async function convertLead(email, nome) {
+    if (!email) {
+      alert("Lead sem email válido para conversão.");
+      return;
+    }
+
+    const converted = window.ZAStorage.convertLeadToCliente(email);
+
+    if (!converted) {
+      alert("Não foi possível converter este lead.");
+      return;
+    }
+
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      alert(`Lead convertido localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+      return;
+    }
+
+    closeActionModal();
+    renderLeads();
+    console.log("[Pré-diagnóstico] Lead convertido com sucesso:", nome || email);
+  }
+
+  async function deleteLead(email, nome) {
+    if (!email) {
+      alert("Lead sem email válido para exclusão.");
+      return;
+    }
+
+    const removed = window.ZAStorage.removeLead(email);
+
+    if (!removed) {
+      alert("Não foi possível excluir este lead.");
+      return;
+    }
+
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      alert(`Lead removido localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+      return;
+    }
+
+    closeActionModal();
+    renderLeads();
+    console.log("[Pré-diagnóstico] Lead excluído com sucesso:", nome || email);
+  }
+
   function bindActionButtons() {
     document.querySelectorAll(".btn-convert").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -113,19 +166,10 @@ window.ZAPreDiagnostico = (() => {
         openActionModal({
           title: "Converter lead em cliente",
           subtitle: "Esse lead sairá do pré-diagnóstico e entrará na área de clientes.",
-          text: `Deseja converter ${nome} em cliente?`,
+          text: `Deseja converter ${nome || email} em cliente?`,
           confirmLabel: "Converter",
-          onConfirm: () => {
-            const converted = window.ZAStorage.convertLeadToCliente(email);
-
-            if (!converted) {
-              closeActionModal();
-              window.alert("Não foi possível converter este lead.");
-              return;
-            }
-
-            closeActionModal();
-            renderLeads();
+          onConfirm: async () => {
+            await convertLead(email, nome);
           }
         });
       });
@@ -139,19 +183,10 @@ window.ZAPreDiagnostico = (() => {
         openActionModal({
           title: "Excluir lead",
           subtitle: "Essa ação remove o lead permanentemente.",
-          text: `Deseja excluir ${nome}?`,
+          text: `Deseja excluir ${nome || email}?`,
           confirmLabel: "Excluir",
-          onConfirm: () => {
-            const removed = window.ZAStorage.removeLead(email);
-
-            if (!removed) {
-              closeActionModal();
-              window.alert("Não foi possível excluir este lead.");
-              return;
-            }
-
-            closeActionModal();
-            renderLeads();
+          onConfirm: async () => {
+            await deleteLead(email, nome);
           }
         });
       });
@@ -164,7 +199,6 @@ window.ZAPreDiagnostico = (() => {
 
     const origin = window.location.origin;
     const basePath = window.location.pathname.split("/pre-diagnostico")[0];
-
     publicFormLinkBox.textContent = `${origin}${basePath}/formulario-publico/`;
   }
 
@@ -173,9 +207,9 @@ window.ZAPreDiagnostico = (() => {
 
     cancelActionBtn?.addEventListener("click", closeActionModal);
 
-    confirmActionBtn?.addEventListener("click", () => {
+    confirmActionBtn?.addEventListener("click", async () => {
       if (typeof pendingAction === "function") {
-        pendingAction();
+        await pendingAction();
       }
     });
 
@@ -193,7 +227,8 @@ window.ZAPreDiagnostico = (() => {
   }
 
   return {
-    init
+    init,
+    renderLeads
   };
 })();
 
