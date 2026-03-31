@@ -116,7 +116,12 @@ window.ZAPlanoCliente = (() => {
 
     if (nomeCiclo) {
       setText("plan-title", nomeCiclo);
-      setText("plan-cover-subtitle", archivedId ? "Planejamento arquivado para consulta." : "Documento de direcionamento do processo.");
+      setText(
+        "plan-cover-subtitle",
+        archivedId
+          ? "Planejamento arquivado para consulta."
+          : "Documento de direcionamento do processo."
+      );
       return;
     }
 
@@ -125,7 +130,9 @@ window.ZAPlanoCliente = (() => {
       firstFilled(
         planejamentoSelecionado?.titulo,
         planejamentoSelecionado?.estrategia?.focoCentral,
-        archivedId ? "Planejamento arquivado para consulta." : "Documento de direcionamento do processo."
+        archivedId
+          ? "Planejamento arquivado para consulta."
+          : "Documento de direcionamento do processo."
       )
     );
   }
@@ -302,7 +309,7 @@ window.ZAPlanoCliente = (() => {
     renderProximosPassos();
   }
 
-  function init() {
+  async function init() {
     clienteId = getQueryParam("id");
     archivedId = getQueryParam("archived");
 
@@ -312,6 +319,7 @@ window.ZAPlanoCliente = (() => {
       return;
     }
 
+    await window.ZAStorage.init({ force: true });
     cliente = getClienteById(clienteId);
     planejamentoSelecionado = resolvePlanejamento();
 
@@ -323,6 +331,5 @@ window.ZAPlanoCliente = (() => {
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZAPlanoCliente.init();
+  await window.ZAPlanoCliente.init();
 });
