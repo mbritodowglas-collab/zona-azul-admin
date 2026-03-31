@@ -523,23 +523,7 @@ window.ZARelatorioCliente = (() => {
     });
   }
 
-  function init() {
-    clienteId = getQueryParam("id");
-
-    if (!clienteId) {
-      document.getElementById("relatorio-page")?.classList.add("hidden");
-      document.getElementById("relatorio-not-found")?.classList.remove("hidden");
-      return;
-    }
-
-    cliente = getClienteById(clienteId);
-
-    if (!cliente) {
-      document.getElementById("relatorio-page")?.classList.add("hidden");
-      document.getElementById("relatorio-not-found")?.classList.remove("hidden");
-      return;
-    }
-
+  function render() {
     renderHeader();
     renderResumo();
     renderRadar();
@@ -551,10 +535,39 @@ window.ZARelatorioCliente = (() => {
     bindEvents();
   }
 
+  function showNotFound() {
+    document.getElementById("relatorio-page")?.classList.add("hidden");
+    document.getElementById("relatorio-not-found")?.classList.remove("hidden");
+  }
+
+  function showPage() {
+    document.getElementById("relatorio-page")?.classList.remove("hidden");
+    document.getElementById("relatorio-not-found")?.classList.add("hidden");
+  }
+
+  async function init() {
+    clienteId = getQueryParam("id");
+
+    if (!clienteId) {
+      showNotFound();
+      return;
+    }
+
+    await window.ZAStorage.init({ force: true });
+    cliente = getClienteById(clienteId);
+
+    if (!cliente) {
+      showNotFound();
+      return;
+    }
+
+    showPage();
+    render();
+  }
+
   return { init };
 })();
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ZAStorage.init();
-  window.ZARelatorioCliente.init();
+  await window.ZARelatorioCliente.init();
 });
