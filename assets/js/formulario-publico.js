@@ -117,50 +117,54 @@
     document.querySelectorAll(".score-btn").forEach(card => card.classList.remove("selected"));
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const nascimentoDia = document.getElementById("nascimento_dia").value;
-    const nascimentoMes = document.getElementById("nascimento_mes").value;
-    const nascimentoAno = document.getElementById("nascimento_ano").value;
+  function buildPayload() {
+    const nascimentoDia = document.getElementById("nascimento_dia")?.value || "";
+    const nascimentoMes = document.getElementById("nascimento_mes")?.value || "";
+    const nascimentoAno = document.getElementById("nascimento_ano")?.value || "";
 
     const dataNascimento = (nascimentoDia && nascimentoMes && nascimentoAno)
       ? `${nascimentoAno}-${String(nascimentoMes).padStart(2, "0")}-${String(nascimentoDia).padStart(2, "0")}`
       : "";
 
-    const payload = {
-      nome: document.getElementById("nome").value,
-      email: document.getElementById("email").value,
+    return {
+      nome: document.getElementById("nome")?.value || "",
+      email: document.getElementById("email")?.value || "",
       data_nascimento: dataNascimento,
-      genero: document.getElementById("genero").value,
-      cidade: document.getElementById("cidade").value,
-      origem: document.getElementById("origem").value,
+      genero: document.getElementById("genero")?.value || "",
+      cidade: document.getElementById("cidade")?.value || "",
+      origem: document.getElementById("origem")?.value || "",
 
-      exp_personal: document.getElementById("exp_personal").value,
-      exp_emagrecimento: document.getElementById("exp_emagrecimento").value,
-      o_que_funcionou: document.getElementById("o_que_funcionou").value,
-      limitacoes_atuais: document.getElementById("limitacoes_atuais").value,
-      por_que_parou: document.getElementById("por_que_parou").value,
+      exp_personal: document.getElementById("exp_personal")?.value || "",
+      exp_emagrecimento: document.getElementById("exp_emagrecimento")?.value || "",
+      o_que_funcionou: document.getElementById("o_que_funcionou")?.value || "",
+      limitacoes_atuais: document.getElementById("limitacoes_atuais")?.value || "",
+      por_que_parou: document.getElementById("por_que_parou")?.value || "",
 
-      score_movimento: document.getElementById("score_movimento").value,
-      score_alimentacao: document.getElementById("score_alimentacao").value,
-      score_sono: document.getElementById("score_sono").value,
-      score_proposito: document.getElementById("score_proposito").value,
-      score_social: document.getElementById("score_social").value,
-      score_estresse: document.getElementById("score_estresse").value,
+      score_movimento: document.getElementById("score_movimento")?.value || "",
+      score_alimentacao: document.getElementById("score_alimentacao")?.value || "",
+      score_sono: document.getElementById("score_sono")?.value || "",
+      score_proposito: document.getElementById("score_proposito")?.value || "",
+      score_social: document.getElementById("score_social")?.value || "",
+      score_estresse: document.getElementById("score_estresse")?.value || "",
 
-      urgencia: document.getElementById("urgencia").value,
-      comprometimento: document.getElementById("comprometimento").value,
-      investimento: document.getElementById("investimento").value,
-      sabotagem: document.getElementById("sabotagem").value,
-      objetivo_fisico: document.getElementById("objetivo_fisico").value,
+      urgencia: document.getElementById("urgencia")?.value || "",
+      comprometimento: document.getElementById("comprometimento")?.value || "",
+      investimento: document.getElementById("investimento")?.value || "",
+      sabotagem: document.getElementById("sabotagem")?.value || "",
+      objetivo_fisico: document.getElementById("objetivo_fisico")?.value || "",
 
-      desafio_atual: document.getElementById("desafio_atual").value,
-      meta_6_meses: document.getElementById("meta_6_meses").value,
+      desafio_atual: document.getElementById("desafio_atual")?.value || "",
+      meta_6_meses: document.getElementById("meta_6_meses")?.value || "",
 
-      peso: document.getElementById("peso").value,
-      altura: document.getElementById("altura").value
+      peso: document.getElementById("peso")?.value || "",
+      altura: document.getElementById("altura")?.value || ""
     };
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const payload = buildPayload();
 
     const erro = window.ZACalculos.validarFormulario(payload);
     if (erro) {
@@ -172,7 +176,7 @@
 
     console.log("[Formulario Publico] Lead gerado:", lead);
 
-    const saveResult = window.ZAStorage.upsertLead(lead);
+    const saveResult = window.ZAStorage.saveLead(lead);
     const syncResult = await window.ZAStorage.syncNow();
 
     console.log("[Formulario Publico] Resultado save:", saveResult);
@@ -192,9 +196,9 @@
     successCard.classList.remove("hidden");
 
     if (saveResult?.action === "updated") {
-      console.log("[Formulario Publico] Lead atualizado no banco.");
+      console.log("[Formulario Publico] Lead atualizado na tabela leads.");
     } else {
-      console.log("[Formulario Publico] Lead criado no banco.");
+      console.log("[Formulario Publico] Lead criado na tabela leads.");
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
