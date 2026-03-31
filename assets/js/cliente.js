@@ -1,61 +1,240 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const clienteId = params.get("id");
+window.ZAClientes = (() => {
+  let currentFilter = "ativos";
 
   function getClientes() {
     return window.ZAStorage?.getClientes?.() || [];
   }
 
-  function getClienteById(id) {
-    return getClientes().find((cliente) => String(cliente.id) === String(id)) || null;
+  function getListElement() {
+    return (
+      document.getElementById("clientes-table-body") ||
+      document.getElementById("clientes-list")
+    );
   }
 
-  const cliente = getClienteById(clienteId);
+  function getFilteredClientes(clientes) {
+    if (currentFilter === "ativos") {
+      return clientes.filter(
+        (cliente) => String(cliente.status || "ativo").toLowerCase() !== "arquivado"
+      );
+    }
 
-  if (!cliente) {
-    alert("Cliente não encontrado.");
-    window.location.href = "../clientes/";
-    return;
+    if (currentFilter === "arquivados") {
+      return clientes.filter(
+        (cliente) => String(cliente.status || "").toLowerCase() === "arquivado"
+      );
+    }
+
+    return clientes;
   }
 
-  const nomeEl = document.getElementById("cliente-nome");
-  const objetivoEl = document.getElementById("cliente-objetivo");
-  const voltarBtn = document.getElementById("voltar-btn");
-
-  if (nomeEl) {
-    nomeEl.textContent = cliente.nome || "Cliente";
+  function getObjetivo(cliente) {
+    return (
+      cliente?.dadosBaseEditados?.objetivo ||
+      cliente?.preDiagnostico?.objetivo ||
+      cliente?.preDiagnostico?.objetivo_principal ||
+      cliente?.preDiagnostico?.objetivo_fisico ||
+      cliente?.objetivo ||
+      "—"
+    );
   }
 
-  if (objetivoEl) {
-    objetivoEl.textContent =
-      cliente.objetivo ||
-      cliente.objetivo_principal ||
-      "Sem objetivo definido";
+  function getStatusLabel(cliente) {
+    return String(cliente.status || "").toLowerCase() === "arquivado"
+      ? "Arquivado"
+      : "Ativo";
   }
 
-  if (voltarBtn) {
-    voltarBtn.addEventListener("click", () => {
-      window.location.href = "../clientes/";
+  function renderLista(clientes) {
+    const list = getListElement();
+    const emptyState = document.getElementById("empty-clientes");
+
+    if (!list) return;
+
+    const lista = getFilteredClientes(clientes);
+
+    if (!lista.length) {
+      list.innerHTML = "";
+      emptyState?.classList.remove("hidden");
+      return;
+    }
+
+    emptyState?.classList.add("hidden");
+
+    list.innerHTML = lista
+      .map((cliente) => {
+        const isArchived = String(cliente.status || "").toLowerCase() === "arquivado";
+
+        return `
+          <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition">
+            <td class="px-4 py-3 font-medium text-slate-800">
+              ${cliente.nome || "-"}
+            </td>
+
+            <td class="px-4 py-3 text-slate-600">
+              ${getObjetivo(cliente)}
+            </td>
+
+            <td class="px-4 py-3">
+              ${getStatusLabel(cliente)}
+            </td>
+
+            <td class="px-4 py-3">
+              <div class="cliente-acoes">
+                <a
+                  href="../cliente/index.html?id=${encodeURIComponent(cliente.id)}"
+                  class="cliente-btn cliente-btn-abrir"
+                >
+                  Abrir
+                </a>
+
+                ${
+                  isArchived
+                    ? `
+                      <button
+                        type="button"
+                        data-reactivate="${cliente.id}"
+                        data-nome="${cliente.nome || ""}"
+                        class="cliente-btn cliente-btn-reativar"
+                      >
+                        Reativar
+                      </button>
+                    `
+                    : `
+                      <button
+                        type="button"
+                        data-archive="${cliente.id}"
+                        data-nome="${cliente.nome || ""}"
+                        class="cliente-btn cliente-btn-arquivar"
+                      >
+                        Arquivar
+                      </button>
+                    `
+                }
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    bindActionButtons();
+  }
+
+  function renderFilters() {
+    const container = document.getElementById("clientes-filters");
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="clientes-filtros">
+        <button
+          type="button"
+          data-filter="ativos"
+          class="cliente-filtro-btn ${currentFilter === "ativos" ? "is-active" : ""}"
+        >
+          <span>Ativos</span>
+        </button>
+
+        <button
+          type="button"
+          data-filter="arquivados"
+          class="cliente-filtro-btn ${currentFilter === "arquivados" ? "is-active" : ""}"
+        >
+          <span>Arquivados</span>
+        </button>
+
+        <button
+          type="button"
+          data-filter="todos"
+          class="cliente-filtro-btn ${currentFilter === "todos" ? "is-active" : ""}"
+        >
+          <span>Todos</span>
+        </button>
+      </div>
+    `;
+
+    container.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter;
+        init();
+      });
     });
   }
 
-  document.querySelectorAll("[data-open]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tipo = btn.dataset.open;
+  async function archive(id, nome = "") {
+    const ok = window.confirm(`Deseja arquivar ${nome || "este cliente"}?`);
+    if (!ok) return;
 
-      if (tipo === "lancamentos") {
-        window.location.href = `../cliente/lancamentos.html?id=${encodeURIComponent(clienteId)}`;
-        return;
-      }
+    const archived = window.ZAStorage?.archiveCliente?.(id);
 
-      if (tipo === "relatorio") {
-        window.location.href = `../cliente/relatorio.html?id=${encodeURIComponent(clienteId)}`;
-        return;
-      }
+    if (!archived) {
+      window.alert("Erro ao arquivar cliente.");
+      return;
+    }
 
-      if (tipo === "planejamento") {
-        window.location.href = `../cliente/planejamento.html?id=${encodeURIComponent(clienteId)}`;
-      }
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      window.alert(
+        `Cliente arquivado localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`
+      );
+      return;
+    }
+
+    await init();
+  }
+
+  async function reactivate(id, nome = "") {
+    const ok = window.confirm(`Deseja reativar ${nome || "este cliente"}?`);
+    if (!ok) return;
+
+    const reactivated = window.ZAStorage?.reactivateCliente?.(id);
+
+    if (!reactivated) {
+      window.alert("Erro ao reativar cliente.");
+      return;
+    }
+
+    const syncResult = await window.ZAStorage.syncNow();
+
+    if (!syncResult?.ok) {
+      window.alert(
+        `Cliente reativado localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`
+      );
+      return;
+    }
+
+    await init();
+  }
+
+  function bindActionButtons() {
+    document.querySelectorAll("[data-archive]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await archive(button.dataset.archive, button.dataset.nome || "");
+      });
     });
-  });
+
+    document.querySelectorAll("[data-reactivate]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await reactivate(button.dataset.reactivate, button.dataset.nome || "");
+      });
+    });
+  }
+
+  async function init() {
+    await window.ZAStorage.init({ force: true });
+    const clientes = getClientes();
+    renderFilters();
+    renderLista(clientes);
+  }
+
+  return {
+    init,
+    archive,
+    reactivate
+  };
+})();
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.ZAClientes.init();
 });
