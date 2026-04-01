@@ -3,67 +3,735 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cliente | Zona Azul</title>
+  <title>Cliente | Trackion System</title>
   <link rel="stylesheet" href="../assets/css/global.css?v=56" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-0: #020816;
+      --bg-1: #061126;
+      --bg-2: #0a1830;
+      --panel: rgba(10, 24, 48, 0.78);
+      --panel-2: rgba(8, 20, 40, 0.92);
+      --line: rgba(255,255,255,0.08);
+      --line-soft: rgba(255,255,255,0.05);
+      --text: #f3f8ff;
+      --muted: #9cb0cb;
+      --muted-2: #7f92ad;
+      --blue-1: #47b8ff;
+      --blue-2: #1f7cff;
+      --green-1: #7cff5a;
+      --green-2: #41d13f;
+      --success: #9dffd6;
+      --warning: #ffe08a;
+      --danger: #ffb0b0;
+      --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);
+      --shadow-lg: 0 18px 42px rgba(0,0,0,0.28);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
+        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 24px 20px;
+      border-right: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+      backdrop-filter: blur(12px);
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 26px;
+    }
+
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
+      letter-spacing: 0.04em;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .brand-highlight {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #47b8ff, #7cff5a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav a {
+      min-height: 52px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 700;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border-color: var(--line);
+      transform: translateX(2px);
+    }
+
+    .nav a.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(71,184,255,0.12), rgba(124,255,90,0.08));
+      border-color: rgba(71,184,255,0.16);
+    }
+
+    .main {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .page-wrap {
+      display: grid;
+      gap: 22px;
+      max-width: 1520px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 760px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.97;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      border: 1px solid var(--line);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
+    }
+
+    .hero {
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),
+        linear-gradient(135deg, rgba(71,184,255,0.16), rgba(124,255,90,0.08)),
+        var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .hero-kicker {
+      margin: 0 0 10px;
+      color: #b9ebff;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .hero h3 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      color: #ffffff;
+      max-width: 820px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #d6e3f5;
+      font-size: 15px;
+      line-height: 1.8;
+      max-width: 860px;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #edf5ff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      letter-spacing: 0.01em;
+    }
+
+    .chip.success {
+      color: var(--success);
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.18);
+    }
+
+    .chip.warning {
+      color: var(--warning);
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .chip.danger {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.18);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .summary-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .summary-label {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--muted-2);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .summary-value {
+      display: block;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+      color: #ffffff;
+    }
+
+    .summary-meta {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      min-width: 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .card-main {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      min-height: 220px;
+    }
+
+    .card-main h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .card-main p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .card-link-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .link-ghost {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.2;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .hub-card-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .info-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-value {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    .cliente-avatar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .cliente-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 14px 28px rgba(31,124,255,0.20);
+      flex-shrink: 0;
+    }
+
+    .cliente-avatar-meta strong {
+      display: block;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .cliente-avatar-meta span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3,
+      .hub-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .sidebar,
+      .main {
+        padding: 16px;
+      }
+
+      .topbar h2 {
+        font-size: 30px;
+      }
+
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .hero h3 {
+        font-size: 28px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-actions {
+        width: 100%;
+      }
+
+      #logout-btn,
+      #voltar-btn {
+        width: 100%;
+      }
+
+      .card-link-row {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
 
   <div class="app-shell">
-
     <aside class="sidebar">
-      <h1>Zona Azul</h1>
-      <nav>
+      <div class="brand">
+        <div class="brand-badge">TR</div>
+        <div>
+          <h1>Trackion System</h1>
+          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
+        </div>
+      </div>
+
+      <nav class="nav">
         <a href="../index.html">Dashboard</a>
         <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="../clientes/">Clientes</a>
+        <a class="active" href="../clientes/">Clientes</a>
       </nav>
     </aside>
 
     <main class="main">
+      <div class="page-wrap">
+        <div class="topbar">
+          <div>
+            <h2 id="cliente-nome">Cliente</h2>
+            <p id="cliente-objetivo">Objetivo</p>
+          </div>
 
-      <div class="topbar">
-        <div>
-          <h2 id="cliente-nome">Cliente</h2>
-          <p id="cliente-objetivo">Objetivo</p>
+          <div class="topbar-actions">
+            <button id="voltar-btn" class="btn secondary" type="button">Voltar</button>
+            <button id="logout-btn" class="btn secondary" type="button">Sair</button>
+          </div>
         </div>
 
-        <div>
-          <button id="voltar-btn" type="button">Voltar</button>
-        </div>
+        <section class="hero">
+          <p class="hero-kicker">Trackion System</p>
+          <h3>Hub operacional do cliente</h3>
+          <p>
+            Este é o ponto central do caso. A partir daqui você registra lançamentos, analisa a evolução,
+            constrói a estratégia e organiza o plano de continuidade do processo.
+          </p>
+
+          <div class="cliente-avatar-wrap">
+            <div class="cliente-avatar" id="cliente-avatar">C</div>
+            <div class="cliente-avatar-meta">
+              <strong id="cliente-nome-topo">Cliente</strong>
+              <span id="cliente-subtitulo">Hub do caso</span>
+            </div>
+          </div>
+
+          <div class="hero-chips">
+            <span class="chip" id="cliente-fase">Fase não definida</span>
+            <span class="chip success" id="cliente-status">Ativo</span>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <div class="summary-card">
+            <span class="summary-label">Nome</span>
+            <strong class="summary-value" style="font-size:20px;" id="cliente-nome-resumo">—</strong>
+            <div class="summary-meta">Identificação principal do caso.</div>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">Objetivo</span>
+            <strong class="summary-value" style="font-size:20px;" id="cliente-objetivo-resumo">—</strong>
+            <div class="summary-meta">Direção central do processo atual.</div>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">Fase atual</span>
+            <strong class="summary-value" style="font-size:20px;" id="cliente-fase-resumo">—</strong>
+            <div class="summary-meta">Estágio atual dentro da jornada.</div>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">Status</span>
+            <strong class="summary-value" style="font-size:20px;" id="cliente-status-resumo">—</strong>
+            <div class="summary-meta">Situação operacional do cliente.</div>
+          </div>
+        </section>
+
+        <section class="grid-3">
+          <div class="card card-main">
+            <h3>🧩 Lançamentos</h3>
+            <p>Registrar diagnóstico, avaliação, evolução, radar revisado e acompanhamentos do cliente.</p>
+
+            <div class="card-link-row">
+              <button data-open="lancamentos" class="btn primary" type="button">Abrir</button>
+              <a id="abrir-lancamentos-link" class="link-ghost" href="#">Acesso direto</a>
+            </div>
+          </div>
+
+          <div class="card card-main">
+            <h3>📊 Relatório completo</h3>
+            <p>Visualizar a análise consolidada do caso, evolução dos indicadores e leitura geral do processo.</p>
+
+            <div class="card-link-row">
+              <button data-open="relatorio" class="btn primary" type="button">Abrir relatório</button>
+              <a id="abrir-relatorio-link" class="link-ghost" href="#">Acesso direto</a>
+            </div>
+          </div>
+
+          <div class="card card-main">
+            <h3>🧠 Planejamento do treinador</h3>
+            <p>Definir estratégia, comportamento, treino, ajustes de rotina e direção do ciclo em andamento.</p>
+
+            <div class="card-link-row">
+              <button data-open="planejamento" class="btn primary" type="button">Abrir planejamento</button>
+              <a id="abrir-planejamento-link" class="link-ghost" href="#">Acesso direto</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="hub-card-grid">
+          <section class="card">
+            <h3 class="section-title">Visão geral do caso</h3>
+            <p class="muted">Resumo executivo do que importa agora para conduzir o cliente com clareza.</p>
+
+            <div class="info-list">
+              <div class="info-item">
+                <div class="info-label">Nome do cliente</div>
+                <div class="info-value" id="cliente-nome-info">—</div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-label">Objetivo principal</div>
+                <div class="info-value" id="cliente-objetivo-info">—</div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-label">Fase atual</div>
+                <div class="info-value" id="cliente-fase-info">—</div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-label">Status do caso</div>
+                <div class="info-value" id="cliente-status-info">—</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h3 class="section-title">Plano do cliente</h3>
+            <p class="muted">Acesse a versão organizada do plano para visualização e PDF.</p>
+
+            <div class="card-link-row" style="margin-top:16px;">
+              <button data-open="plano-cliente" class="btn primary" type="button">Abrir plano</button>
+              <a id="abrir-plano-cliente-link" class="link-ghost" href="#">Acesso direto</a>
+            </div>
+          </section>
+        </section>
       </div>
-
-      <section class="grid-3">
-
-        <div class="card card-main">
-          <h3>🧩 Lançamentos</h3>
-          <p>Registrar diagnóstico, evolução e dados do cliente.</p>
-          <button data-open="lancamentos" type="button">Abrir</button>
-        </div>
-
-        <div class="card card-main">
-          <h3>📊 Relatório completo</h3>
-          <p>Visualizar análise consolidada do cliente.</p>
-          <button data-open="relatorio" type="button">Abrir relatório</button>
-        </div>
-
-        <div class="card card-main">
-          <h3>🧠 Planejamento do treinador</h3>
-          <p>Definir estratégia, comportamento e treino.</p>
-          <button data-open="planejamento" type="button">Abrir planejamento</button>
-        </div>
-
-      </section>
-
     </main>
-
   </div>
 
-  <!-- CORE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/supabase.js?v=1"></script>
-  <script src="../assets/js/storage.js?v=1"></script>
+  <script src="../assets/js/supabase.js?v=2"></script>
+  <script src="../assets/js/guard.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=2"></script>
+  <script src="../assets/js/logout.js?v=1"></script>
+  <script src="../assets/js/cliente-hub.js?v=2"></script>
 
-  <!-- PAGE -->
-  <script src="../assets/js/cliente-hub.js?v=1"></script>
+  <script>
+    const syncHubSummary = () => {
+      const nome = document.getElementById("cliente-nome")?.textContent || "—";
+      const objetivo = document.getElementById("cliente-objetivo")?.textContent || "—";
+      const fase = document.getElementById("cliente-fase")?.textContent || "—";
+      const status = document.getElementById("cliente-status")?.textContent || "—";
+
+      const map = [
+        ["cliente-nome-resumo", nome],
+        ["cliente-objetivo-resumo", objetivo],
+        ["cliente-fase-resumo", fase],
+        ["cliente-status-resumo", status],
+        ["cliente-nome-info", nome],
+        ["cliente-objetivo-info", objetivo],
+        ["cliente-fase-info", fase],
+        ["cliente-status-info", status]
+      ];
+
+      map.forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+    };
+
+    const observer = new MutationObserver(syncHubSummary);
+    window.addEventListener("DOMContentLoaded", () => {
+      ["cliente-nome", "cliente-objetivo", "cliente-fase", "cliente-status"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el, { childList: true, subtree: true, characterData: true });
+      });
+
+      setTimeout(syncHubSummary, 150);
+      setTimeout(syncHubSummary, 500);
+    });
+  </script>
 </body>
 </html>
