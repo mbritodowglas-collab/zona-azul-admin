@@ -3,34 +3,611 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pré-Diagnóstico | Zona Azul</title>
+  <title>Pré-Diagnóstico | Trackion System</title>
 
-  <link rel="stylesheet" href="../assets/css/global.css" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=1" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-0: #020816;
+      --bg-1: #061126;
+      --bg-2: #0a1830;
+      --panel: rgba(10, 24, 48, 0.78);
+      --panel-2: rgba(8, 20, 40, 0.92);
+      --line: rgba(255,255,255,0.08);
+      --line-soft: rgba(255,255,255,0.05);
+      --text: #f3f8ff;
+      --muted: #9cb0cb;
+      --muted-2: #7f92ad;
+      --blue-1: #47b8ff;
+      --blue-2: #1f7cff;
+      --green-1: #7cff5a;
+      --green-2: #41d13f;
+      --success: #9dffd6;
+      --danger: #ffb0b0;
+      --warning: #ffe08a;
+      --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);
+      --shadow-lg: 0 18px 42px rgba(0,0,0,0.28);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
+        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 24px 20px;
+      border-right: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+      backdrop-filter: blur(12px);
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 26px;
+    }
+
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
+      letter-spacing: 0.04em;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .brand-trackion-mark {
+      display: inline-block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--blue-1), var(--green-1));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav a {
+      min-height: 52px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 700;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border-color: var(--line);
+      transform: translateX(2px);
+    }
+
+    .nav a.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(71,184,255,0.12), rgba(124,255,90,0.08));
+      border-color: rgba(71,184,255,0.16);
+    }
+
+    .main {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .page-wrap {
+      display: grid;
+      gap: 22px;
+      max-width: 1520px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 760px;
+    }
+
+    .btn,
+    .btn-icon {
+      min-height: 42px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover,
+    .btn-icon:hover {
+      transform: translateY(-1px);
+      opacity: 0.97;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      border: 1px solid var(--line);
+    }
+
+    .btn.small {
+      min-height: 36px;
+      padding: 0 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
+    .btn.small.secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-convert {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
+    }
+
+    .btn-icon.danger {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0 10px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      color: #ffd2d2;
+    }
+
+    .hero {
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),
+        linear-gradient(135deg, rgba(71,184,255,0.16), rgba(124,255,90,0.08)),
+        var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .hero-kicker {
+      margin: 0 0 10px;
+      color: #b9ebff;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .hero h3 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      color: #ffffff;
+      max-width: 820px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #d6e3f5;
+      font-size: 15px;
+      line-height: 1.8;
+      max-width: 860px;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .chip {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #edf5ff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      letter-spacing: 0.01em;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-lg);
+      min-width: 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.2;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .public-link {
+      margin-top: 16px;
+    }
+
+    .link-box {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--line);
+      color: #dce9ff;
+      font-size: 14px;
+      line-height: 1.65;
+      word-break: break-all;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 880px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 16px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-2);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+
+    tbody td {
+      padding: 16px;
+      border-bottom: 1px solid var(--line-soft);
+      color: #e9f1fb;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.025);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .lead-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .lead-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .lead-actions-inline {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .empty-state {
+      margin-top: 16px;
+      padding: 22px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.10);
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(2, 8, 22, 0.72);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-content {
+      width: min(100%, 520px);
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(8, 20, 40, 0.96);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .modal-content h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+    }
+
+    .modal-content p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .modal-content p + p {
+      margin-top: 10px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    #confirm-action-btn {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #fff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
+    }
+
+    #cancel-action-btn {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line-soft);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .sidebar,
+      .main {
+        padding: 16px;
+      }
+
+      .topbar h2 {
+        font-size: 30px;
+      }
+
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .hero h3 {
+        font-size: 28px;
+      }
+
+      .lead-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .lead-actions-inline {
+        width: 100%;
+      }
+
+      #logout-btn {
+        width: 100%;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
+      .modal-actions button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <main class="container">
-    <h1>Pré-Diagnóstico</h1>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">TR</div>
+        <div>
+          <h1>Trackion System</h1>
+          <p>Sistema de evolução integrada</p>
+          <span class="brand-trackion-mark">Corpo • Mente • Performance</span>
+        </div>
+      </div>
 
-    <div class="public-link">
-      <strong>Link do formulário:</strong>
-      <div id="public-form-link-box"></div>
-    </div>
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a class="active" href="./">Pré-diagnóstico</a>
+        <a href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Leads</th>
-        </tr>
-      </thead>
+    <main class="main">
+      <div class="page-wrap">
+        <div class="topbar">
+          <div>
+            <h2>Pré-Diagnóstico</h2>
+            <p>Base de leads recebidos, leitura inicial da captação e ponto de partida do processo de conversão.</p>
+          </div>
 
-      <tbody id="leads-table-body"></tbody>
-    </table>
+          <button id="logout-btn" class="btn secondary">Sair</button>
+        </div>
 
-    <div id="empty-leads" class="hidden">
-      Nenhum lead encontrado.
-    </div>
-  </main>
+        <section class="hero">
+          <p class="hero-kicker">Trackion System</p>
+          <h3>Entrada qualificada de novos casos</h3>
+          <p>
+            Aqui você revisa os leads captados, acessa o relatório inicial e decide quando converter
+            cada entrada em cliente ativo dentro do sistema.
+          </p>
+
+          <div class="hero-chips">
+            <span class="chip">Pré-diagnóstico ativo</span>
+            <span class="chip">Captação estruturada</span>
+            <span class="chip">Conversão orientada</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">Link público</h3>
+          <p class="muted">Use este link na landing page, campanhas, mensagens e formulários de entrada.</p>
+
+          <div class="public-link">
+            <div id="public-form-link-box" class="link-box"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">Leads captados</h3>
+          <p class="muted">Avalie cada entrada, gere o relatório e conduza a conversão com critério.</p>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Leads</th>
+                </tr>
+              </thead>
+              <tbody id="leads-table-body"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-leads" class="empty-state hidden">
+            Nenhum lead encontrado.
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
 
   <!-- MODAL -->
   <div id="action-modal" class="modal hidden">
@@ -40,18 +617,20 @@
       <p id="action-modal-text"></p>
 
       <div class="modal-actions">
-        <button id="cancel-action-btn">Cancelar</button>
-        <button id="confirm-action-btn">Confirmar</button>
+        <button id="cancel-action-btn" type="button">Cancelar</button>
+        <button id="confirm-action-btn" type="button">Confirmar</button>
       </div>
     </div>
   </div>
 
   <!-- CORE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/supabase.js?v=1"></script>
-  <script src="../assets/js/storage.js?v=1"></script>
+  <script src="../assets/js/supabase.js?v=2"></script>
+  <script src="../assets/js/guard.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=2"></script>
+  <script src="../assets/js/logout.js?v=1"></script>
 
   <!-- PAGE -->
-  <script src="../assets/js/pre-diagnostico.js?v=1"></script>
+  <script src="../assets/js/pre-diagnostico.js?v=2"></script>
 </body>
 </html>
