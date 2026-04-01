@@ -7,467 +7,122 @@
   <link rel="stylesheet" href="./assets/css/global.css?v=1" />
 
   <style>
-    :root {
-      --bg: #071120;
-      --bg-soft: #0c1729;
-      --panel: rgba(12, 23, 41, 0.78);
-      --panel-strong: rgba(15, 27, 48, 0.96);
-      --line: rgba(255, 255, 255, 0.08);
-      --line-soft: rgba(255, 255, 255, 0.05);
-      --text: #f8fbff;
-      --muted: #9fb0c7;
-      --muted-2: #7f92ad;
-      --primary: #6c7cff;
-      --primary-2: #4da3ff;
-      --success: #27c281;
-      --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.34);
-      --shadow-md: 0 14px 30px rgba(0, 0, 0, 0.22);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       background:
-        radial-gradient(circle at top left, rgba(108, 124, 255, 0.16), transparent 22%),
-        radial-gradient(circle at top right, rgba(77, 163, 255, 0.12), transparent 20%),
+        radial-gradient(circle at top left, rgba(108,124,255,0.16), transparent 22%),
+        radial-gradient(circle at top right, rgba(77,163,255,0.12), transparent 20%),
         linear-gradient(180deg, #071120 0%, #050d19 100%);
-      color: var(--text);
-      min-height: 100vh;
+      color: #fff;
     }
 
     .app-shell {
       display: grid;
-      grid-template-columns: 290px 1fr;
+      grid-template-columns: 280px 1fr;
       min-height: 100vh;
     }
 
     .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      padding: 28px 20px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border-right: 1px solid var(--line-soft);
-      backdrop-filter: blur(12px);
+      padding: 24px;
+      border-right: 1px solid rgba(255,255,255,0.05);
     }
 
     .brand {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px;
-      border-radius: var(--radius-lg);
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-md);
-      margin-bottom: 28px;
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
     .brand-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 800;
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 12px 24px rgba(108, 124, 255, 0.28);
-      flex-shrink: 0;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.2;
-      color: var(--text);
-    }
-
-    .brand p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 13px;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg,#6366f1,#3b82f6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
     }
 
     .nav {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 8px;
     }
 
     .nav a {
-      display: flex;
-      align-items: center;
-      min-height: 52px;
-      padding: 0 16px;
-      border-radius: 18px;
+      padding: 12px;
+      border-radius: 10px;
       text-decoration: none;
-      color: var(--muted);
-      font-weight: 700;
-      transition: all 0.18s ease;
-      border: 1px solid transparent;
-    }
-
-    .nav a:hover {
-      color: var(--text);
-      background: rgba(255,255,255,0.04);
-      border-color: var(--line);
-      transform: translateX(2px);
+      color: #9fb0c7;
     }
 
     .nav a.active {
+      background: rgba(255,255,255,0.06);
       color: #fff;
-      background: linear-gradient(135deg, rgba(108,124,255,0.20), rgba(77,163,255,0.14));
-      border-color: rgba(108,124,255,0.24);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
     }
 
     .main {
-      padding: 28px;
-    }
-
-    .dashboard-wrap {
-      display: grid;
-      gap: 22px;
-      max-width: 1500px;
+      padding: 24px;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 8px 2px 0;
-    }
-
-    .topbar h2 {
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      color: #fff;
-    }
-
-    .topbar p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-      max-width: 760px;
-    }
-
-    .hero-panel {
-      position: relative;
-      overflow: hidden;
-      padding: 28px;
-      border-radius: var(--radius-xl);
-      background:
-        linear-gradient(135deg, rgba(108,124,255,0.18), rgba(77,163,255,0.08)),
-        rgba(12, 23, 41, 0.72);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-xl);
-    }
-
-    .hero-panel::after {
-      content: "";
-      position: absolute;
-      inset: auto -60px -60px auto;
-      width: 240px;
-      height: 240px;
-      background: radial-gradient(circle, rgba(108,124,255,0.22), transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero-kicker {
-      margin: 0 0 10px;
-      color: #bfd2ff;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .hero-title {
-      margin: 0;
-      color: #fff;
-      font-size: 40px;
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-      max-width: 840px;
-    }
-
-    .hero-subtitle {
-      margin: 14px 0 0;
-      color: #d2def0;
-      font-size: 15px;
-      line-height: 1.75;
-      max-width: 820px;
-    }
-
-    .hero-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .chip {
-      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      min-height: 40px;
-      padding: 0 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #eef4ff;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.01em;
     }
 
-    .chip.success {
-      color: #b8ffdd;
-      background: rgba(39,194,129,0.12);
-      border-color: rgba(39,194,129,0.18);
+    .btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.06);
+      color: white;
+    }
+
+    .hero {
+      margin-top: 20px;
+      padding: 24px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
     }
 
     .grid {
       display: grid;
-      gap: 18px;
+      gap: 16px;
+      margin-top: 20px;
     }
 
     .grid-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .dashboard-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.9fr);
-      gap: 22px;
-      align-items: start;
-    }
-
-    .stack {
-      display: grid;
-      gap: 22px;
+      grid-template-columns: repeat(4,1fr);
     }
 
     .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 22px 22px 16px;
-      border-bottom: 1px solid var(--line-soft);
-    }
-
-    .card-header h3 {
-      margin: 0;
-      color: #fff;
-      font-size: 19px;
-      line-height: 1.2;
-    }
-
-    .card-header p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .card-body {
-      padding: 22px;
-    }
-
-    .stat-card {
       padding: 20px;
-      border-radius: var(--radius-lg);
-      background: var(--panel);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-md);
-    }
-
-    .stat-label {
-      display: block;
-      margin-bottom: 12px;
-      color: var(--muted-2);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 11px;
-      font-weight: 800;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
     }
 
     .stat-value {
-      display: block;
-      color: #fff;
-      font-size: 36px;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      font-weight: 800;
-    }
-
-    .stat-meta {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .btn {
-      min-height: 52px;
-      padding: 0 18px;
-      border-radius: 16px;
-      border: 0;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-weight: 800;
-      font-size: 14px;
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 14px 28px rgba(77, 163, 255, 0.18);
-      transition: transform 0.18s ease, opacity 0.18s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      opacity: 0.96;
-    }
-
-    .btn.secondary {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--line);
-      color: #e8f0ff;
-      box-shadow: none;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .code-box {
-      margin-top: 12px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.035);
-      border: 1px solid var(--line);
-      color: #dce9ff;
-      font-size: 14px;
-      line-height: 1.6;
-      word-break: break-all;
-    }
-
-    .insight-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .insight-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line-soft);
-    }
-
-    .insight-item:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .insight-label {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .insight-value {
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.5;
-      text-align: right;
-    }
-
-    @media (max-width: 1180px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        position: relative;
-        height: auto;
-        padding-bottom: 18px;
-      }
-
-      .dashboard-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .grid-4 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 720px) {
-      .main {
-        padding: 18px;
-      }
-
-      .hero-title,
-      .topbar h2 {
-        font-size: 30px;
-      }
-
-      .grid-4,
-      .actions {
-        grid-template-columns: 1fr;
-      }
-
-      .card-body,
-      .card-header,
-      .hero-panel,
-      .stat-card {
-        padding-left: 18px;
-        padding-right: 18px;
-      }
+      font-size: 28px;
+      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
   <div class="app-shell">
+    
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">ZA</div>
         <div>
-          <h1>Zona Azul Admin</h1>
+          <h1>Zona Azul</h1>
           <p>Painel operacional</p>
         </div>
       </div>
@@ -479,129 +134,61 @@
       </nav>
     </aside>
 
+    <!-- MAIN -->
     <main class="main">
-      <div class="dashboard-wrap">
-        <div class="topbar">
-          <div>
-            <h2>Dashboard</h2>
-            <p>Visão geral do fluxo do protocolo e leitura executiva da operação.</p>
-          </div>
+      
+      <div class="topbar">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Visão geral da operação</p>
         </div>
 
-        <section class="hero-panel">
-          <p class="hero-kicker">Painel geral</p>
-          <h3 class="hero-title">Centro de comando da operação</h3>
-          <p class="hero-subtitle">
-            Acompanhe leads, clientes ativos e o fluxo principal do sistema em um só lugar.
-            Aqui fica a visão macro da operação antes de entrar nos casos individuais.
-          </p>
-
-          <div class="hero-chips">
-            <span class="chip success">Sistema ativo</span>
-            <span class="chip" id="hero-total-clientes">0 clientes</span>
-            <span class="chip" id="hero-total-leads">0 leads</span>
-          </div>
-        </section>
-
-        <section class="grid grid-4">
-          <article class="stat-card">
-            <span class="stat-label">Leads totais</span>
-            <strong class="stat-value" id="stat-leads">0</strong>
-            <div class="stat-meta">Leads captados no sistema.</div>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">Leads novos</span>
-            <strong class="stat-value" id="stat-novos">0</strong>
-            <div class="stat-meta">Entradas aguardando ação.</div>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">Convertidos</span>
-            <strong class="stat-value" id="stat-convertidos">0</strong>
-            <div class="stat-meta">Conversões registradas.</div>
-          </article>
-
-          <article class="stat-card">
-            <span class="stat-label">Clientes ativos</span>
-            <strong class="stat-value" id="stat-clientes">0</strong>
-            <div class="stat-meta">Base operacional ativa.</div>
-          </article>
-        </section>
-
-        <section class="dashboard-layout">
-          <div class="stack">
-            <section class="card">
-              <div class="card-header">
-                <div>
-                  <h3>Atalhos</h3>
-                  <p>Acesso rápido para as áreas mais importantes da operação.</p>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="actions">
-                  <a class="btn" href="./pre-diagnostico/">Abrir Pré-diagnóstico</a>
-                  <a class="btn secondary" href="./clientes/">Ver Clientes</a>
-                </div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <div>
-                  <h3>Link público</h3>
-                  <p>Use esse link na sua landing page e campanhas de captação.</p>
-                </div>
-              </div>
-              <div class="card-body">
-                <p class="muted">Use este link na sua landing page:</p>
-                <div class="code-box" id="public-link-box"></div>
-              </div>
-            </section>
-          </div>
-
-          <div class="stack">
-            <section class="card">
-              <div class="card-header">
-                <div>
-                  <h3>Leitura operacional</h3>
-                  <p>Diagnóstico rápido do momento atual do sistema.</p>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="insight-list">
-                  <div class="insight-item">
-                    <div class="insight-label">Taxa de conversão estimada</div>
-                    <div class="insight-value" id="insight-conversao">0%</div>
-                  </div>
-
-                  <div class="insight-item">
-                    <div class="insight-label">Clientes arquivados</div>
-                    <div class="insight-value" id="insight-arquivados">0</div>
-                  </div>
-
-                  <div class="insight-item">
-                    <div class="insight-label">Leads aguardando ação</div>
-                    <div class="insight-value" id="insight-aguardando">0</div>
-                  </div>
-
-                  <div class="insight-item">
-                    <div class="insight-label">Base total de clientes</div>
-                    <div class="insight-value" id="insight-base-clientes">0</div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-        </section>
+        <button id="logout-btn" class="btn secondary">Sair</button>
       </div>
+
+      <section class="hero">
+        <h3>Centro de comando</h3>
+        <p>Acompanhe seus leads e clientes em tempo real</p>
+      </section>
+
+      <section class="grid grid-4">
+        <div class="card">
+          <span>Leads</span>
+          <div class="stat-value" id="stat-leads">0</div>
+        </div>
+
+        <div class="card">
+          <span>Novos</span>
+          <div class="stat-value" id="stat-novos">0</div>
+        </div>
+
+        <div class="card">
+          <span>Convertidos</span>
+          <div class="stat-value" id="stat-convertidos">0</div>
+        </div>
+
+        <div class="card">
+          <span>Clientes</span>
+          <div class="stat-value" id="stat-clientes">0</div>
+        </div>
+      </section>
+
     </main>
   </div>
 
+  <!-- CORE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/supabase.js?v=2"></script>
+
+  <!-- 🔒 GUARD -->
   <script src="./assets/js/guard.js?v=1"></script>
+
+  <!-- SISTEMA -->
   <script src="./assets/js/storage.js?v=2"></script>
   <script src="./assets/js/dashboard.js?v=2"></script>
+
+  <!-- LOGOUT -->
+  <script src="./assets/js/logout.js?v=1"></script>
+
 </body>
 </html>
