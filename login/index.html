@@ -50,14 +50,9 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #4f46e5;
-    }
-
     #msg {
       margin-top: 10px;
       font-size: 14px;
-      color: #fda4af;
     }
   </style>
 </head>
@@ -79,14 +74,23 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    console.log("Script carregado");
+
     const supabase = window.supabase.createClient(
       "https://qrwzzgnyzsomugranmnu.supabase.co",
       "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M"
     );
 
     async function login() {
+      alert("Botão funcionando");
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("senha").value;
+
+      if (!email || !password) {
+        alert("Preenche email e senha");
+        return;
+      }
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -94,17 +98,13 @@
       });
 
       if (error) {
-        document.getElementById("msg").innerText = error.message;
+        alert("Erro: " + error.message);
         return;
       }
 
-      document.getElementById("msg").style.color = "#86efac";
-      document.getElementById("msg").innerText = "Login realizado com sucesso";
+      alert("Login OK");
 
-      // redireciona para o sistema
-      setTimeout(() => {
-        window.location.href = "../";
-      }, 800);
+      window.location.href = "../";
     }
   </script>
 
