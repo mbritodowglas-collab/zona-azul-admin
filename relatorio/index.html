@@ -2,48 +2,431 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatório | Metodologia Vida Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=18" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zona Azul Admin</title>
+
+  <link rel="stylesheet" href="./assets/css/global.css?v=61" />
+
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top, rgba(99,102,241,0.14), transparent 28%),
+        radial-gradient(circle at right top, rgba(59,130,246,0.10), transparent 24%),
+        linear-gradient(180deg, #0b1120, #020617 78%);
+      min-height: 100vh;
+    }
+
+    .dashboard-wrap {
+      display: grid;
+      gap: 24px;
+    }
+
+    .dashboard-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 26px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, rgba(79,70,229,0.22), rgba(37,99,235,0.12));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.28);
+    }
+
+    .dashboard-hero-left {
+      display: grid;
+      gap: 10px;
+      max-width: 700px;
+    }
+
+    .dashboard-kicker {
+      margin: 0;
+      color: rgba(191,219,254,0.92);
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .dashboard-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 1.04;
+      font-weight: 800;
+    }
+
+    .dashboard-subtitle {
+      margin: 0;
+      color: rgba(226,232,240,0.78);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .dashboard-hero-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .hero-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e5eefc;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .metric-panel {
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+    }
+
+    .metric-panel small {
+      display: block;
+      margin-bottom: 10px;
+      color: rgba(226,232,240,0.62);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .metric-value {
+      color: #ffffff;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .metric-meta {
+      color: rgba(226,232,240,0.74);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.85fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .dashboard-col {
+      display: grid;
+      gap: 20px;
+    }
+
+    .dashboard-card {
+      border-radius: 28px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+    }
+
+    .dashboard-card-head {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-card-head h3 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .dashboard-card-head p {
+      margin: 6px 0 0;
+      color: rgba(226,232,240,0.70);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .dashboard-card-body {
+      padding: 20px 22px 22px;
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .shortcut-card {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.05);
+      text-decoration: none;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .shortcut-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(129,140,248,0.34);
+      background: rgba(99,102,241,0.07);
+    }
+
+    .shortcut-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.26), rgba(59,130,246,0.18));
+      color: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .shortcut-card strong {
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .shortcut-card span {
+      color: rgba(226,232,240,0.72);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .insight-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .insight-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .insight-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .insight-label {
+      color: rgba(226,232,240,0.72);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .insight-value {
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .link-box {
+      display: grid;
+      gap: 14px;
+    }
+
+    .public-link-box {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #dbeafe;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-all;
+    }
+
+    .dashboard-inline-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .dashboard-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .dashboard-btn-primary {
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      box-shadow: 0 12px 24px rgba(59,130,246,0.22);
+    }
+
+    .dashboard-btn-secondary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e5eefc;
+    }
+
+    .status-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.12);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.18);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 1100px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .dashboard-title {
+        font-size: 28px;
+      }
+
+      .metrics-grid,
+      .shortcut-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-value {
+        font-size: 30px;
+      }
+    }
+  </style>
 </head>
-<body class="report-shell report-premium-shell">
-  <main class="report-wrap report-premium-wrap">
-    <div class="report-actions no-print">
-      <a href="../pre-diagnostico/" class="btn secondary">Voltar</a>
-      <button class="btn" id="print-report-btn" type="button">Baixar / Imprimir PDF</button>
-    </div>
 
-    <article class="report-card premium-report-card" id="report-content">
-      <header class="premium-report-hero">
-        <div class="premium-report-kicker">◆ METODOLOGIA VIDA AZUL ◆</div>
-        <h1>SEU PERFIL DE LONGEVIDADE</h1>
-        <p class="premium-report-subtitle">
-          Baseado nos pilares centrais das Zonas Azuis — regiões do mundo onde as pessoas vivem mais e melhor.
-        </p>
-
-        <div class="premium-report-meta">
-          <div>
-            <span class="meta-label">Lead</span>
-            <strong id="report-lead-name">Carregando...</strong>
-          </div>
-          <div>
-            <span class="meta-label">Relatório gerado em</span>
-            <strong id="report-date">--/--/----</strong>
-          </div>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">ZA</div>
+        <div>
+          <h1>Zona Azul</h1>
+          <p>Painel operacional</p>
         </div>
-      </header>
+      </div>
 
-      <div class="report-body premium-report-body" id="report-body"></div>
-    </article>
-  </main>
+      <nav class="nav">
+        <a href="./index.html" class="active">Dashboard</a>
+        <a href="./pre-diagnostico/">Pré-diagnóstico</a>
+        <a href="./clientes/">Clientes</a>
+      </nav>
+    </aside>
 
-  <!-- CORE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/supabase.js?v=1"></script>
-  <script src="../assets/js/storage.js?v=1"></script>
+    <main class="main">
+      <div class="dashboard-wrap">
+        <section class="dashboard-hero">
+          <div class="dashboard-hero-left">
+            <p class="dashboard-kicker">Painel geral</p>
+            <h2 class="dashboard-title">Centro de comando da operação</h2>
+            <p class="dashboard-subtitle">
+              Acompanhe leads, clientes ativos e o fluxo principal do sistema em um só lugar.
+              Aqui fica a leitura macro da máquina antes de entrar nos casos individuais.
+            </p>
+          </div>
 
-  <!-- PAGE -->
-  <script src="../assets/js/calculos.js?v=18"></script>
-  <script src="../assets/js/relatorio.js?v=18"></script>
-</body>
-</html>
+          <div class="dashboard-hero-right">
+            <span class="status-soft">Sistema ativo</span>
+            <span class="hero-chip" id="hero-total-clientes">0 clientes</span>
+            <span class="hero-chip" id="hero-total-leads">0 leads</span>
+          </div>
+        </section>
+
+        <section class="metrics-grid">
+          <article class="metric-panel">
+            <small>Total de leads</small>
+            <div class="metric-value" id="stat-leads">0</div>
+            <div class="metric-meta" id="stat-leads-meta">Leads captados no sistema.</div>
+          </article>
+
+          <article class="metric-panel">
+            <small>Leads novos</small>
+            <div class="metric-value" id="stat-novos">0</div>
+            <div class="metric-meta" id="stat-novos-meta">Entradas aguardando ação.</div>
+          </article>
+
+          <article class="metric-panel">
+            <small>Leads convertidos</small>
+            <div class="metric-value" id="stat-convertidos">0</div>
+            <div class="metric-meta" id="stat-convertidos-meta">Conversões registradas.</div>
+          </article>
+
+          <article class="metric-panel">
+            <small>Clientes ativos</small>
+            <div class="metric-value" id="stat-clientes">0</div>
+            <div class="metric-meta" id="stat-clientes-meta">Base operacional ativa.</div>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="dashboard-col">
+            <section class="dashboard-card">
+              <div class="dashboard-card-head">
+                <div>
+                  <h3>Atalhos do sistema</h3>
+                  <p>Acesso rápido para as áreas mais importantes da operação.</p>
+                </div>
+              </div>
+
+              <div class="dashboard-card-body">
+                <div class="shortcut-grid">
+                  <a class="shortcut-card" href="./pre-diagnostico/">
+                    <div class="shortcut-icon">🧾</div>
+                    <strong>Pré-diagnóstico</strong>
+                    <span>Ver leads recebidos, revisar entradas e converter em cliente.</span>
+                  </a>
+
+                  <a class="shortcut-card" href="./clientes/">
+                    <div class="shortcut-icon">👥</div>
+                    <strong>Clientes
