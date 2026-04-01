@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const form = document.getElementById("login-form");
   const emailInput = document.getElementById("email");
   const senhaInput = document.getElementById("senha");
@@ -24,6 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
     "https://qrwzzgnyzsomugranmnu.supabase.co",
     "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M"
   );
+
+  function goToApp() {
+    window.location.href = "../index.html";
+  }
+
+  // Se já tiver sessão, não fica preso no login
+  try {
+    const { data, error } = await supabase.auth.getSession();
+
+    if (!error && data?.session) {
+      goToApp();
+      return;
+    }
+  } catch (err) {
+    console.error("[login.js] erro ao verificar sessão:", err);
+  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -54,11 +70,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setMsg("Login OK", true);
 
       setTimeout(() => {
-        window.location.href = "../";
-      }, 700);
+        goToApp();
+      }, 500);
     } catch (err) {
-      setMsg("Erro inesperado no login.");
       console.error("[login.js]", err);
+      setMsg("Erro inesperado no login.");
       setLoading(false);
     }
   });
