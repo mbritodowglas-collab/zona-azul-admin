@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Zona Azul</title>
-
+  <title>Login | Zona Azul | v2</title>
   <style>
     body {
       margin: 0;
@@ -14,9 +13,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
-
     .box {
       width: 320px;
       padding: 20px;
@@ -24,11 +22,12 @@
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
-
-    h2 {
-      margin-bottom: 20px;
+    h2 { margin-bottom: 8px; }
+    .version {
+      font-size: 12px;
+      color: #93c5fd;
+      margin-bottom: 16px;
     }
-
     input {
       width: 100%;
       padding: 10px;
@@ -37,8 +36,8 @@
       border: none;
       background: #1e293b;
       color: white;
+      box-sizing: border-box;
     }
-
     button {
       width: 100%;
       padding: 10px;
@@ -49,64 +48,75 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     #msg {
       margin-top: 10px;
       font-size: 14px;
+      color: #fda4af;
+      min-height: 20px;
     }
   </style>
 </head>
-
 <body>
-
   <div class="box">
     <h2>Entrar</h2>
+    <div class="version">versão teste v2</div>
 
-    <input id="email" type="email" placeholder="Seu email" />
-    <input id="senha" type="password" placeholder="Sua senha" />
-
-    <button onclick="login()">Entrar</button>
+    <form id="login-form">
+      <input id="email" type="email" placeholder="Seu email" required />
+      <input id="senha" type="password" placeholder="Sua senha" required />
+      <button id="login-btn" type="submit">Entrar</button>
+    </form>
 
     <p id="msg"></p>
   </div>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    console.log("Script carregado");
+    const msg = document.getElementById("msg");
+    const form = document.getElementById("login-form");
+
+    function setMsg(text, ok = false) {
+      msg.textContent = text;
+      msg.style.color = ok ? "#86efac" : "#fda4af";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      setMsg("script carregado");
+    });
 
     const supabase = window.supabase.createClient(
       "https://qrwzzgnyzsomugranmnu.supabase.co",
       "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M"
     );
 
-    async function login() {
-      alert("Botão funcionando");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setMsg("botão respondeu");
 
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("senha").value;
 
       if (!email || !password) {
-        alert("Preenche email e senha");
+        setMsg("Preenche email e senha");
         return;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if (error) {
-        alert("Erro: " + error.message);
+        setMsg("Erro: " + error.message);
         return;
       }
 
-      alert("Login OK");
-
-      window.location.href = "../";
-    }
+      setMsg("Login OK", true);
+      setTimeout(() => {
+        window.location.href = "../";
+      }, 700);
+    });
   </script>
-
 </body>
 </html>
