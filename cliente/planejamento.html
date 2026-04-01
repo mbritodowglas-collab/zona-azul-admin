@@ -3,22 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planejamento | Zona Azul</title>
+  <title>Planejamento | Trackion System</title>
   <link rel="stylesheet" href="../assets/css/global.css?v=60" />
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-0: #020816;
+      --bg-1: #061126;
+      --bg-2: #0a1830;
+      --panel: rgba(10, 24, 48, 0.78);
+      --panel-2: rgba(8, 20, 40, 0.92);
+      --line: rgba(255,255,255,0.08);
+      --line-soft: rgba(255,255,255,0.05);
+      --text: #f3f8ff;
+      --muted: #9cb0cb;
+      --muted-2: #7f92ad;
+      --blue-1: #47b8ff;
+      --blue-2: #1f7cff;
+      --green-1: #7cff5a;
+      --green-2: #41d13f;
+      --success: #9dffd6;
+      --warning: #ffe08a;
+      --danger: #ffb0b0;
+      --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);
+      --shadow-lg: 0 18px 42px rgba(0,0,0,0.28);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
     body {
-      background: radial-gradient(circle at top, #111827, #020617 72%);
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
+        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 24px 20px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+      backdrop-filter: blur(12px);
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 26px;
+    }
+
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
+      letter-spacing: 0.04em;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .brand-highlight {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #47b8ff, #7cff5a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav a {
+      min-height: 52px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 700;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.08);
+      transform: translateX(2px);
+    }
+
+    .nav a.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(71,184,255,0.12), rgba(124,255,90,0.08));
+      border-color: rgba(71,184,255,0.16);
+    }
+
+    .main {
+      padding: 24px;
+      min-width: 0;
     }
 
     .planner-wrap {
       display: grid;
       gap: 24px;
+      max-width: 1560px;
     }
 
     .planner-hero {
-      background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(139,92,246,0.12));
-      border: 1px solid rgba(255,255,255,0.06);
+      background:
+        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),
+        linear-gradient(135deg, rgba(71,184,255,0.16), rgba(124,255,90,0.08)),
+        var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 28px;
       padding: 24px;
       display: flex;
@@ -26,6 +168,7 @@
       gap: 20px;
       flex-wrap: wrap;
       align-items: center;
+      box-shadow: var(--shadow-xl);
     }
 
     .planner-hero-left {
@@ -44,15 +187,16 @@
       font-size: 22px;
       font-weight: 800;
       color: #fff;
-      background: linear-gradient(135deg, #6d73ff, #8d72ff);
-      box-shadow: 0 18px 32px rgba(109,115,255,0.24);
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 18px 32px rgba(31,124,255,0.24);
     }
 
     .planner-title {
       margin: 0;
-      font-size: 28px;
-      line-height: 1.1;
-      font-weight: 800;
+      font-size: 30px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -0.03em;
       color: #fff;
     }
 
@@ -60,12 +204,50 @@
       margin: 6px 0 0;
       color: rgba(235,240,255,0.72);
       font-size: 15px;
+      line-height: 1.6;
     }
 
     .planner-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .cliente-btn,
+    .cliente-btn-secundario,
+    .cliente-btn-abrir {
+      min-height: 44px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .cliente-btn:hover,
+    .cliente-btn-secundario:hover,
+    .cliente-btn-abrir:hover {
+      transform: translateY(-1px);
+      opacity: 0.97;
+    }
+
+    .cliente-btn-secundario {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cliente-btn,
+    .cliente-btn-abrir {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
     }
 
     .planner-summary-grid {
@@ -79,6 +261,7 @@
       border: 1px solid rgba(255,255,255,0.05);
       border-radius: 22px;
       padding: 18px;
+      box-shadow: var(--shadow-lg);
     }
 
     .summary-card small {
@@ -95,7 +278,7 @@
       display: block;
       color: #fff;
       font-size: 17px;
-      line-height: 1.35;
+      line-height: 1.45;
     }
 
     .planner-grid {
@@ -113,6 +296,24 @@
     .planner-side-sticky {
       position: sticky;
       top: 20px;
+    }
+
+    .card {
+      border-radius: 22px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .card-body {
+      padding: 22px;
     }
 
     .planner-accordion {
@@ -143,11 +344,16 @@
 
     .planner-toggle h3 {
       margin: 0 0 4px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #ffffff;
     }
 
     .planner-toggle p {
       margin: 0;
       color: rgba(235,240,255,0.64);
+      line-height: 1.6;
     }
 
     .planner-icon {
@@ -407,7 +613,8 @@
       margin-top: 14px;
     }
 
-    .za-feedback-field label {
+    .za-feedback-field label,
+    .field label {
       color: rgba(230,235,255,0.88);
       font-size: 13px;
       font-weight: 700;
@@ -415,7 +622,10 @@
 
     .za-feedback-field select,
     .za-feedback-field textarea,
-    .za-feedback-field input {
+    .za-feedback-field input,
+    .field input,
+    .field textarea,
+    .field select {
       width: 100%;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.1);
@@ -427,12 +637,56 @@
       box-sizing: border-box;
     }
 
-    .za-feedback-field textarea {
+    .za-feedback-field textarea,
+    .field textarea {
       min-height: 92px;
       resize: vertical;
     }
 
+    .field {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid.cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cliente-section-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .cliente-hub-updated {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     @media (max-width: 1100px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+
       .planner-summary-grid {
         grid-template-columns: 1fr 1fr;
       }
@@ -447,6 +701,11 @@
     }
 
     @media (max-width: 640px) {
+      .sidebar,
+      .main {
+        padding: 16px;
+      }
+
       .planner-summary-grid {
         grid-template-columns: 1fr;
       }
@@ -459,6 +718,19 @@
         width: 64px;
         height: 64px;
       }
+
+      .grid.cols-2,
+      .grid.cols-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .planner-actions {
+        width: 100%;
+      }
+
+      .planner-actions > * {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -466,24 +738,24 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-badge">ZA</div>
+        <div class="brand-badge">TR</div>
         <div>
-          <h1>Zona Azul</h1>
-          <p>Planejamento do treinador</p>
+          <h1>Trackion System</h1>
+          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
         </div>
       </div>
 
       <nav class="nav">
         <a href="../index.html">Dashboard</a>
         <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a href="../clientes/">Clientes</a>
+        <a class="active" href="../clientes/">Clientes</a>
       </nav>
     </aside>
 
     <main class="main">
       <div id="planejamento-not-found" class="card hidden">
         <div class="card-body">
-          <div class="empty-state">Cliente não encontrado.</div>
+          <div class="empty-state-box">Cliente não encontrado.</div>
         </div>
       </div>
 
@@ -503,10 +775,11 @@
           </div>
 
           <div class="planner-actions">
-            <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
-            <a id="abrir-plano-cliente-btn" class="cliente-btn cliente-btn-secundario" href="./plano-cliente.html">Versão cliente / PDF</a>
-            <button id="puxar-diagnostico-btn" type="button" class="cliente-btn cliente-btn-secundario">Puxar diagnóstico</button>
-            <button id="salvar-planejamento-topo-btn" type="button" class="cliente-btn cliente-btn-abrir">Salvar planejamento</button>
+            <a id="voltar-cliente-link" class="cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+            <a id="abrir-plano-cliente-btn" class="cliente-btn-secundario" href="./plano-cliente.html">Versão cliente / PDF</a>
+            <button id="puxar-diagnostico-btn" type="button" class="cliente-btn-secundario">Puxar diagnóstico</button>
+            <button id="salvar-planejamento-topo-btn" type="button" class="cliente-btn-abrir">Salvar planejamento</button>
+            <button id="logout-btn" type="button" class="cliente-btn-secundario">Sair</button>
           </div>
         </section>
 
@@ -535,600 +808,6 @@
         <section class="planner-grid">
           <div class="planner-col">
             <div id="planner-editable-area">
-              <section class="card planner-accordion" data-accordion="estrategia">
+              <section class="card planner-accordion is-open" data-accordion="estrategia">
                 <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="true">
-                    <div>
-                      <h3>Estratégia macro</h3>
-                      <p>Direção do caso, janela de foco e objetivo operacional.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="estrategia-titulo">Título do planejamento</label>
-                      <input id="estrategia-titulo" type="text" placeholder="Ex.: Planejamento ciclo 1" />
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-fase">Fase do planejamento</label>
-                      <select id="estrategia-fase">
-                        <option value="">Selecionar</option>
-                        <option value="base">Base</option>
-                        <option value="ajuste">Ajuste</option>
-                        <option value="construcao">Construção</option>
-                        <option value="consolidacao">Consolidação</option>
-                      </select>
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-formato">Formato do serviço</label>
-                      <select id="estrategia-formato">
-                        <option value="">Selecionar</option>
-                        <option value="online">Online</option>
-                        <option value="presencial">Presencial</option>
-                        <option value="hibrido">Híbrido</option>
-                      </select>
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-objetivo-30d">Meta dos próximos 30 dias</label>
-                      <input id="estrategia-objetivo-30d" type="text" placeholder="Ex.: treinar 3x/semana com aderência real" />
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-foco-central">Foco central do mês</label>
-                      <input id="estrategia-foco-central" type="text" placeholder="Ex.: regular sono antes de aumentar carga" />
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-indicador-sucesso">Indicador principal de sucesso</label>
-                      <input id="estrategia-indicador-sucesso" type="text" placeholder="Ex.: 12 treinos concluídos no mês" />
-                    </div>
-
-                    <div class="field">
-                      <label for="estrategia-risco">Risco principal de sabotagem</label>
-                      <input id="estrategia-risco" type="text" placeholder="Ex.: rotina desorganizada à noite" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="estrategia-diretriz">Diretriz técnica do treinador</label>
-                      <textarea id="estrategia-diretriz" placeholder="Descreva a lógica central da condução deste caso..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="planner-divider"></div>
-
-                  <h4 class="subsection-title">Pilares priorizados</h4>
-
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="pilar-1">1º pilar</label>
-                      <input id="pilar-1" type="text" placeholder="Ex.: Sono" />
-                    </div>
-
-                    <div class="field">
-                      <label for="pilar-2">2º pilar</label>
-                      <input id="pilar-2" type="text" placeholder="Ex.: Movimento" />
-                    </div>
-
-                    <div class="field">
-                      <label for="pilar-3">3º pilar</label>
-                      <input id="pilar-3" type="text" placeholder="Ex.: Estresse" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="estrategia-updated">Última atualização: —</span>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card planner-accordion" data-accordion="habitos">
-                <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="false">
-                    <div>
-                      <h3>Hábitos e comportamento</h3>
-                      <p>Rotina mínima viável, ancoragens e ambiente de execução.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="habito-ancora">Hábito âncora</label>
-                      <input id="habito-ancora" type="text" placeholder="Ex.: deitar 30 min mais cedo" />
-                    </div>
-
-                    <div class="field">
-                      <label for="ajuste-ambiente">Ajuste de ambiente</label>
-                      <input id="ajuste-ambiente" type="text" placeholder="Ex.: deixar roupa de treino pronta" />
-                    </div>
-
-                    <div class="field">
-                      <label for="meta-sono">Meta de sono</label>
-                      <input id="meta-sono" type="text" placeholder="Ex.: 7h por noite" />
-                    </div>
-
-                    <div class="field">
-                      <label for="meta-hidratacao">Meta de hidratação</label>
-                      <input id="meta-hidratacao" type="text" placeholder="Ex.: 2,5 L por dia" />
-                    </div>
-
-                    <div class="field">
-                      <label for="meta-passos">Meta de passos / movimento</label>
-                      <input id="meta-passos" type="text" placeholder="Ex.: 8 mil passos/dia" />
-                    </div>
-
-                    <div class="field">
-                      <label for="meta-alimentacao">Meta alimentar</label>
-                      <input id="meta-alimentacao" type="text" placeholder="Ex.: 2 refeições estruturadas por dia" />
-                    </div>
-
-                    <div class="field">
-                      <label for="ritual-anti-sabotagem">Ritual anti-sabotagem</label>
-                      <input id="ritual-anti-sabotagem" type="text" placeholder="Ex.: checklist noturno de 5 min" />
-                    </div>
-
-                    <div class="field">
-                      <label for="frequencia-checkin">Frequência de check-in</label>
-                      <select id="frequencia-checkin">
-                        <option value="">Selecionar</option>
-                        <option value="diario">Diário</option>
-                        <option value="2x-semana">2x por semana</option>
-                        <option value="semanal">Semanal</option>
-                        <option value="quinzenal">Quinzenal</option>
-                      </select>
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="regra-minima">Regra mínima da semana</label>
-                      <textarea id="regra-minima" placeholder="Ex.: se perder o treino principal, fazer versão reduzida de 20 minutos no mesmo dia."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="habitos-updated">Última atualização: —</span>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card planner-accordion" data-accordion="nutricional">
-                <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="false">
-                    <div>
-                      <h3>Direcionamento nutricional</h3>
-                      <p>Estratégia alimentar, constância e proteção contra sabotagem.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="nutri-objetivo">Objetivo nutricional do ciclo</label>
-                      <input id="nutri-objetivo" type="text" placeholder="Ex.: melhorar rotina alimentar e reduzir improviso" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-foco-principal">Foco alimentar principal</label>
-                      <input id="nutri-foco-principal" type="text" placeholder="Ex.: proteína + refeições estruturadas" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-regra-minima">Regra alimentar mínima</label>
-                      <input id="nutri-regra-minima" type="text" placeholder="Ex.: 2 refeições completas ao dia" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-refeicoes-prioritarias">Refeições prioritárias</label>
-                      <input id="nutri-refeicoes-prioritarias" type="text" placeholder="Ex.: café da manhã e jantar" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-dias-corridos">Estratégia para dias corridos</label>
-                      <input id="nutri-dias-corridos" type="text" placeholder="Ex.: marmita + lanche de contingência" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-fim-semana">Estratégia para fim de semana</label>
-                      <input id="nutri-fim-semana" type="text" placeholder="Ex.: 1 refeição livre consciente" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-sabotadores">Gatilhos de sabotagem alimentar</label>
-                      <input id="nutri-sabotadores" type="text" placeholder="Ex.: ansiedade à noite, falta de preparo" />
-                    </div>
-
-                    <div class="field">
-                      <label for="nutri-resposta-recaida">Resposta planejada para recaídas</label>
-                      <input id="nutri-resposta-recaida" type="text" placeholder="Ex.: retomar na refeição seguinte sem compensação" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="nutri-observacoes">Observações do treinador</label>
-                      <textarea id="nutri-observacoes" placeholder="Diretrizes práticas de rotina alimentar e adesão."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="nutricional-updated">Última atualização: —</span>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card planner-accordion" data-accordion="treino">
-                <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="false">
-                    <div>
-                      <h3>Planejamento de treino</h3>
-                      <p>Estrutura do ciclo de 3 meses e programa escrito de cada mês.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <h4 class="subsection-title">Visão macro do ciclo</h4>
-
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="treino-objetivo">Objetivo do ciclo de 3 meses</label>
-                      <input id="treino-objetivo" type="text" placeholder="Ex.: emagrecimento com ganho de consistência e base muscular" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-frequencia">Frequência semanal base</label>
-                      <input id="treino-frequencia" type="text" placeholder="Ex.: 3x por semana" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-duracao">Duração média por sessão</label>
-                      <input id="treino-duracao" type="text" placeholder="Ex.: 45 a 60 min" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-local">Local de treino</label>
-                      <input id="treino-local" type="text" placeholder="Ex.: academia / casa / híbrido" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-intensidade">Intensidade alvo geral</label>
-                      <input id="treino-intensidade" type="text" placeholder="Ex.: moderada, RPE 6–8" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-progressao">Critério de progressão</label>
-                      <input id="treino-progressao" type="text" placeholder="Ex.: aumentar carga quando fechar faixa alvo" />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-restricoes">Restrições ou cuidados</label>
-                      <input id="treino-restricoes" type="text" placeholder="Ex.: dor lombar, baixa mobilidade, joelho..." />
-                    </div>
-
-                    <div class="field">
-                      <label for="treino-divisao">Estrutura geral base</label>
-                      <input id="treino-divisao" type="text" placeholder="Ex.: full body / ABC / superior-inferior" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="treino-observacoes">Observações técnicas do ciclo</label>
-                      <textarea id="treino-observacoes" placeholder="Anote aqui as regras técnicas gerais do ciclo de 3 meses..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="planner-divider"></div>
-
-                  <h4 class="subsection-title">Mês 1</h4>
-
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="mes1-foco">Foco do mês 1</label>
-                      <input id="mes1-foco" type="text" placeholder="Ex.: adaptação, aderência e técnica" />
-                    </div>
-
-                    <div class="field">
-                      <label for="mes1-divisao">Divisão do mês 1</label>
-                      <input id="mes1-divisao" type="text" placeholder="Ex.: full body 3x" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="mes1-programa">Programa do mês 1</label>
-                      <textarea id="mes1-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 1 por extenso..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="planner-divider"></div>
-
-                  <h4 class="subsection-title">Mês 2</h4>
-
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="mes2-foco">Foco do mês 2</label>
-                      <input id="mes2-foco" type="text" placeholder="Ex.: progressão de volume e consolidação" />
-                    </div>
-
-                    <div class="field">
-                      <label for="mes2-divisao">Divisão do mês 2</label>
-                      <input id="mes2-divisao" type="text" placeholder="Ex.: ABC 4x" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="mes2-programa">Programa do mês 2</label>
-                      <textarea id="mes2-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 2 por extenso..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="planner-divider"></div>
-
-                  <h4 class="subsection-title">Mês 3</h4>
-
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="mes3-foco">Foco do mês 3</label>
-                      <input id="mes3-foco" type="text" placeholder="Ex.: intensificação e fechamento do bloco" />
-                    </div>
-
-                    <div class="field">
-                      <label for="mes3-divisao">Divisão do mês 3</label>
-                      <input id="mes3-divisao" type="text" placeholder="Ex.: ABCD" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="mes3-programa">Programa do mês 3</label>
-                      <textarea id="mes3-programa" rows="10" placeholder="Escreva aqui o programa de treino do mês 3 por extenso..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="treino-updated">Última atualização: —</span>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card planner-accordion" data-accordion="cardio">
-                <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="false">
-                    <div>
-                      <h3>Cardio, gasto e recuperação</h3>
-                      <p>Cardio prescrito, NEAT e proteção da aderência.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="cardio-modalidade">Modalidade principal</label>
-                      <input id="cardio-modalidade" type="text" placeholder="Ex.: caminhada inclinada / bike / corrida" />
-                    </div>
-
-                    <div class="field">
-                      <label for="cardio-frequencia">Frequência</label>
-                      <input id="cardio-frequencia" type="text" placeholder="Ex.: 3x por semana" />
-                    </div>
-
-                    <div class="field">
-                      <label for="cardio-duracao">Duração</label>
-                      <input id="cardio-duracao" type="text" placeholder="Ex.: 20 a 30 min" />
-                    </div>
-
-                    <div class="field">
-                      <label for="cardio-intensidade">Intensidade</label>
-                      <input id="cardio-intensidade" type="text" placeholder="Ex.: leve a moderada / zona 2" />
-                    </div>
-
-                    <div class="field">
-                      <label for="neat-meta">Meta de NEAT</label>
-                      <input id="neat-meta" type="text" placeholder="Ex.: levantar a cada 60 min + 8 mil passos" />
-                    </div>
-
-                    <div class="field">
-                      <label for="recuperacao-estrategia">Estratégia de recuperação</label>
-                      <input id="recuperacao-estrategia" type="text" placeholder="Ex.: 1 dia leve + alongamento curto" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="cardio-observacoes">Observações do bloco</label>
-                      <textarea id="cardio-observacoes" placeholder="Descreva como o cardio entra sem atrapalhar o processo..."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="cardio-updated">Última atualização: —</span>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card planner-accordion" data-accordion="observacoes">
-                <div class="card-header">
-                  <button class="planner-toggle" type="button" aria-expanded="false">
-                    <div>
-                      <h3>Condução do caso e observações finais</h3>
-                      <p>Tom da mentoria, alertas e mensagem interna do treinador.</p>
-                    </div>
-                    <span class="planner-icon">⌄</span>
-                  </button>
-                </div>
-
-                <div class="card-body planner-panel">
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="comunicacao-tom">Tom de comunicação</label>
-                      <input id="comunicacao-tom" type="text" placeholder="Ex.: firme, leve, educativo, diretivo..." />
-                    </div>
-
-                    <div class="field">
-                      <label for="momento-revisao">Data sugerida de revisão</label>
-                      <input id="momento-revisao" type="date" />
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="alertas-internos">Alertas internos do caso</label>
-                      <textarea id="alertas-internos" placeholder="Ex.: tendência a desistir quando a semana aperta, baixa confiança corporal, rotina familiar caótica..."></textarea>
-                    </div>
-
-                    <div class="field" style="grid-column: 1 / -1;">
-                      <label for="mensagem-interna">Mensagem interna do treinador</label>
-                      <textarea id="mensagem-interna" placeholder="Seu raciocínio de condução do caso em linguagem interna."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="observacoes-updated">Última atualização: —</span>
-                    <button id="salvar-planejamento-btn" type="button" class="cliente-btn cliente-btn-abrir">Salvar planejamento</button>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-
-          <div class="planner-col planner-side-sticky">
-            <section class="card">
-              <div class="card-header">
-                <h3>Leitura rápida do caso</h3>
-              </div>
-              <div class="card-body planner-status-card">
-                <div class="planner-status-row">
-                  <span>Objetivo</span>
-                  <strong id="side-objetivo">—</strong>
-                </div>
-                <div class="planner-status-row">
-                  <span>Gargalo</span>
-                  <strong id="side-gargalo">—</strong>
-                </div>
-                <div class="planner-status-row">
-                  <span>Prioridade</span>
-                  <strong id="side-prioridade">—</strong>
-                </div>
-                <div class="planner-status-row">
-                  <span>Hábito inicial</span>
-                  <strong id="side-habito">—</strong>
-                </div>
-                <div class="planner-status-row">
-                  <span>Ajuste de ambiente</span>
-                  <strong id="side-ambiente">—</strong>
-                </div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <h3>Resumo operacional</h3>
-              </div>
-              <div class="card-body">
-                <div class="planner-note-box">
-                  Esse bloco gera um texto-resumo do plano para você consultar rápido.
-                </div>
-
-                <div class="planner-inline-actions">
-                  <button id="gerar-resumo-btn" type="button" class="cliente-btn cliente-btn-secundario">Gerar resumo</button>
-                  <button id="copiar-resumo-btn" type="button" class="cliente-btn cliente-btn-secundario">Copiar</button>
-                </div>
-
-                <div class="field" style="margin-top: 16px;">
-                  <label for="planejamento-resumo">Resumo do planejamento</label>
-                  <textarea id="planejamento-resumo" class="planner-output" placeholder="O resumo gerado aparecerá aqui."></textarea>
-                </div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <h3>Notas do treinador</h3>
-              </div>
-              <div class="card-body">
-                <div id="note-form-wrap">
-                  <div class="grid cols-1">
-                    <div class="field">
-                      <label for="nota-tipo">Tipo da nota</label>
-                      <select id="nota-tipo">
-                        <option value="lembrete">Lembrete</option>
-                        <option value="ajuste">Ajuste</option>
-                        <option value="alerta">Alerta</option>
-                        <option value="observacao">Observação</option>
-                      </select>
-                    </div>
-
-                    <div class="field">
-                      <label for="nota-texto">Nova nota</label>
-                      <textarea id="nota-texto" placeholder="Ex.: aluno perde aderência quando vira a noite no fim de semana."></textarea>
-                    </div>
-                  </div>
-
-                  <div class="planner-inline-actions">
-                    <button id="salvar-nota-btn" type="button" class="cliente-btn cliente-btn-abrir">Salvar nota</button>
-                  </div>
-                </div>
-
-                <div id="notes-list" class="notes-list"></div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <h3>Status do módulo</h3>
-              </div>
-              <div class="card-body">
-                <div id="status-planejamento" class="empty-state-box">
-                  Nenhum planejamento ativo no momento.
-                </div>
-
-                <div class="badge-row" id="status-badges"></div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <h3>Controle do planejamento</h3>
-              </div>
-              <div class="card-body">
-                <div class="planner-inline-actions">
-                  <button id="arquivar-planejamento-btn" type="button" class="cliente-btn cliente-btn-secundario">Arquivar planejamento</button>
-                </div>
-
-                <div class="danger-zone" style="margin-top: 16px;">
-                  <h4>Zona de exclusão</h4>
-                  <p>
-                    Excluir remove completamente o planejamento salvo deste cliente.
-                  </p>
-                  <button id="excluir-planejamento-btn" type="button" class="cliente-btn cliente-btn-secundario">
-                    Excluir planejamento
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            <section class="card">
-              <div class="card-header">
-                <h3>Planejamentos arquivados</h3>
-              </div>
-              <div class="card-body">
-                <div id="archived-list" class="archived-list">
-                  <div class="empty-state-box">Nenhum planejamento arquivado ainda.</div>
-                </div>
-              </div>
-            </section>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <!-- CORE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/supabase.js?v=1"></script>
-  <script src="../assets/js/storage.js?v=1"></script>
-
-  <!-- PAGE -->
-  <script src="../assets/js/planejamento.js?v=1"></script>
-</body>
-</html>
+                  <button class="planner-toggle" type="button"
