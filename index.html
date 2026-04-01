@@ -7,29 +7,42 @@
   <link rel="stylesheet" href="./assets/css/global.css?v=1" />
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       background:
         radial-gradient(circle at top left, rgba(108,124,255,0.16), transparent 22%),
         radial-gradient(circle at top right, rgba(77,163,255,0.12), transparent 20%),
         linear-gradient(180deg, #071120 0%, #050d19 100%);
       color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .app-shell {
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 280px minmax(0, 1fr);
       min-height: 100vh;
     }
 
     .sidebar {
       padding: 24px;
       border-right: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.01);
+      min-width: 0;
     }
 
     .brand {
       display: flex;
       gap: 12px;
       margin-bottom: 24px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .brand-badge {
@@ -41,6 +54,19 @@
       align-items:center;
       justify-content:center;
       font-weight:bold;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: #9fb0c7;
+      font-size: 14px;
     }
 
     .nav {
@@ -50,45 +76,113 @@
     }
 
     .nav a {
-      padding: 12px;
-      border-radius: 10px;
+      padding: 14px 16px;
+      border-radius: 12px;
       text-decoration: none;
       color: #9fb0c7;
+      font-weight: 600;
+      transition: 0.2s ease;
     }
 
-    .nav a.active {
+    .nav a.active,
+    .nav a:hover {
       background: rgba(255,255,255,0.06);
       color: #fff;
     }
 
     .main {
       padding: 24px;
+      min-width: 0;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 40px;
+      line-height: 1.05;
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      color: #9fb0c7;
+      font-size: 16px;
     }
 
     .btn {
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 14px;
+      min-height: 44px;
     }
 
     .secondary {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.08);
       color: white;
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .hero {
+      margin-top: 8px;
+      padding: 28px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(108,124,255,0.18), rgba(77,163,255,0.08)),
+        rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .hero h3 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #d0dbec;
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 780px;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-top: 20px;
-      padding: 24px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.04);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #eef4ff;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .chip.success {
+      color: #b8ffdd;
+      background: rgba(39,194,129,0.12);
+      border-color: rgba(39,194,129,0.18);
     }
 
     .grid {
@@ -98,26 +192,190 @@
     }
 
     .grid-4 {
-      grid-template-columns: repeat(4,1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .card {
       padding: 20px;
-      border-radius: 16px;
+      border-radius: 20px;
       background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.14);
+      min-width: 0;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8ea0bb;
+      margin-bottom: 14px;
+      font-weight: 800;
     }
 
     .stat-value {
-      font-size: 28px;
-      font-weight: bold;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .stat-meta {
+      color: #9fb0c7;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .dashboard-bottom {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .btn-link {
+      min-height: 48px;
+      border-radius: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      padding: 0 14px;
+      background: linear-gradient(135deg,#6366f1,#3b82f6);
+      color: #fff;
+    }
+
+    .btn-link.secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .muted {
+      color: #9fb0c7;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .code-box {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #dce9ff;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-all;
+    }
+
+    .insight-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .insight-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .insight-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .insight-label {
+      color: #9fb0c7;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .insight-value {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .dashboard-bottom {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .sidebar,
+      .main {
+        padding: 16px;
+      }
+
+      .topbar h2 {
+        font-size: 30px;
+      }
+
+      .hero {
+        padding: 22px 18px;
+      }
+
+      .hero h3 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .grid-4,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-value {
+        font-size: 34px;
+      }
+
+      .topbar {
+        align-items: stretch;
+      }
+
+      #logout-btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="app-shell">
-    
-    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-badge">ZA</div>
@@ -134,9 +392,7 @@
       </nav>
     </aside>
 
-    <!-- MAIN -->
     <main class="main">
-      
       <div class="topbar">
         <div>
           <h2>Dashboard</h2>
@@ -148,47 +404,96 @@
 
       <section class="hero">
         <h3>Centro de comando</h3>
-        <p>Acompanhe seus leads e clientes em tempo real</p>
+        <p>
+          Acompanhe seus leads e clientes em tempo real, com uma visão clara
+          da operação e do avanço do sistema.
+        </p>
+
+        <div class="hero-chips">
+          <span class="chip success">Sistema ativo</span>
+          <span class="chip" id="hero-total-clientes">0 clientes</span>
+          <span class="chip" id="hero-total-leads">0 leads</span>
+        </div>
       </section>
 
       <section class="grid grid-4">
         <div class="card">
-          <span>Leads</span>
-          <div class="stat-value" id="stat-leads">0</div>
+          <span class="stat-label">Leads</span>
+          <strong class="stat-value" id="stat-leads">0</strong>
+          <div class="stat-meta">Leads captados no sistema.</div>
         </div>
 
         <div class="card">
-          <span>Novos</span>
-          <div class="stat-value" id="stat-novos">0</div>
+          <span class="stat-label">Novos</span>
+          <strong class="stat-value" id="stat-novos">0</strong>
+          <div class="stat-meta">Entradas aguardando ação.</div>
         </div>
 
         <div class="card">
-          <span>Convertidos</span>
-          <div class="stat-value" id="stat-convertidos">0</div>
+          <span class="stat-label">Convertidos</span>
+          <strong class="stat-value" id="stat-convertidos">0</strong>
+          <div class="stat-meta">Conversões registradas.</div>
         </div>
 
         <div class="card">
-          <span>Clientes</span>
-          <div class="stat-value" id="stat-clientes">0</div>
+          <span class="stat-label">Clientes</span>
+          <strong class="stat-value" id="stat-clientes">0</strong>
+          <div class="stat-meta">Base operacional ativa.</div>
         </div>
       </section>
 
+      <section class="dashboard-bottom">
+        <section class="card">
+          <h3 style="margin:0 0 10px;">Atalhos</h3>
+          <p class="muted">Acesso rápido às principais áreas da operação.</p>
+
+          <div class="actions">
+            <a class="btn-link" href="./pre-diagnostico/">Abrir Pré-diagnóstico</a>
+            <a class="btn-link secondary" href="./clientes/">Ver Clientes</a>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 style="margin:0 0 10px;">Link público</h3>
+          <p class="muted">Use este link na sua landing page:</p>
+          <div class="code-box" id="public-link-box"></div>
+        </section>
+      </section>
+
+      <section class="card" style="margin-top:20px;">
+        <h3 style="margin:0 0 10px;">Leitura operacional</h3>
+        <p class="muted">Diagnóstico rápido do momento atual do sistema.</p>
+
+        <div class="insight-list">
+          <div class="insight-item">
+            <div class="insight-label">Taxa de conversão estimada</div>
+            <div class="insight-value" id="insight-conversao">0%</div>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Clientes arquivados</div>
+            <div class="insight-value" id="insight-arquivados">0</div>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Leads aguardando ação</div>
+            <div class="insight-value" id="insight-aguardando">0</div>
+          </div>
+
+          <div class="insight-item">
+            <div class="insight-label">Base total de clientes</div>
+            <div class="insight-value" id="insight-base-clientes">0</div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
-  <!-- CORE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/supabase.js?v=2"></script>
-
-  <!-- 🔒 GUARD -->
   <script src="./assets/js/guard.js?v=1"></script>
-
-  <!-- SISTEMA -->
   <script src="./assets/js/storage.js?v=2"></script>
   <script src="./assets/js/dashboard.js?v=2"></script>
-
-  <!-- LOGOUT -->
   <script src="./assets/js/logout.js?v=1"></script>
-
 </body>
 </html>
