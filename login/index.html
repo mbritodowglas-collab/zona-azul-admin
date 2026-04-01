@@ -3,27 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
+  <title>Login | Zona Azul</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      width: 320px;
+      padding: 20px;
+      background: #020617;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #1e293b;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #6366f1;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4f46e5;
+    }
+
+    #msg {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #fda4af;
+    }
+  </style>
 </head>
-<body style="background:#0f172a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
 
-  <div style="width:300px;">
-    <h2>Login</h2>
+<body>
 
-    <input id="email" type="email" placeholder="Email" style="width:100%; padding:10px; margin-bottom:10px;" />
-    <input id="senha" type="password" placeholder="Senha" style="width:100%; padding:10px; margin-bottom:10px;" />
+  <div class="box">
+    <h2>Entrar</h2>
 
-    <button onclick="login()" style="width:100%; padding:10px;">Entrar</button>
+    <input id="email" type="email" placeholder="Seu email" />
+    <input id="senha" type="password" placeholder="Sua senha" />
+
+    <button onclick="login()">Entrar</button>
 
     <p id="msg"></p>
   </div>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     const supabase = window.supabase.createClient(
-      "COLE_AQUI_SUA_URL",
-      "COLE_AQUI_SUA_ANON_KEY"
+      "https://qrwzzgnyzsomugranmnu.supabase.co",
+      "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M"
     );
 
     async function login() {
@@ -40,10 +98,13 @@
         return;
       }
 
-      document.getElementById("msg").innerText = "Login OK";
+      document.getElementById("msg").style.color = "#86efac";
+      document.getElementById("msg").innerText = "Login realizado com sucesso";
 
-      // redireciona pro sistema
-      window.location.href = "../";
+      // redireciona para o sistema
+      setTimeout(() => {
+        window.location.href = "../";
+      }, 800);
     }
   </script>
 
