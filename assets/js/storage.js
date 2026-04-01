@@ -164,9 +164,14 @@ window.ZAStorage = (() => {
       updated_at: nowIso()
     };
 
-    const { error } = await supabase.from("leads").upsert(row, { onConflict: "id" });
+    const { error } = await supabase
+      .from("leads")
+      .upsert(row, { onConflict: "id" });
 
-    if (error) return { ok: false, error: error.message || String(error) };
+    if (error) {
+      return { ok: false, error: error.message || String(error) };
+    }
+
     return { ok: true };
   }
 
@@ -176,14 +181,19 @@ window.ZAStorage = (() => {
 
     const row = {
       id: cliente.id,
-      email: normalizeEmail(cliente.email) || null,
+      tipo: "cliente",
       data: cliente,
       updated_at: nowIso()
     };
 
-    const { error } = await supabase.from("clientes").upsert(row, { onConflict: "id" });
+    const { error } = await supabase
+      .from("clientes")
+      .upsert(row, { onConflict: "id" });
 
-    if (error) return { ok: false, error: error.message || String(error) };
+    if (error) {
+      return { ok: false, error: error.message || String(error) };
+    }
+
     return { ok: true };
   }
 
@@ -191,9 +201,15 @@ window.ZAStorage = (() => {
     const supabase = getSupabaseClient();
     if (!supabase) return { ok: false, error: "Supabase indisponível." };
 
-    const { error } = await supabase.from("leads").delete().eq("id", id);
+    const { error } = await supabase
+      .from("leads")
+      .delete()
+      .eq("id", id);
 
-    if (error) return { ok: false, error: error.message || String(error) };
+    if (error) {
+      return { ok: false, error: error.message || String(error) };
+    }
+
     return { ok: true };
   }
 
@@ -201,9 +217,15 @@ window.ZAStorage = (() => {
     const supabase = getSupabaseClient();
     if (!supabase) return { ok: false, error: "Supabase indisponível." };
 
-    const { error } = await supabase.from("clientes").delete().eq("id", id);
+    const { error } = await supabase
+      .from("clientes")
+      .delete()
+      .eq("id", id);
 
-    if (error) return { ok: false, error: error.message || String(error) };
+    if (error) {
+      return { ok: false, error: error.message || String(error) };
+    }
+
     return { ok: true };
   }
 
@@ -292,14 +314,20 @@ window.ZAStorage = (() => {
   function removeLead(email) {
     const normalized = normalizeEmail(email);
     const before = leads.length;
-    leads = leads.filter((item) => normalizeEmail(item.email) !== normalized);
+
+    leads = leads.filter(
+      (item) => normalizeEmail(item.email) !== normalized
+    );
+
     writeLocal();
     return leads.length !== before;
   }
 
   function archiveLead(email) {
     const normalized = normalizeEmail(email);
-    const lead = leads.find((item) => normalizeEmail(item.email) === normalized);
+    const lead = leads.find(
+      (item) => normalizeEmail(item.email) === normalized
+    );
 
     if (!lead) return false;
 
