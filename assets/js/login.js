@@ -1,12 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("login.js carregado");
-
   const form = document.getElementById("login-form");
+  const emailInput = document.getElementById("email");
+  const senhaInput = document.getElementById("senha");
+  const loginBtn = document.getElementById("login-btn");
   const msg = document.getElementById("msg");
 
   function setMsg(text, ok = false) {
     msg.textContent = text;
     msg.style.color = ok ? "#86efac" : "#fda4af";
+  }
+
+  function setLoading(isLoading) {
+    loginBtn.disabled = isLoading;
+    loginBtn.textContent = isLoading ? "Entrando..." : "Entrar";
+  }
+
+  if (!window.supabase) {
+    setMsg("SDK do Supabase não carregou.");
+    return;
   }
 
   const supabase = window.supabase.createClient(
@@ -17,30 +28,38 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    setMsg("Tentando login...");
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("senha").value;
+    const email = emailInput.value.trim();
+    const password = senhaInput.value;
 
     if (!email || !password) {
-      setMsg("Preencha email e senha");
+      setMsg("Preencha email e senha.");
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    setLoading(true);
+    setMsg("Tentando login...", true);
 
-    if (error) {
-      setMsg("Erro: " + error.message);
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setMsg("Erro: " + error.message);
+        setLoading(false);
+        return;
+      }
+
+      setMsg("Login OK", true);
+
+      setTimeout(() => {
+        window.location.href = "../";
+      }, 700);
+    } catch (err) {
+      setMsg("Erro inesperado no login.");
+      console.error("[login.js]", err);
+      setLoading(false);
     }
-
-    setMsg("Login OK", true);
-
-    setTimeout(() => {
-      window.location.href = "../";
-    }, 800);
   });
 });
