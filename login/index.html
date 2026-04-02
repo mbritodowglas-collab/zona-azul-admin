@@ -4,17 +4,260 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | Trackion System</title>
-</head>
-<body>
-  <form id="login-form">
-    <input id="email" type="email" placeholder="Seu email" />
-    <input id="password" type="password" placeholder="Sua senha" />
-    <button id="login-submit" type="submit">Entrar</button>
-    <div id="login-feedback" style="display:none;"></div>
-  </form>
 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-0: #020816;
+      --bg-1: #061126;
+      --panel: rgba(10, 24, 48, 0.85);
+      --line: rgba(255,255,255,0.08);
+      --text: #f3f8ff;
+      --muted: #9cb0cb;
+      --blue-1: #47b8ff;
+      --blue-2: #1f7cff;
+      --green-1: #7cff5a;
+      --shadow-xl: 0 30px 80px rgba(0,0,0,0.45);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+
+      background:
+        radial-gradient(circle at top left, rgba(71,184,255,0.15), transparent 22%),
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-card {
+      padding: 32px;
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 20px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 14px 28px rgba(31,124,255,0.25);
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .brand-highlight {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--blue-1), var(--green-1));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .input {
+      width: 100%;
+      height: 52px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: #fff;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input:focus {
+      border-color: rgba(71,184,255,0.4);
+      box-shadow: 0 0 0 2px rgba(71,184,255,0.15);
+    }
+
+    .btn {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(31,124,255,0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .feedback {
+      margin-top: 14px;
+      font-size: 13px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 24px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <div class="brand">
+        <div class="brand-badge">TR</div>
+        <div>
+          <h1>Trackion System</h1>
+          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
+        </div>
+      </div>
+
+      <div class="login-title">Acesso ao sistema</div>
+      <div class="login-subtitle">
+        Entre com sua conta para acessar o painel operacional e gerenciar seus clientes.
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <input id="email" type="email" class="input" placeholder="Seu email" required />
+        </div>
+
+        <div class="form-group">
+          <input id="password" type="password" class="input" placeholder="Sua senha" required />
+        </div>
+
+        <button id="login-submit" class="btn btn-primary" type="submit">
+          Entrar no sistema
+        </button>
+
+        <div id="login-feedback" class="feedback"></div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/supabase.js?v=3"></script>
-  <script src="./login.js?v=3"></script>
+
+  <!-- LOGIN SCRIPT -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("login-form");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const submitBtn = document.getElementById("login-submit");
+      const feedback = document.getElementById("login-feedback");
+
+      function setFeedback(message, isError = true) {
+        feedback.textContent = message;
+        feedback.style.display = message ? "block" : "none";
+        feedback.style.color = isError ? "#ffb0b0" : "#9dffd6";
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          setFeedback("Preencha email e senha.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        setFeedback("");
+
+        try {
+          const { data, error } = await window.ZASupabase.signIn(email, password);
+
+          if (error || !data?.session) {
+            setFeedback(error?.message || "Não foi possível entrar.");
+            submitBtn.disabled = false;
+            return;
+          }
+
+          setFeedback("Login realizado com sucesso.", false);
+
+          window.location.href = window.ZASupabase.getDashboardUrl();
+
+        } catch (err) {
+          console.error(err);
+          setFeedback("Erro inesperado.");
+          submitBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
