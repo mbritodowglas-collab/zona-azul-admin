@@ -1,700 +1,199 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório do Cliente | Trackion System</title>
-
-  <link rel="stylesheet" href="../assets/css/global.css?v=56">
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg-0: #020816;
-      --bg-1: #061126;
-      --panel: rgba(10, 24, 48, 0.84);
-      --panel-soft: rgba(255,255,255,0.04);
-      --line: rgba(255,255,255,0.08);
-      --line-soft: rgba(255,255,255,0.05);
-      --text: #f3f8ff;
-      --muted: #9cb0cb;
-      --muted-2: #7f92ad;
-      --blue-1: #47b8ff;
-      --blue-2: #1f7cff;
-      --green-1: #7cff5a;
-      --green-2: #41d13f;
-      --success: #86efac;
-      --warning: #fcd34d;
-      --danger: #fca5a5;
-      --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);
-      --shadow-lg: 0 18px 42px rgba(0,0,0,0.28);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-    }
-
-    body {
-      margin: 0;
-      color: var(--text);
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),
-        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
-        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),
-        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
-    }
-
-    .app-shell {
-      min-height: 100vh;
-    }
-
-    .main {
-      padding: 24px;
-    }
-
-    .report-wrap {
-      display: grid;
-      gap: 24px;
-      max-width: 1420px;
-      margin: 0 auto;
-    }
-
-    .report-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .cliente-btn,
-    .cliente-btn-secundario,
-    .cliente-btn-abrir {
-      min-height: 44px;
-      padding: 0 16px;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.18s ease, opacity 0.18s ease;
-    }
-
-    .cliente-btn:hover,
-    .cliente-btn-secundario:hover,
-    .cliente-btn-abrir:hover {
-      transform: translateY(-1px);
-      opacity: 0.97;
-    }
-
-    .cliente-btn-secundario {
-      background: rgba(255,255,255,0.06);
-      color: #ffffff;
-      border: 1px solid var(--line);
-    }
-
-    .cliente-btn,
-    .cliente-btn-abrir {
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      color: #ffffff;
-      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
-    }
-
-    .report-empty {
-      background: rgba(255,255,255,0.04);
-      border-radius: 18px;
-      padding: 18px;
-      color: rgba(255,255,255,0.72);
-      border: 1px dashed rgba(255,255,255,0.08);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .report-hero {
-      background:
-        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),
-        linear-gradient(135deg, rgba(71,184,255,0.16), rgba(124,255,90,0.08)),
-        var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      padding: 26px;
-      display: grid;
-      gap: 22px;
-      box-shadow: var(--shadow-xl);
-    }
-
-    .report-brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line-soft);
-    }
-
-    .report-brand-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .report-brand-badge {
-      width: 62px;
-      height: 62px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 900;
-      color: #fff;
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
-      flex-shrink: 0;
-    }
-
-    .report-brand-left h1 {
-      margin: 0;
-      font-size: 28px;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      color: #fff;
-    }
-
-    .report-brand-highlight {
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #47b8ff, #7cff5a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .report-brand-right {
-      text-align: right;
-      display: grid;
-      gap: 6px;
-    }
-
-    .report-brand-right span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .report-brand-right strong {
-      color: #fff;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .report-client-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .report-hero-left {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .report-avatar {
-      width: 74px;
-      height: 74px;
-      border-radius: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 24px;
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      color: #fff;
-      box-shadow: 0 18px 32px rgba(31,124,255,0.24);
-      flex-shrink: 0;
-    }
-
-    .report-title {
-      font-size: 30px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin: 0;
-    }
-
-    .report-sub {
-      color: rgba(235,240,255,0.72);
-      font-size: 14px;
-      line-height: 1.6;
-      margin-top: 6px;
-    }
-
-    .report-profissional {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .report-profissional h3 {
-      margin: 0;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted-2);
-    }
-
-    .report-profissional-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: flex-start;
-      border-bottom: 1px solid var(--line-soft);
-      padding-bottom: 10px;
-    }
-
-    .report-profissional-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .report-profissional-row span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .report-profissional-row strong {
-      color: #fff;
-      text-align: right;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .report-card {
-      background: var(--panel);
-      border-radius: 26px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .report-card-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--line-soft);
-    }
-
-    .report-card-header h3 {
-      margin: 0;
-      color: #fff;
-      font-size: 20px;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-    }
-
-    .report-card-body {
-      padding: 20px;
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .summary-box {
-      background: var(--panel-soft);
-      padding: 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line-soft);
-    }
-
-    .summary-box h4 {
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted-2);
-      margin: 0 0 8px;
-      font-weight: 800;
-    }
-
-    .summary-box p {
-      font-weight: 800;
-      color: #fff;
-      margin: 0;
-      line-height: 1.55;
-      white-space: pre-wrap;
-    }
-
-    .radar-canvas-wrap {
-      height: 350px;
-    }
-
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-
-    .metric-card {
-      background: var(--panel-soft);
-      padding: 16px;
-      border-radius: 18px;
-      color: #fff;
-      border: 1px solid var(--line-soft);
-    }
-
-    .metric-label {
-      display: block;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted-2);
-      margin-bottom: 12px;
-      font-weight: 800;
-    }
-
-    .metric-values {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .metric-values small {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-
-    .metric-values strong {
-      font-size: 18px;
-      color: #fff;
-    }
-
-    .metric-delta {
-      margin-top: 8px;
-      font-weight: 800;
-      font-size: 14px;
-    }
-
-    .delta-positive { color: var(--success); }
-    .delta-negative { color: var(--danger); }
-    .delta-neutral { color: var(--warning); }
-
-    .perimetria-grid {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 14px;
-    }
-
-    .text-box {
-      background: var(--panel-soft);
-      padding: 16px;
-      border-radius: 18px;
-      color: #fff;
-      border: 1px solid var(--line-soft);
-    }
-
-    .text-box h4 {
-      margin: 0 0 8px;
-      font-size: 15px;
-      color: #fff;
-    }
-
-    .text-box p {
-      margin: 0;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      color: #e8f1fc;
-    }
-
-    .timeline {
-      display: grid;
-      gap: 10px;
-    }
-
-    .timeline-item {
-      background: var(--panel-soft);
-      padding: 14px;
-      border-radius: 16px;
-      color: #fff;
-      border: 1px solid var(--line-soft);
-    }
-
-    .timeline-item-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .timeline-item-top strong {
-      color: #fff;
-      font-size: 14px;
-    }
-
-    .timeline-item-top span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .timeline-item p {
-      margin: 0;
-      color: #e7eefb;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    @media (max-width: 1000px) {
-      .report-client-grid,
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .metrics-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .perimetria-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .main {
-        padding: 16px;
-      }
-
-      .report-actions {
-        justify-content: stretch;
-      }
-
-      .report-actions > * {
-        width: 100%;
-      }
-
-      .report-brand-left h1 {
-        font-size: 24px;
-      }
-
-      .report-title {
-        font-size: 24px;
-      }
-
-      .metrics-grid,
-      .perimetria-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .report-brand-right {
-        text-align: left;
-      }
-    }
-
-    @media print {
-      body {
-        background: #0b1120 !important;
-      }
-
-      .no-print {
-        display: none !important;
-      }
-
-      .main {
-        padding: 0 !important;
-      }
-
-      .report-card,
-      .report-hero {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-
-      .report-wrap {
-        gap: 18px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app-shell">
-    <main class="main">
-      <div class="report-wrap" id="relatorio-page">
-
-        <div class="report-actions no-print">
-          <a id="voltar-cliente-link" href="../cliente/index.html" class="cliente-btn-secundario">Voltar ao cliente</a>
-          <button class="cliente-btn-abrir" id="print-report-btn" type="button">Imprimir / Salvar PDF</button>
+document.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const clienteId = urlParams.get("id");
+
+  if (!clienteId) return;
+
+  const clientes = JSON.parse(localStorage.getItem("clientes") || "[]");
+  const planejamentos = JSON.parse(localStorage.getItem("planejamentos") || "[]");
+  const acompanhamentos = JSON.parse(localStorage.getItem("acompanhamentos") || "[]");
+
+  const cliente = clientes.find(c => c.id === clienteId);
+  const planejamento = planejamentos.find(p => p.clienteId === clienteId);
+
+  if (!cliente || !planejamento) {
+    document.getElementById("relatorio-not-found").classList.remove("hidden");
+    return;
+  }
+
+  // =========================
+  // PROFISSIONAL
+  // =========================
+  const nomeProfissional =
+    planejamento.profissional?.nome ||
+    planejamento.profissionalNome ||
+    "Márcio Dowglas";
+
+  const crefProfissional =
+    planejamento.profissional?.cref ||
+    planejamento.profissionalCref ||
+    "—";
+
+  document.getElementById("report-profissional-nome").textContent = nomeProfissional;
+  document.getElementById("report-profissional-cref").textContent = crefProfissional;
+
+  // =========================
+  // HEADER
+  // =========================
+  document.getElementById("report-nome").textContent = cliente.nome || "Cliente";
+  document.getElementById("report-email").textContent = cliente.email || "";
+  document.getElementById("report-meta").textContent = cliente.objetivo || "";
+
+  const avatar = document.getElementById("report-avatar");
+  avatar.textContent = cliente.nome ? cliente.nome.charAt(0).toUpperCase() : "C";
+
+  document.getElementById("report-data-geracao").textContent =
+    new Date().toLocaleDateString("pt-BR");
+
+  // =========================
+  // RESUMO
+  // =========================
+  document.getElementById("summary-objetivo").textContent =
+    planejamento.estrategia?.objetivo30d || "-";
+
+  document.getElementById("summary-gargalo").textContent =
+    planejamento.estrategia?.gargaloPrincipal || "-";
+
+  document.getElementById("summary-prioridade").textContent =
+    planejamento.estrategia?.focoCentral || "-";
+
+  // =========================
+  // MÉTRICAS (EXEMPLO BASE)
+  // =========================
+  const metrics = [
+    { label: "Peso", atual: planejamento.metricas?.peso || 0, anterior: planejamento.metricas?.pesoAnterior || 0 },
+    { label: "BF %", atual: planejamento.metricas?.bf || 0, anterior: planejamento.metricas?.bfAnterior || 0 },
+    { label: "Massa Magra", atual: planejamento.metricas?.massa || 0, anterior: planejamento.metricas?.massaAnterior || 0 },
+    { label: "Cintura", atual: planejamento.metricas?.cintura || 0, anterior: planejamento.metricas?.cinturaAnterior || 0 },
+  ];
+
+  const metricsGrid = document.getElementById("metrics-grid");
+
+  metrics.forEach(m => {
+    const delta = m.atual - m.anterior;
+
+    let deltaClass = "delta-neutral";
+    if (delta > 0) deltaClass = "delta-positive";
+    if (delta < 0) deltaClass = "delta-negative";
+
+    const card = document.createElement("div");
+    card.className = "metric-card";
+
+    card.innerHTML = `
+      <span class="metric-label">${m.label}</span>
+      <div class="metric-values">
+        <div>
+          <small>Atual</small>
+          <strong>${m.atual}</strong>
         </div>
-
-        <div id="relatorio-not-found" class="report-empty hidden">
-          Cliente não encontrado para este relatório.
+        <div>
+          <small>Anterior</small>
+          <strong>${m.anterior}</strong>
         </div>
-
-        <section class="report-hero">
-          <div class="report-brand">
-            <div class="report-brand-left">
-              <div class="report-brand-badge">TR</div>
-              <div>
-                <h1>Trackion System</h1>
-                <span class="report-brand-highlight">CORPO • MENTE • PERFORMANCE</span>
-              </div>
-            </div>
-
-            <div class="report-brand-right">
-              <span>Documento técnico de acompanhamento</span>
-              <strong id="report-data-geracao">—</strong>
-            </div>
-          </div>
-
-          <div class="report-client-grid">
-            <div class="report-hero-left">
-              <div class="report-avatar" id="report-avatar">C</div>
-              <div>
-                <div class="report-title" id="report-nome">Cliente</div>
-                <div class="report-sub" id="report-email"></div>
-                <div class="report-sub" id="report-meta"></div>
-              </div>
-            </div>
-
-            <div class="report-profissional">
-              <h3>Profissional responsável</h3>
-
-              <div class="report-profissional-row">
-                <span>Responsável técnico</span>
-                <strong id="report-profissional-nome">Márcio Dowglas</strong>
-              </div>
-
-              <div class="report-profissional-row">
-                <span>CREF</span>
-                <strong id="report-profissional-cref">—</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Resumo Estratégico</h3>
-          </div>
-          <div class="report-card-body">
-            <div class="summary-grid">
-              <div class="summary-box">
-                <h4>Objetivo</h4>
-                <p id="summary-objetivo"></p>
-              </div>
-              <div class="summary-box">
-                <h4>Gargalo</h4>
-                <p id="summary-gargalo"></p>
-              </div>
-              <div class="summary-box">
-                <h4>Prioridade</h4>
-                <p id="summary-prioridade"></p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Radar Comparativo</h3>
-          </div>
-          <div class="report-card-body">
-            <div class="radar-canvas-wrap">
-              <canvas id="radar-chart"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Composição Corporal</h3>
-          </div>
-          <div class="report-card-body">
-            <div id="metrics-grid" class="metrics-grid"></div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Evolução dos Indicadores</h3>
-          </div>
-          <div class="report-card-body">
-            <div style="height:350px;">
-              <canvas id="evolucao-chart"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Perimetria</h3>
-          </div>
-          <div class="report-card-body">
-            <div id="perimetria-grid" class="perimetria-grid"></div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Leitura Técnica</h3>
-          </div>
-          <div class="report-card-body summary-grid">
-            <div class="text-box">
-              <h4>Leitura</h4>
-              <p id="diagnostico-leitura"></p>
-            </div>
-            <div class="text-box">
-              <h4>Síntese</h4>
-              <p id="diagnostico-sintese"></p>
-            </div>
-            <div class="text-box">
-              <h4>Foco</h4>
-              <p id="diagnostico-foco"></p>
-            </div>
-          </div>
-        </section>
-
-        <section class="report-card">
-          <div class="report-card-header">
-            <h3>Acompanhamentos</h3>
-          </div>
-          <div class="report-card-body">
-            <div id="timeline-list" class="timeline"></div>
-          </div>
-        </section>
-
       </div>
-    </main>
-  </div>
+      <div class="metric-delta ${deltaClass}">
+        Δ ${delta.toFixed(1)}
+      </div>
+    `;
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/supabase.js?v=2"></script>
-  <script src="../assets/js/guard.js?v=1"></script>
-  <script src="../assets/js/storage.js?v=2"></script>
-  <script src="../assets/js/logout.js?v=1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../assets/js/relatorio-cliente.js?v=2"></script>
-</body>
-</html>
+    metricsGrid.appendChild(card);
+  });
+
+  // =========================
+  // RADAR
+  // =========================
+  const radarData = planejamento.radar || {
+    treino: 5,
+    dieta: 5,
+    sono: 5,
+    disciplina: 5,
+    mental: 5
+  };
+
+  new Chart(document.getElementById("radar-chart"), {
+    type: "radar",
+    data: {
+      labels: ["Treino", "Dieta", "Sono", "Disciplina", "Mental"],
+      datasets: [{
+        label: "Performance",
+        data: Object.values(radarData),
+        borderColor: "#47b8ff",
+        backgroundColor: "rgba(71,184,255,0.2)"
+      }]
+    }
+  });
+
+  // =========================
+  // EVOLUÇÃO
+  // =========================
+  const evolucao = planejamento.evolucao || [];
+
+  new Chart(document.getElementById("evolucao-chart"), {
+    type: "line",
+    data: {
+      labels: evolucao.map(e => e.data),
+      datasets: [{
+        label: "Peso",
+        data: evolucao.map(e => e.peso),
+        borderColor: "#7cff5a",
+        tension: 0.3
+      }]
+    }
+  });
+
+  // =========================
+  // PERIMETRIA
+  // =========================
+  const perimetria = planejamento.perimetria || {};
+  const perimetriaGrid = document.getElementById("perimetria-grid");
+
+  Object.entries(perimetria).forEach(([key, value]) => {
+    const div = document.createElement("div");
+    div.className = "metric-card";
+    div.innerHTML = `<strong>${key}</strong><br>${value} cm`;
+    perimetriaGrid.appendChild(div);
+  });
+
+  // =========================
+  // DIAGNÓSTICO
+  // =========================
+  document.getElementById("diagnostico-leitura").textContent =
+    planejamento.diagnostico?.leitura || "";
+
+  document.getElementById("diagnostico-sintese").textContent =
+    planejamento.diagnostico?.sintese || "";
+
+  document.getElementById("diagnostico-foco").textContent =
+    planejamento.diagnostico?.foco || "";
+
+  // =========================
+  // TIMELINE
+  // =========================
+  const timeline = acompanhamentos.filter(a => a.clienteId === clienteId);
+  const timelineList = document.getElementById("timeline-list");
+
+  timeline.forEach(item => {
+    const el = document.createElement("div");
+    el.className = "timeline-item";
+
+    el.innerHTML = `
+      <div class="timeline-item-top">
+        <strong>${item.titulo || "Acompanhamento"}</strong>
+        <span>${item.data || ""}</span>
+      </div>
+      <p>${item.descricao || ""}</p>
+    `;
+
+    timelineList.appendChild(el);
+  });
+
+  // =========================
+  // PRINT
+  // =========================
+  const printBtn = document.getElementById("print-report-btn");
+  if (printBtn) {
+    printBtn.addEventListener("click", () => {
+      window.print();
+    });
+  }
+});
