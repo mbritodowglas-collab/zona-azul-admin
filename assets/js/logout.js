@@ -29,6 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Erro ao limpar storage:", error);
     }
 
+    if (window.ZASupabase && typeof window.ZASupabase.getLoginUrl === "function") {
+      window.location.href = window.ZASupabase.getLoginUrl();
+      return;
+    }
+
     window.location.href = "/login/";
   }
 
