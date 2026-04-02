@@ -23,6 +23,45 @@
       gap: 22px;
     }
 
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.97;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg,#47b8ff,#1f7cff);
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
+    }
+
     .header {
       background: rgba(255,255,255,0.03);
       border-radius: 24px;
@@ -46,19 +85,28 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
+      color: #fff;
+      flex-shrink: 0;
     }
 
     .brand h1 {
       margin: 0;
       font-size: 20px;
+      color: #fff;
     }
 
     .highlight {
+      display: block;
+      margin-top: 6px;
       font-size: 11px;
-      letter-spacing: 0.12em;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       background: linear-gradient(90deg,#47b8ff,#7cff5a);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
     }
 
     .cliente-info {
@@ -68,6 +116,13 @@
     .cliente-nome {
       font-size: 24px;
       font-weight: bold;
+      color: #fff;
+    }
+
+    #cliente-meta {
+      margin-top: 6px;
+      color: #cfe0f7;
+      line-height: 1.6;
     }
 
     .section {
@@ -75,11 +130,14 @@
       border-radius: 20px;
       padding: 20px;
       border: 1px solid rgba(255,255,255,0.06);
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
 
     .section h2 {
       margin: 0 0 12px;
       font-size: 18px;
+      color: #fff;
     }
 
     .text {
@@ -97,18 +155,51 @@
       grid-template-columns: 1fr 1fr;
     }
 
-    @media(max-width:700px){
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+    .assinatura-box {
+      background: rgba(255,255,255,0.03);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: grid;
+      gap: 10px;
     }
 
-    .pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      display: inline-block;
-      font-weight: bold;
+    .assinatura-box h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .assinatura-linhas {
+      display: grid;
+      gap: 8px;
+    }
+
+    .assinatura-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .assinatura-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .assinatura-item span {
+      color: #9cb0cb;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .assinatura-item strong {
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: right;
     }
 
     .footer {
@@ -116,11 +207,74 @@
       opacity: 0.6;
       font-size: 12px;
       margin-top: 10px;
+      color: #cfe0f7;
+    }
+
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions {
+        justify-content: stretch;
+      }
+
+      .top-actions > * {
+        width: 100%;
+      }
     }
 
     @media print {
-      body { background: #fff; color:#000; }
-      .section { break-inside: avoid; }
+      @page {
+        size: A4;
+        margin: 14mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #111827 !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .container {
+        max-width: 100%;
+        padding: 0;
+        gap: 14px;
+      }
+
+      .header,
+      .section,
+      .assinatura-box {
+        background: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: none !important;
+      }
+
+      .brand h1,
+      .cliente-nome,
+      .section h2,
+      .assinatura-box h3 {
+        color: #111827 !important;
+      }
+
+      #cliente-meta,
+      .text,
+      .footer,
+      .assinatura-item span {
+        color: #374151 !important;
+      }
+
+      .assinatura-item strong {
+        color: #111827 !important;
+      }
+
+      .badge {
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
@@ -128,12 +282,17 @@
 <body>
   <div class="container">
 
+    <div class="top-actions no-print">
+      <a id="voltar-cliente-link" href="../cliente/index.html" class="btn secondary">Voltar ao cliente</a>
+      <button id="print-plano-btn" type="button" class="btn primary">Imprimir / Salvar PDF</button>
+    </div>
+
     <div class="header">
       <div class="brand">
         <div class="badge">TR</div>
         <div>
           <h1>Trackion System</h1>
-          <div class="highlight">CORPO • MENTE • PERFORMANCE</div>
+          <span class="highlight">CORPO • MENTE • PERFORMANCE</span>
         </div>
       </div>
 
@@ -187,6 +346,22 @@
       <div class="text" id="plano-mensagem"></div>
     </div>
 
+    <div class="assinatura-box">
+      <h3>Profissional responsável</h3>
+
+      <div class="assinatura-linhas">
+        <div class="assinatura-item">
+          <span>Responsável técnico</span>
+          <strong id="plano-profissional-nome">Márcio Dowglas</strong>
+        </div>
+
+        <div class="assinatura-item">
+          <span>CREF</span>
+          <strong id="plano-profissional-cref">—</strong>
+        </div>
+      </div>
+    </div>
+
     <div class="footer">
       Trackion System © | acompanhamento profissional
     </div>
@@ -196,5 +371,15 @@
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/plano-cliente.js"></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const printBtn = document.getElementById("print-plano-btn");
+      if (printBtn) {
+        printBtn.addEventListener("click", () => {
+          window.print();
+        });
+      }
+    });
+  </script>
 </body>
 </html>
