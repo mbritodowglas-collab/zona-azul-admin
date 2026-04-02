@@ -12,26 +12,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!cliente || !planejamento) return;
 
-  // =========================
-  // DADOS BÁSICOS
-  // =========================
+  const nomeProfissional =
+    planejamento.profissional?.nome ||
+    planejamento.profissionalNome ||
+    "Márcio Dowglas";
+
+  const crefProfissional =
+    planejamento.profissional?.cref ||
+    planejamento.profissionalCref ||
+    "—";
+
   document.getElementById("cliente-nome").textContent = cliente.nome || "Cliente";
   document.getElementById("cliente-meta").textContent = cliente.objetivo || "";
 
-  // =========================
-  // RESUMO
-  // =========================
+  document.getElementById("plano-profissional-nome").textContent = nomeProfissional;
+  document.getElementById("plano-profissional-cref").textContent = crefProfissional;
+
   document.getElementById("plano-objetivo").textContent =
     planejamento.estrategia?.objetivo30d || "";
 
   document.getElementById("plano-foco").textContent =
     planejamento.estrategia?.focoCentral || "";
 
-  // =========================
-  // HÁBITOS (TRADUÇÃO)
-  // =========================
   const habitos = planejamento.habitos || {};
-
   const habitosTexto = `
 Vamos focar em pequenas ações consistentes:
 
@@ -42,14 +45,9 @@ Vamos focar em pequenas ações consistentes:
 • Movimento diário: ${habitos.metaPassos || "-"}
 • Regra mínima: ${habitos.regraMinima || "-"}
   `;
+  document.getElementById("plano-habitos").textContent = habitosTexto.trim();
 
-  document.getElementById("plano-habitos").textContent = habitosTexto;
-
-  // =========================
-  // TREINO
-  // =========================
   const treino = planejamento.treino || {};
-
   const treinoTexto = `
 Frequência: ${treino.frequencia || "-"}
 Duração: ${treino.duracao || "-"}
@@ -58,52 +56,33 @@ Estrutura: ${treino.divisao || "-"}
 Plano do mês:
 ${treino.mes1Programa || ""}
   `;
+  document.getElementById("plano-treino").textContent = treinoTexto.trim();
 
-  document.getElementById("plano-treino").textContent = treinoTexto;
-
-  // =========================
-  // CARDIO
-  // =========================
   const cardio = planejamento.cardio || {};
-
   const cardioTexto = `
 Modalidade: ${cardio.modalidade || "-"}
 Frequência: ${cardio.frequencia || "-"}
 Duração: ${cardio.duracao || "-"}
 Intensidade: ${cardio.intensidade || "-"}
   `;
+  document.getElementById("plano-cardio").textContent = cardioTexto.trim();
 
-  document.getElementById("plano-cardio").textContent = cardioTexto;
-
-  // =========================
-  // NUTRIÇÃO
-  // =========================
   const nutri = planejamento.nutricional || {};
-
   const nutriTexto = `
 Foco principal: ${nutri.focoPrincipal || "-"}
 Regra mínima: ${nutri.regraMinima || "-"}
 Refeições prioritárias: ${nutri.refeicoesPrioritarias || "-"}
 Estratégia fim de semana: ${nutri.fimSemana || "-"}
   `;
+  document.getElementById("plano-nutri").textContent = nutriTexto.trim();
 
-  document.getElementById("plano-nutri").textContent = nutriTexto;
-
-  // =========================
-  // REGRAS DO JOGO
-  // =========================
   const regrasTexto = `
 • Não precisa perfeição, precisa consistência
 • Se falhar, retoma no próximo bloco
 • Priorizar o básico antes de avançar
   `;
+  document.getElementById("plano-regras").textContent = regrasTexto.trim();
 
-  document.getElementById("plano-regras").textContent = regrasTexto;
-
-  // =========================
-  // MENSAGEM FINAL
-  // =========================
   const mensagem = planejamento.observacoes?.mensagemInterna || "";
-
   document.getElementById("plano-mensagem").textContent = mensagem;
 });
