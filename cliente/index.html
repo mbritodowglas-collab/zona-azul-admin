@@ -76,20 +76,24 @@
       margin-bottom: 26px;
     }
 
-    .brand-badge {
+    .brand-logo {
       width: 56px;
       height: 56px;
       border-radius: 18px;
+      background: rgba(255,255,255,0.03);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 6px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
       flex-shrink: 0;
-      font-size: 20px;
-      font-weight: 900;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
-      letter-spacing: 0.04em;
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .brand h1 {
@@ -517,7 +521,9 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-badge">TR</div>
+        <div class="brand-logo">
+          <img src="../assets/img/trackion-logo.png" alt="Trackion System" />
+        </div>
         <div>
           <h1>Trackion System</h1>
           <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
