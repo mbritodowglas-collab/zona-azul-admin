@@ -1,81 +1,53 @@
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("login-form");
   const emailInput = document.getElementById("email");
-  const senhaInput = document.getElementById("senha");
-  const loginBtn = document.getElementById("login-btn");
-  const msg = document.getElementById("msg");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.getElementById("login-submit");
+  const feedback = document.getElementById("login-feedback");
 
-  function setMsg(text, ok = false) {
-    msg.textContent = text;
-    msg.style.color = ok ? "#86efac" : "#fda4af";
-  }
+  if (!form) return;
 
-  function setLoading(isLoading) {
-    loginBtn.disabled = isLoading;
-    loginBtn.textContent = isLoading ? "Entrando..." : "Entrar";
-  }
-
-  if (!window.supabase) {
-    setMsg("SDK do Supabase não carregou.");
-    return;
-  }
-
-  const supabase = window.supabase.createClient(
-    "https://qrwzzgnyzsomugranmnu.supabase.co",
-    "sb_publishable_CvVEHAvdmjmT-TlrUybIDQ_BOkIOB1M"
-  );
-
-  function goToApp() {
-    window.location.href = "../index.html";
-  }
-
-  // Se já tiver sessão, não fica preso no login
-  try {
-    const { data, error } = await supabase.auth.getSession();
-
-    if (!error && data?.session) {
-      goToApp();
-      return;
-    }
-  } catch (err) {
-    console.error("[login.js] erro ao verificar sessão:", err);
+  function setFeedback(message, isError = true) {
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.style.display = message ? "block" : "none";
+    feedback.style.color = isError ? "#ffb0b0" : "#9dffd6";
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const email = emailInput.value.trim();
-    const password = senhaInput.value;
+    const email = emailInput?.value?.trim();
+    const password = passwordInput?.value ?? "";
 
     if (!email || !password) {
-      setMsg("Preencha email e senha.");
+      setFeedback("Preencha email e senha.");
       return;
     }
 
-    setLoading(true);
-    setMsg("Tentando login...", true);
+    if (!window.ZASupabase || typeof window.ZASupabase.signIn !== "function") {
+      setFeedback("Supabase não carregado.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    setFeedback("");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { data, error } = await window.ZASupabase.signIn(email, password);
 
-      if (error) {
-        setMsg("Erro: " + error.message);
-        setLoading(false);
+      if (error || !data?.session) {
+        setFeedback(error?.message || "Não foi possível entrar.");
+        submitBtn.disabled = false;
         return;
       }
 
-      setMsg("Login OK", true);
-
-      setTimeout(() => {
-        goToApp();
-      }, 500);
+      setFeedback("Login realizado com sucesso.", false);
+      window.location.href = window.ZASupabase.getDashboardUrl();
     } catch (err) {
-      console.error("[login.js]", err);
-      setMsg("Erro inesperado no login.");
-      setLoading(false);
+      console.error(err);
+      setFeedback("Erro inesperado ao entrar.");
+      submitBtn.disabled = false;
     }
   });
 });
