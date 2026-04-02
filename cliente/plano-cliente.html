@@ -1,781 +1,200 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plano do Cliente | Zona Azul</title>
-  <link rel="stylesheet" href="../assets/css/global.css?v=60" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano do Cliente | Trackion System</title>
+
+  <link rel="stylesheet" href="../assets/css/global.css">
 
   <style>
-    :root {
-      --print-bg: #ffffff;
-      --print-text: #111827;
-      --print-muted: #6b7280;
-      --print-line: #e5e7eb;
-      --print-accent: #4f46e5;
-      --print-soft: #f8fafc;
-    }
-
     body {
-      background: linear-gradient(180deg, #eef2ff, #f8fafc);
-      color: var(--print-text);
+      margin: 0;
+      font-family: inherit;
+      background: linear-gradient(180deg, #061126, #020816);
+      color: #f3f8ff;
     }
 
-    .plan-shell {
-      max-width: 1120px;
+    .container {
+      max-width: 960px;
       margin: 0 auto;
       padding: 24px;
-      display: grid;
-      gap: 20px;
-    }
-
-    .plan-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .plan-actions-left,
-    .plan-actions-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .plan-paper {
-      background: var(--print-bg);
-      border-radius: 28px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.10);
-      overflow: hidden;
-      border: 1px solid rgba(15, 23, 42, 0.06);
-    }
-
-    .plan-cover {
-      padding: 36px;
-      background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(59,130,246,0.06));
-      border-bottom: 1px solid var(--print-line);
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .plan-brand {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .plan-brand-badge {
-      width: 68px;
-      height: 68px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, #4f46e5, #3b82f6);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 22px;
-      box-shadow: 0 16px 32px rgba(79,70,229,0.20);
-    }
-
-    .plan-kicker {
-      margin: 0 0 6px;
-      color: var(--print-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .plan-title {
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.08;
-      color: var(--print-text);
-    }
-
-    .plan-subtitle {
-      margin: 8px 0 0;
-      color: var(--print-muted);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .plan-archive-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .plan-archive-badge.archived {
-      background: rgba(245, 158, 11, 0.14);
-      color: #b45309;
-      border: 1px solid rgba(245, 158, 11, 0.22);
-    }
-
-    .plan-archive-badge.active {
-      background: rgba(34, 197, 94, 0.14);
-      color: #15803d;
-      border: 1px solid rgba(34, 197, 94, 0.22);
-    }
-
-    .plan-meta {
-      display: grid;
-      gap: 10px;
-      min-width: 260px;
-    }
-
-    .plan-meta-box {
-      background: rgba(255,255,255,0.76);
-      border: 1px solid var(--print-line);
-      border-radius: 18px;
-      padding: 14px 16px;
-    }
-
-    .plan-meta-box small {
-      display: block;
-      color: var(--print-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .plan-meta-box strong {
-      display: block;
-      color: var(--print-text);
-      font-size: 15px;
-      line-height: 1.45;
-    }
-
-    .plan-body {
-      padding: 32px;
       display: grid;
       gap: 22px;
     }
 
-    .plan-section {
-      display: grid;
-      gap: 14px;
+    .header {
+      background: rgba(255,255,255,0.03);
+      border-radius: 24px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
-    .plan-section-head {
+    .brand {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
-      border-bottom: 1px solid var(--print-line);
-      padding-bottom: 10px;
+      margin-bottom: 16px;
     }
 
-    .plan-section-head h2 {
+    .badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg,#47b8ff,#1f7cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .brand h1 {
       margin: 0;
-      font-size: 22px;
-      color: var(--print-text);
+      font-size: 20px;
     }
 
-    .plan-section-head span {
-      color: var(--print-muted);
-      font-size: 13px;
-    }
-
-    .plan-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .plan-grid.cols-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .plan-grid.cols-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .plan-card {
-      background: var(--print-soft);
-      border: 1px solid var(--print-line);
-      border-radius: 20px;
-      padding: 16px;
-      min-height: 100%;
-    }
-
-    .plan-card small {
-      display: block;
-      color: var(--print-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    .highlight {
       font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      letter-spacing: 0.12em;
+      background: linear-gradient(90deg,#47b8ff,#7cff5a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .plan-card strong,
-    .plan-card p,
-    .plan-card div {
-      color: var(--print-text);
-      line-height: 1.65;
-      margin: 0;
-      white-space: pre-wrap;
+    .cliente-info {
+      margin-top: 12px;
     }
 
-    .month-block {
-      display: grid;
-      gap: 12px;
-      padding: 18px;
-      border: 1px solid var(--print-line);
-      border-radius: 22px;
-      background: #fff;
+    .cliente-nome {
+      font-size: 24px;
+      font-weight: bold;
     }
 
-    .month-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-bottom: 1px solid var(--print-line);
-      padding-bottom: 10px;
+    .section {
+      background: rgba(255,255,255,0.03);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
-    .month-title h3 {
-      margin: 0;
+    .section h2 {
+      margin: 0 0 12px;
       font-size: 18px;
-      color: var(--print-text);
     }
 
-    .month-title span {
-      color: var(--print-muted);
-      font-size: 13px;
-    }
-
-    .month-program {
-      background: var(--print-soft);
-      border: 1px solid var(--print-line);
-      border-radius: 18px;
-      padding: 14px;
-      white-space: pre-wrap;
-      line-height: 1.75;
-      color: var(--print-text);
-    }
-
-    .plan-footer {
-      padding: 24px 32px 34px;
-      border-top: 1px solid var(--print-line);
-      background: linear-gradient(180deg, rgba(248,250,252,0.4), rgba(248,250,252,0.9));
-    }
-
-    .plan-footer-note {
-      color: var(--print-muted);
+    .text {
       line-height: 1.7;
-      margin: 0;
-      font-size: 14px;
+      color: #dbeafe;
+      white-space: pre-wrap;
     }
 
-    .plan-empty {
-      padding: 18px;
-      border: 1px dashed var(--print-line);
-      border-radius: 18px;
-      color: var(--print-muted);
-      background: #fff;
+    .grid {
+      display: grid;
+      gap: 14px;
     }
 
-    .cycle-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      width: fit-content;
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
     }
 
-    .cycle-pill.completo {
-      background: rgba(34,197,94,0.14);
-      color: #15803d;
-      border: 1px solid rgba(34,197,94,0.22);
-    }
-
-    .cycle-pill.parcial {
-      background: rgba(245,158,11,0.14);
-      color: #b45309;
-      border: 1px solid rgba(245,158,11,0.22);
-    }
-
-    .cycle-pill.abandonado {
-      background: rgba(239,68,68,0.14);
-      color: #b91c1c;
-      border: 1px solid rgba(239,68,68,0.22);
-    }
-
-    @media (max-width: 860px) {
-      .plan-grid.cols-2,
-      .plan-grid.cols-3 {
+    @media(max-width:700px){
+      .grid-2 {
         grid-template-columns: 1fr;
       }
+    }
 
-      .plan-cover,
-      .plan-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      display: inline-block;
+      font-weight: bold;
+    }
 
-      .plan-title {
-        font-size: 28px;
-      }
+    .footer {
+      text-align: center;
+      opacity: 0.6;
+      font-size: 12px;
+      margin-top: 10px;
     }
 
     @media print {
-      body {
-        background: #fff !important;
-      }
-
-      .plan-shell {
-        max-width: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .plan-actions {
-        display: none !important;
-      }
-
-      .plan-paper {
-        box-shadow: none;
-        border: 0;
-        border-radius: 0;
-      }
-
-      .plan-cover,
-      .plan-body,
-      .plan-footer {
-        padding-left: 26px;
-        padding-right: 26px;
-      }
-
-      .plan-section,
-      .month-block,
-      .plan-card {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
+      body { background: #fff; color:#000; }
+      .section { break-inside: avoid; }
     }
   </style>
 </head>
+
 <body>
-  <div class="plan-shell">
-    <div class="plan-actions">
-      <div class="plan-actions-left">
-        <a id="voltar-planejamento-link" class="cliente-btn cliente-btn-secundario" href="../cliente/planejamento.html">Voltar ao planejamento</a>
-        <a id="voltar-cliente-link" class="cliente-btn cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+  <div class="container">
+
+    <div class="header">
+      <div class="brand">
+        <div class="badge">TR</div>
+        <div>
+          <h1>Trackion System</h1>
+          <div class="highlight">CORPO • MENTE • PERFORMANCE</div>
+        </div>
       </div>
 
-      <div class="plan-actions-right">
-        <button id="print-plan-btn" type="button" class="cliente-btn cliente-btn-abrir">Imprimir / Salvar em PDF</button>
+      <div class="cliente-info">
+        <div class="cliente-nome" id="cliente-nome">Cliente</div>
+        <div id="cliente-meta"></div>
       </div>
     </div>
 
-    <div id="plan-not-found" class="plan-empty hidden">
-      Não encontrei um cliente válido ou não há planejamento salvo para gerar o plano.
+    <div class="section">
+      <h2>Resumo do Plano</h2>
+      <div class="grid grid-2">
+        <div>
+          <strong>Objetivo</strong>
+          <div class="text" id="plano-objetivo"></div>
+        </div>
+        <div>
+          <strong>Foco do mês</strong>
+          <div class="text" id="plano-foco"></div>
+        </div>
+      </div>
     </div>
 
-    <article id="plan-paper" class="plan-paper hidden">
-      <section class="plan-cover">
-        <div class="plan-brand">
-          <div class="plan-brand-badge">ZA</div>
-          <div>
-            <p class="plan-kicker">Zona Azul</p>
-            <h1 class="plan-title" id="plan-title">Plano Estratégico de 3 Meses</h1>
-            <p class="plan-subtitle" id="plan-cover-subtitle">
-              Documento de direcionamento do processo.
-            </p>
-            <div id="plan-archive-badge-wrap" style="margin-top: 14px;"></div>
-          </div>
-        </div>
+    <div class="section">
+      <h2>Direcionamento Comportamental</h2>
+      <div class="text" id="plano-habitos"></div>
+    </div>
 
-        <div class="plan-meta">
-          <div class="plan-meta-box">
-            <small>Cliente</small>
-            <strong id="meta-cliente">—</strong>
-          </div>
+    <div class="section">
+      <h2>Estratégia de Treino</h2>
+      <div class="text" id="plano-treino"></div>
+    </div>
 
-          <div class="plan-meta-box">
-            <small>Objetivo principal</small>
-            <strong id="meta-objetivo">—</strong>
-          </div>
+    <div class="section">
+      <h2>Cardio e Rotina</h2>
+      <div class="text" id="plano-cardio"></div>
+    </div>
 
-          <div class="plan-meta-box">
-            <small>Data do plano</small>
-            <strong id="meta-data">—</strong>
-          </div>
-        </div>
-      </section>
+    <div class="section">
+      <h2>Diretrizes Alimentares</h2>
+      <div class="text" id="plano-nutri"></div>
+    </div>
 
-      <section class="plan-body">
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Fechamento do ciclo</h2>
-            <span>Leitura de encerramento</span>
-          </div>
+    <div class="section">
+      <h2>Regras do Jogo</h2>
+      <div class="text" id="plano-regras"></div>
+    </div>
 
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Status do ciclo</small>
-              <div id="encerramento-status-view">—</div>
-            </div>
+    <div class="section">
+      <h2>Mensagem do Treinador</h2>
+      <div class="text" id="plano-mensagem"></div>
+    </div>
 
-            <div class="plan-card" style="grid-column: span 2;">
-              <small>Resultado do ciclo</small>
-              <p id="encerramento-resultado-view">—</p>
-            </div>
-          </div>
+    <div class="footer">
+      Trackion System © | acompanhamento profissional
+    </div>
 
-          <div class="plan-card">
-            <small>Observação de encerramento</small>
-            <p id="encerramento-observacao-view">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Visão geral</h2>
-            <span>Direção do ciclo</span>
-          </div>
-
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Meta dos próximos 30 dias</small>
-              <p id="visao-meta-30d">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Foco central</small>
-              <p id="visao-foco-central">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Indicador de sucesso</small>
-              <p id="visao-indicador">—</p>
-            </div>
-          </div>
-
-          <div class="plan-card">
-            <small>Diretriz do ciclo</small>
-            <p id="visao-diretriz">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Hábitos prioritários</h2>
-            <span>Base de aderência</span>
-          </div>
-
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Hábito âncora</small>
-              <p id="habito-ancora-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Ajuste de ambiente</small>
-              <p id="habito-ambiente-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Frequência de check-in</small>
-              <p id="habito-checkin-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Meta de sono</small>
-              <p id="habito-sono-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Meta de hidratação</small>
-              <p id="habito-hidratacao-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Meta de movimento</small>
-              <p id="habito-passos-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-grid cols-2">
-            <div class="plan-card">
-              <small>Meta alimentar</small>
-              <p id="habito-alimentacao-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Ritual anti-sabotagem</small>
-              <p id="habito-ritual-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-card">
-            <small>Regra mínima</small>
-            <p id="habito-regra-view">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Direcionamento nutricional</h2>
-            <span>Estratégia alimentar</span>
-          </div>
-
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Objetivo nutricional</small>
-              <p id="nutri-objetivo-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Foco principal</small>
-              <p id="nutri-foco-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Regra alimentar mínima</small>
-              <p id="nutri-regra-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-grid cols-2">
-            <div class="plan-card">
-              <small>Refeições prioritárias</small>
-              <p id="nutri-refeicoes-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Estratégia para dias corridos</small>
-              <p id="nutri-corridos-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Estratégia para fim de semana</small>
-              <p id="nutri-fds-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Como responder às recaídas</small>
-              <p id="nutri-recaida-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-card">
-            <small>Observações nutricionais</small>
-            <p id="nutri-observacoes-view">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Estrutura do treino</h2>
-            <span>Macrovisão do bloco</span>
-          </div>
-
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Objetivo do ciclo</small>
-              <p id="treino-objetivo-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Frequência semanal</small>
-              <p id="treino-frequencia-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Duração por sessão</small>
-              <p id="treino-duracao-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Local de treino</small>
-              <p id="treino-local-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Intensidade alvo</small>
-              <p id="treino-intensidade-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Critério de progressão</small>
-              <p id="treino-progressao-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-grid cols-2">
-            <div class="plan-card">
-              <small>Estrutura geral</small>
-              <p id="treino-estrutura-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Cuidados e restrições</small>
-              <p id="treino-restricoes-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-card">
-            <small>Observações técnicas do ciclo</small>
-            <p id="treino-observacoes-view">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Planejamento por mês</h2>
-            <span>Desdobramento do ciclo</span>
-          </div>
-
-          <div class="month-block">
-            <div class="month-title">
-              <h3>Mês 1</h3>
-              <span id="mes1-divisao-view">—</span>
-            </div>
-            <div class="plan-grid cols-2">
-              <div class="plan-card">
-                <small>Foco</small>
-                <p id="mes1-foco-view">—</p>
-              </div>
-              <div class="plan-card">
-                <small>Divisão</small>
-                <p id="mes1-divisao-card-view">—</p>
-              </div>
-            </div>
-            <div class="month-program" id="mes1-programa-view">—</div>
-          </div>
-
-          <div class="month-block">
-            <div class="month-title">
-              <h3>Mês 2</h3>
-              <span id="mes2-divisao-view">—</span>
-            </div>
-            <div class="plan-grid cols-2">
-              <div class="plan-card">
-                <small>Foco</small>
-                <p id="mes2-foco-view">—</p>
-              </div>
-              <div class="plan-card">
-                <small>Divisão</small>
-                <p id="mes2-divisao-card-view">—</p>
-              </div>
-            </div>
-            <div class="month-program" id="mes2-programa-view">—</div>
-          </div>
-
-          <div class="month-block">
-            <div class="month-title">
-              <h3>Mês 3</h3>
-              <span id="mes3-divisao-view">—</span>
-            </div>
-            <div class="plan-grid cols-2">
-              <div class="plan-card">
-                <small>Foco</small>
-                <p id="mes3-foco-view">—</p>
-              </div>
-              <div class="plan-card">
-                <small>Divisão</small>
-                <p id="mes3-divisao-card-view">—</p>
-              </div>
-            </div>
-            <div class="month-program" id="mes3-programa-view">—</div>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Cardio e recuperação</h2>
-            <span>Suporte do processo</span>
-          </div>
-
-          <div class="plan-grid cols-3">
-            <div class="plan-card">
-              <small>Modalidade</small>
-              <p id="cardio-modalidade-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Frequência</small>
-              <p id="cardio-frequencia-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Duração</small>
-              <p id="cardio-duracao-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Intensidade</small>
-              <p id="cardio-intensidade-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Meta de NEAT</small>
-              <p id="cardio-neat-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Recuperação</small>
-              <p id="cardio-recuperacao-view">—</p>
-            </div>
-          </div>
-
-          <div class="plan-card">
-            <small>Observações do cardio</small>
-            <p id="cardio-observacoes-view">—</p>
-          </div>
-        </section>
-
-        <section class="plan-section">
-          <div class="plan-section-head">
-            <h2>Próximos passos</h2>
-            <span>Condução prática</span>
-          </div>
-
-          <div class="plan-grid cols-2">
-            <div class="plan-card">
-              <small>Data sugerida de revisão</small>
-              <p id="proxima-revisao-view">—</p>
-            </div>
-
-            <div class="plan-card">
-              <small>Tom da condução</small>
-              <p id="tom-comunicacao-view">—</p>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <footer class="plan-footer">
-        <p class="plan-footer-note">
-          Este plano foi organizado para orientar sua execução ao longo do ciclo. O foco é construir constância,
-          clareza e progresso sustentável. Ajustes podem acontecer durante o processo conforme sua resposta prática.
-        </p>
-      </footer>
-    </article>
   </div>
 
-  <script src="../assets/js/storage.js?v=60"></script>
-  <script src="../assets/js/plano-cliente.js?v=60"></script>
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/plano-cliente.js"></script>
+
 </body>
 </html>
