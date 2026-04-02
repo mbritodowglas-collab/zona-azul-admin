@@ -2,88 +2,19 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Zona Azul</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .box {
-      width: 320px;
-      padding: 20px;
-      background: #020617;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    h2 {
-      margin-bottom: 8px;
-    }
-
-    .sub {
-      margin: 0 0 18px;
-      color: #cbd5e1;
-      font-size: 14px;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #1e293b;
-      color: white;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #6366f1;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    #msg {
-      margin-top: 12px;
-      font-size: 14px;
-      min-height: 20px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Trackion System</title>
 </head>
 <body>
-  <div class="box">
-    <h2>Entrar</h2>
-    <p class="sub">Acesse o painel do Zona Azul.</p>
-
-    <form id="login-form">
-      <input id="email" type="email" placeholder="Seu email" required />
-      <input id="senha" type="password" placeholder="Sua senha" required />
-      <button id="login-btn" type="submit">Entrar</button>
-    </form>
-
-    <p id="msg"></p>
-  </div>
+  <form id="login-form">
+    <input id="email" type="email" placeholder="Seu email" />
+    <input id="password" type="password" placeholder="Sua senha" />
+    <button id="login-submit" type="submit">Entrar</button>
+    <div id="login-feedback" style="display:none;"></div>
+  </form>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/login.js?v=2"></script>
+  <script src="../assets/js/supabase.js?v=3"></script>
+  <script src="./login.js?v=3"></script>
 </body>
 </html>
