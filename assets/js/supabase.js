@@ -17,7 +17,6 @@
     ];
 
     const parts = [...pathParts];
-
     const last = parts[parts.length - 1];
     const isFile = last && last.includes(".");
 
@@ -49,6 +48,11 @@
 
   window.ZASupabase = {
     client,
+
+    getClient() {
+      return client;
+    },
+
     url: SUPABASE_URL,
     anonKey: SUPABASE_ANON_KEY,
     getProjectBasePath,
