@@ -14,13 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const clientes = JSON.parse(localStorage.getItem("clientes") || "[]");
-  const planejamentos = JSON.parse(localStorage.getItem("planejamentos") || "[]");
-  const acompanhamentos = JSON.parse(localStorage.getItem("acompanhamentos") || "[]");
-  const leads = JSON.parse(localStorage.getItem("leads") || "[]");
+  const clientes = JSON.parse(localStorage.getItem("za_clientes") || "[]");
+  const leads = JSON.parse(localStorage.getItem("za_leads") || "[]");
 
   const cliente = clientes.find(c => String(c.id) === String(clienteId));
-  const planejamento = planejamentos.find(p => String(p.clienteId) === String(clienteId)) || null;
   const leadRelacionado =
     leads.find(l => String(l.clienteId) === String(clienteId)) ||
     leads.find(l => String(l.id) === String(clienteId)) ||
@@ -32,17 +29,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const pre = cliente.preDiagnostico || leadRelacionado || {};
+  const planejamento = cliente.planejamento || {};
+  const relatorioCompleto = cliente.relatorioCompleto || {};
   const base = cliente.dadosBaseEditados || {};
-  const estrategia = planejamento?.estrategia || {};
-  const diagnostico = planejamento?.diagnostico || {};
-  const metricas = planejamento?.metricas || {};
-  const habitos = planejamento?.habitos || {};
-  const treino = planejamento?.treino || {};
-  const cardio = planejamento?.cardio || {};
-  const nutricional = planejamento?.nutricional || {};
-  const radar = planejamento?.radar || {};
-  const perimetriaPlanejamento = planejamento?.perimetria || {};
-  const profissional = planejamento?.profissional || {};
+  const estrategia = planejamento.estrategia || {};
+  const diagnostico = planejamento.diagnostico || {};
+  const metricas = planejamento.metricas || {};
+  const habitos = planejamento.habitos || {};
+  const treino = planejamento.treino || {};
+  const cardio = planejamento.cardio || {};
+  const nutricional = planejamento.nutricional || {};
+  const radar = planejamento.radar || {};
+  const perimetriaPlanejamento = planejamento.perimetria || {};
+  const profissional = planejamento.profissional || {};
+  const acompanhamentos = Array.isArray(cliente.acompanhamentos) ? cliente.acompanhamentos : [];
+  const timelineCliente = Array.isArray(cliente.timeline) ? cliente.timeline : [];
 
   function firstFilled(...values) {
     for (const value of values) {
@@ -100,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return firstFilled(
       estrategia.fase,
       cliente.fase_nome,
+      cliente.fase_atual,
       cliente.fase,
       "Fase não definida"
     );
@@ -107,11 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getInitialMetric(...keys) {
     for (const key of keys) {
-      const value = firstFilled(
-        base[key],
-        pre[key],
-        cliente[key]
-      );
+      const value = firstFilled(base[key], pre[key], cliente[key]);
       if (value !== "—") return value;
     }
     return 0;
@@ -148,25 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  function firstTimelineDate() {
-    return firstFilled(
-      cliente.createdAt,
-      cliente.created_at,
-      pre.createdAt,
-      pre.created_at,
-      new Date().toISOString()
-    );
-  }
-
-  // =========================
-  // HEADER / HERO
-  // =========================
   const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
   const emailCliente = firstFilled(cliente.email, pre.email, "");
   const objetivoCliente = getObjetivo();
   const faseCliente = getFase();
-  const nomeProfissional = firstFilled(profissional.nome, planejamento?.profissionalNome, "Márcio Dowglas");
-  const crefProfissional = firstFilled(profissional.cref, planejamento?.profissionalCref, "—");
+  const nomeProfissional = firstFilled(profissional.nome, "Márcio Dowglas");
+  const crefProfissional = firstFilled(profissional.cref, "—");
 
   text("report-profissional-nome", nomeProfissional);
   text("report-profissional-cref", crefProfissional);
@@ -193,22 +178,20 @@ document.addEventListener("DOMContentLoaded", () => {
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
 
-  // =========================
-  // RESUMO EXECUTIVO
-  // =========================
   text("summary-objetivo", objetivoCliente);
   text(
     "summary-avanco",
     firstFilled(
+      relatorioCompleto.avancoPrincipal,
       estrategia.avancoPrincipal,
       diagnostico.avancoPrincipal,
-      planejamento?.avanco,
       "Leitura inicial construída a partir do cadastro e do pré-diagnóstico."
     )
   );
   text(
     "summary-gargalo",
     firstFilled(
+      relatorioCompleto.gargaloPrincipal,
       estrategia.gargaloPrincipal,
       diagnostico.gargaloPrincipal,
       pre.dificuldade_principal,
@@ -220,16 +203,13 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "summary-prioridade",
     firstFilled(
+      relatorioCompleto.prioridade,
       estrategia.focoCentral,
       diagnostico.foco,
-      planejamento?.focoProximoCiclo,
       "Consolidar base comportamental e aderência."
     )
   );
 
-  // =========================
-  // MÉTRICAS
-  // =========================
   const pesoInicial = getInitialMetric("peso");
   const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, cliente.peso, 0);
 
@@ -252,9 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ].join("");
   }
 
-  // =========================
-  // RADAR
-  // =========================
   const radarCanvas = document.getElementById("radar-chart");
   if (radarCanvas && typeof Chart !== "undefined") {
     const inicial = {
@@ -313,12 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // EVOLUÇÃO TEMPORAL
-  // =========================
   const evolucaoCanvas = document.getElementById("evolucao-chart");
   if (evolucaoCanvas && typeof Chart !== "undefined") {
-    let evolucao = Array.isArray(planejamento?.evolucao) ? [...planejamento.evolucao] : [];
+    let evolucao = Array.isArray(planejamento.evolucao) ? [...planejamento.evolucao] : [];
 
     if (!evolucao.length) {
       evolucao = [
@@ -359,9 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // PERIMETRIA
-  // =========================
   const perimetriaGrid = document.getElementById("perimetria-grid");
   if (perimetriaGrid) {
     const perimetriaBase = {
@@ -387,24 +358,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =========================
-  // LEITURA TÉCNICA
-  // =========================
   text(
     "diagnostico-leitura",
     firstFilled(
+      relatorioCompleto.leituraTecnica,
       diagnostico.leitura,
-      planejamento?.leituraTecnica,
+      planejamento.leituraTecnica,
       pre.leituraTecnica,
-      "O caso apresenta relatório inicial estruturado a partir dos dados de entrada do cliente, servindo como linha de base para comparações posteriores."
+      "O caso apresenta relatório inicial estruturado a partir dos dados de entrada do cliente."
     )
   );
 
   text(
     "diagnostico-sintese",
     firstFilled(
+      relatorioCompleto.sinteseDiagnostica,
       diagnostico.sintese,
-      planejamento?.sinteseDiagnostica,
+      planejamento.sinteseDiagnostica,
       pre.sinteseDiagnostica,
       "Ainda sem síntese diagnóstica posterior consolidada."
     )
@@ -415,19 +385,17 @@ document.addEventListener("DOMContentLoaded", () => {
     focoEl.textContent = firstFilled(
       diagnostico.foco,
       estrategia.focoCentral,
-      planejamento?.focoProximoCiclo,
+      planejamento.focoProximoCiclo,
       "—"
     );
   }
 
-  // =========================
-  // ANÁLISE COMPORTAMENTAL
-  // =========================
   text(
     "behavior-aderencia",
     firstFilled(
-      planejamento?.aderencia,
-      habitos?.regraMinima,
+      relatorioCompleto.aderencia,
+      planejamento.aderencia,
+      habitos.regraMinima,
       pre.aderencia,
       "Aderência inicial em observação"
     )
@@ -436,8 +404,9 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "behavior-ambiente",
     firstFilled(
-      habitos?.ajusteAmbiente,
-      planejamento?.ambiente,
+      relatorioCompleto.ambiente,
+      habitos.ajusteAmbiente,
+      planejamento.ambiente,
       pre.ambiente,
       "Ambiente ainda sem leitura consolidada"
     )
@@ -446,7 +415,8 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "behavior-sabotadores",
     firstFilled(
-      planejamento?.sabotadores,
+      relatorioCompleto.sabotadores,
+      planejamento.sabotadores,
       pre.sabotadores,
       pre.maior_dificuldade,
       "Sabotadores ainda não mapeados"
@@ -456,20 +426,19 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "behavior-leitura",
     firstFilled(
-      planejamento?.leituraComportamental,
+      relatorioCompleto.leituraComportamental,
+      planejamento.leituraComportamental,
       pre.leituraComportamental,
       "Leitura comportamental inicial em construção."
     )
   );
 
-  // =========================
-  // PRÓXIMO DIRECIONAMENTO
-  // =========================
   text(
     "next-manter",
     firstFilled(
-      planejamento?.manter,
-      treino?.frequencia,
+      relatorioCompleto.manter,
+      planejamento.manter,
+      treino.frequencia,
       "Manter execução do básico com consistência."
     )
   );
@@ -477,9 +446,10 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "next-ajustar",
     firstFilled(
-      planejamento?.ajustar,
-      cardio?.frequencia,
-      nutricional?.regraMinima,
+      relatorioCompleto.ajustar,
+      planejamento.ajustar,
+      cardio.frequencia,
+      nutricional.regraMinima,
       "Ajustar rotina, previsibilidade e aderência."
     )
   );
@@ -487,8 +457,9 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "next-foco",
     firstFilled(
-      planejamento?.focoProximoCiclo,
-      estrategia?.focoCentral,
+      relatorioCompleto.focoProximoCiclo,
+      planejamento.focoProximoCiclo,
+      estrategia.focoCentral,
       "Consolidar base comportamental e organização do processo."
     )
   );
@@ -496,25 +467,31 @@ document.addEventListener("DOMContentLoaded", () => {
   text(
     "next-meta",
     firstFilled(
-      planejamento?.metaPrincipal,
-      estrategia?.objetivo30d,
-      cliente?.objetivo,
+      relatorioCompleto.metaPrincipal,
+      planejamento.metaPrincipal,
+      estrategia.objetivo30d,
+      cliente.objetivo,
       "Meta principal ainda não definida."
     )
   );
 
-  // =========================
-  // TIMELINE
-  // =========================
   const timelineList = document.getElementById("timeline-list");
   if (timelineList) {
-    const timeline = acompanhamentos
-      .filter(a => String(a.clienteId) === String(clienteId))
-      .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+    const timelineAcompanhamentos = acompanhamentos.map(item => ({
+      titulo: item.titulo,
+      data: item.data,
+      descricao: item.descricao
+    }));
+
+    const timelineBase = timelineCliente.map(item => ({
+      titulo: firstFilled(item.tipo, "Registro"),
+      data: item.data,
+      descricao: item.descricao
+    }));
 
     const linhaInicial = {
       titulo: "Entrada inicial do caso",
-      data: firstTimelineDate(),
+      data: firstFilled(cliente.data_inicio, cliente.updatedAt, cliente.createdAt, pre.created_at, new Date().toISOString()),
       descricao: firstFilled(
         pre.queixa_principal,
         pre.objetivo,
@@ -523,7 +500,10 @@ document.addEventListener("DOMContentLoaded", () => {
       )
     };
 
-    const timelineFinal = timeline.length ? timeline : [linhaInicial];
+    const timelineFinal = [...timelineAcompanhamentos, ...timelineBase];
+    if (!timelineFinal.length) timelineFinal.push(linhaInicial);
+
+    timelineFinal.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
     timelineList.innerHTML = timelineFinal.map(item => `
       <div class="timeline-item">
