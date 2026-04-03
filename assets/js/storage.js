@@ -24,7 +24,7 @@ window.ZAStorage = (() => {
   }
 
   function getSupabaseClient() {
-    return window.ZASupabase?.getClient?.() || null;
+    return window.ZASupabase?.getClient?.() || window.ZASupabase?.client || null;
   }
 
   function isSupabaseReady() {
@@ -407,14 +407,24 @@ window.ZAStorage = (() => {
       idade: lead.idade,
       genero: lead.genero || "",
       cidade: lead.cidade || "",
+      objetivo: lead.objetivo || lead.objetivo_principal || lead.objetivo_fisico || "",
       status: "ativo",
       plano: "",
       fase_atual: 1,
       fase_nome: "Diagnóstico completo",
       data_inicio: nowIso(),
       preDiagnostico: { ...lead },
+      dadosBaseEditados: {
+        objetivo: lead.objetivo || lead.objetivo_principal || lead.objetivo_fisico || "",
+        peso: lead.peso || "",
+        cintura: lead.cintura || "",
+        observacaoInicial: lead.queixa_principal || lead.queixa || ""
+      },
       diagnosticoCompleto: {},
-      relatorioCompleto: {},
+      relatorioCompleto: {
+        origem: "pré-diagnóstico",
+        criadoEm: nowIso()
+      },
       planejamento: {},
       planejamentosArquivados: [],
       periodizacao: [],
