@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const printBtn = document.getElementById("print-report-btn");
   if (printBtn) {
-    printBtn.addEventListener("click", () => window.print());
+    printBtn.addEventListener("click", () => {
+      window.print();
+    });
   }
 
   if (!clienteId) {
@@ -115,11 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return 0;
   }
 
-  function getCurrentMetric(primary, ...fallbackKeys) {
-    const value = firstFilled(metricas[primary], ...fallbackKeys.map(k => firstFilled(base[k], pre[k], cliente[k])));
-    return value === "—" ? 0 : value;
-  }
-
   function metricCard(label, atual, anterior, suffix = "") {
     const atualNum = asNumber(atual, 0);
     const anteriorNum = asNumber(anterior, 0);
@@ -152,10 +149,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function firstTimelineDate() {
-    return firstFilled(cliente.createdAt, cliente.created_at, pre.createdAt, pre.created_at, new Date().toISOString());
+    return firstFilled(
+      cliente.createdAt,
+      cliente.created_at,
+      pre.createdAt,
+      pre.created_at,
+      new Date().toISOString()
+    );
   }
 
-  // HEADER
+  // =========================
+  // HEADER / HERO
+  // =========================
   const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
   const emailCliente = firstFilled(cliente.email, pre.email, "");
   const objetivoCliente = getObjetivo();
@@ -167,17 +172,16 @@ document.addEventListener("DOMContentLoaded", () => {
   text("report-profissional-cref", crefProfissional);
   text("report-nome", nomeCliente);
   text("report-email", emailCliente === "—" ? "" : emailCliente);
-  text(
-    "report-meta",
-    firstFilled(
-      base.observacaoInicial,
-      pre.rotina,
-      pre.queixa_principal,
-      pre.queixa,
-      cliente.objetivo,
-      ""
-    ) === "—" ? "" : firstFilled(base.observacaoInicial, pre.rotina, pre.queixa_principal, pre.queixa, cliente.objetivo, "")
+
+  const reportMeta = firstFilled(
+    base.observacaoInicial,
+    pre.rotina,
+    pre.queixa_principal,
+    pre.queixa,
+    cliente.objetivo,
+    ""
   );
+  text("report-meta", reportMeta === "—" ? "" : reportMeta);
 
   const avatar = document.getElementById("report-avatar");
   if (avatar) avatar.textContent = initials(nomeCliente);
@@ -189,7 +193,9 @@ document.addEventListener("DOMContentLoaded", () => {
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
 
-  // RESUMO
+  // =========================
+  // RESUMO EXECUTIVO
+  // =========================
   text("summary-objetivo", objetivoCliente);
   text(
     "summary-avanco",
@@ -221,7 +227,9 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
+  // =========================
   // MÉTRICAS
+  // =========================
   const pesoInicial = getInitialMetric("peso");
   const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, cliente.peso, 0);
 
@@ -244,7 +252,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ].join("");
   }
 
+  // =========================
   // RADAR
+  // =========================
   const radarCanvas = document.getElementById("radar-chart");
   if (radarCanvas && typeof Chart !== "undefined") {
     const inicial = {
@@ -303,7 +313,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // =========================
   // EVOLUÇÃO TEMPORAL
+  // =========================
   const evolucaoCanvas = document.getElementById("evolucao-chart");
   if (evolucaoCanvas && typeof Chart !== "undefined") {
     let evolucao = Array.isArray(planejamento?.evolucao) ? [...planejamento.evolucao] : [];
@@ -347,7 +359,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // =========================
   // PERIMETRIA
+  // =========================
   const perimetriaGrid = document.getElementById("perimetria-grid");
   if (perimetriaGrid) {
     const perimetriaBase = {
@@ -355,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
       quadril: firstFilled(perimetriaPlanejamento.quadril, base.quadril, pre.quadril, cliente.quadril),
       peito: firstFilled(perimetriaPlanejamento.peito, base.peito, pre.peito, cliente.peito),
       coxa: firstFilled(perimetriaPlanejamento.coxa, base.coxa, pre.coxa, cliente.coxa),
-      braço: firstFilled(perimetriaPlanejamento.braco, base.braco, pre.braco, cliente.braco),
+      braco: firstFilled(perimetriaPlanejamento.braco, base.braco, pre.braco, cliente.braco),
       abdome: firstFilled(perimetriaPlanejamento.abdome, base.abdome, pre.abdome, cliente.abdome)
     };
 
@@ -373,7 +387,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // =========================
   // LEITURA TÉCNICA
+  // =========================
   text(
     "diagnostico-leitura",
     firstFilled(
@@ -394,7 +410,19 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
+  const focoEl = document.getElementById("diagnostico-foco");
+  if (focoEl) {
+    focoEl.textContent = firstFilled(
+      diagnostico.foco,
+      estrategia.focoCentral,
+      planejamento?.focoProximoCiclo,
+      "—"
+    );
+  }
+
+  // =========================
   // ANÁLISE COMPORTAMENTAL
+  // =========================
   text(
     "behavior-aderencia",
     firstFilled(
@@ -434,7 +462,9 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
+  // =========================
   // PRÓXIMO DIRECIONAMENTO
+  // =========================
   text(
     "next-manter",
     firstFilled(
@@ -473,7 +503,9 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
+  // =========================
   // TIMELINE
+  // =========================
   const timelineList = document.getElementById("timeline-list");
   if (timelineList) {
     const timeline = acompanhamentos
