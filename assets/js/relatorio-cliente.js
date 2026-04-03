@@ -4,9 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const printBtn = document.getElementById("print-report-btn");
   if (printBtn) {
-    printBtn.addEventListener("click", () => {
-      window.print();
-    });
+    printBtn.addEventListener("click", () => window.print());
   }
 
   if (!clienteId) {
@@ -17,29 +15,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const clientes = JSON.parse(localStorage.getItem("clientes") || "[]");
   const planejamentos = JSON.parse(localStorage.getItem("planejamentos") || "[]");
   const acompanhamentos = JSON.parse(localStorage.getItem("acompanhamentos") || "[]");
+  const leads = JSON.parse(localStorage.getItem("leads") || "[]");
 
   const cliente = clientes.find(c => String(c.id) === String(clienteId));
   const planejamento = planejamentos.find(p => String(p.clienteId) === String(clienteId)) || null;
+  const leadRelacionado =
+    leads.find(l => String(l.clienteId) === String(clienteId)) ||
+    leads.find(l => String(l.id) === String(clienteId)) ||
+    null;
 
   if (!cliente) {
     document.getElementById("relatorio-not-found")?.classList.remove("hidden");
     return;
   }
 
-  const pre = cliente.preDiagnostico || {};
+  const pre = cliente.preDiagnostico || leadRelacionado || {};
   const base = cliente.dadosBaseEditados || {};
-  const diagnostico = planejamento?.diagnostico || {};
   const estrategia = planejamento?.estrategia || {};
+  const diagnostico = planejamento?.diagnostico || {};
   const metricas = planejamento?.metricas || {};
-  const nutricional = planejamento?.nutricional || {};
   const habitos = planejamento?.habitos || {};
-  const cardio = planejamento?.cardio || {};
   const treino = planejamento?.treino || {};
+  const cardio = planejamento?.cardio || {};
+  const nutricional = planejamento?.nutricional || {};
+  const radar = planejamento?.radar || {};
+  const perimetriaPlanejamento = planejamento?.perimetria || {};
   const profissional = planejamento?.profissional || {};
 
   function firstFilled(...values) {
     for (const value of values) {
       if (value === 0) return value;
+      if (value === false) return value;
       if (value !== undefined && value !== null && String(value).trim() !== "") {
         return value;
       }
@@ -47,24 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return "—";
   }
 
-  function num(value, fallback = 0) {
-    const n = Number(value);
+  function asNumber(value, fallback = 0) {
+    if (value === null || value === undefined || value === "") return fallback;
+    const cleaned = String(value).replace(",", ".").replace(/[^\d.-]/g, "");
+    const n = Number(cleaned);
     return Number.isFinite(n) ? n : fallback;
   }
 
-  function text(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = firstFilled(value);
-  }
-
-  function textRaw(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value ?? "";
-  }
-
-  function initials(name) {
-    if (!name) return "C";
-    return String(name).trim().charAt(0).toUpperCase();
+  function toTitle(value) {
+    if (!value || value === "—") return "—";
+    return String(value)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
   function formatDateBR(value) {
@@ -74,9 +74,55 @@ document.addEventListener("DOMContentLoaded", () => {
     return d.toLocaleDateString("pt-BR");
   }
 
-  function buildMetricCard(label, atual, anterior, suffix = "") {
-    const atualNum = num(atual, 0);
-    const anteriorNum = num(anterior, 0);
+  function text(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value ?? "—";
+  }
+
+  function initials(name) {
+    return String(name || "C").trim().charAt(0).toUpperCase();
+  }
+
+  function getObjetivo() {
+    return firstFilled(
+      estrategia.objetivo30d,
+      base.objetivo,
+      pre.objetivo,
+      pre.objetivo_principal,
+      pre.objetivo_fisico,
+      cliente.objetivo
+    );
+  }
+
+  function getFase() {
+    return firstFilled(
+      estrategia.fase,
+      cliente.fase_nome,
+      cliente.fase,
+      "Fase não definida"
+    );
+  }
+
+  function getInitialMetric(...keys) {
+    for (const key of keys) {
+      const value = firstFilled(
+        base[key],
+        pre[key],
+        cliente[key]
+      );
+      if (value !== "—") return value;
+    }
+    return 0;
+  }
+
+  function getCurrentMetric(primary, ...fallbackKeys) {
+    const value = firstFilled(metricas[primary], ...fallbackKeys.map(k => firstFilled(base[k], pre[k], cliente[k])));
+    return value === "—" ? 0 : value;
+  }
+
+  function metricCard(label, atual, anterior, suffix = "") {
+    const atualNum = asNumber(atual, 0);
+    const anteriorNum = asNumber(anterior, 0);
     const delta = atualNum - anteriorNum;
 
     let deltaClass = "delta-neutral";
@@ -94,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong>${atualNum}${suffix}</strong>
           </div>
           <div>
-            <small>Anterior</small>
+            <small>Inicial</small>
             <strong>${anteriorNum}${suffix}</strong>
           </div>
         </div>
@@ -105,82 +151,55 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // =========================
-  // HEADER / HERO
-  // =========================
-  const nomeCliente = firstFilled(cliente.nome, "Cliente");
-  const emailCliente = firstFilled(cliente.email, cliente.contato?.email, "");
-  const objetivoCliente = firstFilled(
-    estrategia.objetivo30d,
-    base.objetivo,
-    pre.objetivo,
-    pre.objetivo_principal,
-    pre.objetivo_fisico,
-    cliente.objetivo
-  );
-  const faseCliente = firstFilled(
-    estrategia.fase,
-    cliente.fase_nome,
-    cliente.fase,
-    "Fase não definida"
-  );
+  function firstTimelineDate() {
+    return firstFilled(cliente.createdAt, cliente.created_at, pre.createdAt, pre.created_at, new Date().toISOString());
+  }
 
-  const nomeProfissional = firstFilled(
-    profissional.nome,
-    planejamento?.profissionalNome,
-    "Márcio Dowglas"
-  );
-
-  const crefProfissional = firstFilled(
-    profissional.cref,
-    planejamento?.profissionalCref,
-    "—"
-  );
+  // HEADER
+  const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
+  const emailCliente = firstFilled(cliente.email, pre.email, "");
+  const objetivoCliente = getObjetivo();
+  const faseCliente = getFase();
+  const nomeProfissional = firstFilled(profissional.nome, planejamento?.profissionalNome, "Márcio Dowglas");
+  const crefProfissional = firstFilled(profissional.cref, planejamento?.profissionalCref, "—");
 
   text("report-profissional-nome", nomeProfissional);
   text("report-profissional-cref", crefProfissional);
-
   text("report-nome", nomeCliente);
-  textRaw("report-email", emailCliente === "—" ? "" : emailCliente);
-  textRaw(
+  text("report-email", emailCliente === "—" ? "" : emailCliente);
+  text(
     "report-meta",
     firstFilled(
       base.observacaoInicial,
       pre.rotina,
       pre.queixa_principal,
-      cliente.objetivo
-    ) === "—"
-      ? ""
-      : firstFilled(base.observacaoInicial, pre.rotina, pre.queixa_principal, cliente.objetivo)
+      pre.queixa,
+      cliente.objetivo,
+      ""
+    ) === "—" ? "" : firstFilled(base.observacaoInicial, pre.rotina, pre.queixa_principal, pre.queixa, cliente.objetivo, "")
   );
 
   const avatar = document.getElementById("report-avatar");
   if (avatar) avatar.textContent = initials(nomeCliente);
 
-  textRaw("report-data-geracao", formatDateBR(new Date()));
-
-  textRaw("report-fase-chip", `Fase atual: ${faseCliente}`);
-  textRaw("report-objetivo-chip", `Objetivo: ${objetivoCliente}`);
-
+  text("report-data-geracao", formatDateBR(new Date()));
+  text("report-fase-chip", `Fase atual: ${faseCliente}`);
+  text("report-objetivo-chip", `Objetivo: ${objetivoCliente}`);
   text("report-cliente-meta-nome", nomeCliente);
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
 
-  // =========================
-  // RESUMO EXECUTIVO
-  // =========================
+  // RESUMO
   text("summary-objetivo", objetivoCliente);
-
   text(
     "summary-avanco",
     firstFilled(
       estrategia.avancoPrincipal,
       diagnostico.avancoPrincipal,
       planejamento?.avanco,
-      "Primeira leitura em construção a partir dos dados iniciais."
+      "Leitura inicial construída a partir do cadastro e do pré-diagnóstico."
     )
   );
-
   text(
     "summary-gargalo",
     firstFilled(
@@ -188,64 +207,60 @@ document.addEventListener("DOMContentLoaded", () => {
       diagnostico.gargaloPrincipal,
       pre.dificuldade_principal,
       pre.maior_dificuldade,
-      "Ainda sem gargalo técnico consolidado."
+      pre.queixa_principal,
+      "Gargalo ainda em observação."
     )
   );
-
   text(
     "summary-prioridade",
     firstFilled(
       estrategia.focoCentral,
       diagnostico.foco,
       planejamento?.focoProximoCiclo,
-      "Estruturar aderência e consolidar a base do processo."
+      "Consolidar base comportamental e aderência."
     )
   );
 
-  // =========================
-  // MÉTRICAS FÍSICAS
-  // =========================
+  // MÉTRICAS
+  const pesoInicial = getInitialMetric("peso");
+  const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, cliente.peso, 0);
+
+  const bfInicial = getInitialMetric("bf", "percentual_gordura");
+  const bfAtual = firstFilled(metricas.bf, base.bf, pre.bf, pre.percentual_gordura, cliente.bf, 0);
+
+  const massaInicial = getInitialMetric("massaMagra", "massa");
+  const massaAtual = firstFilled(metricas.massa, base.massaMagra, pre.massaMagra, cliente.massaMagra, 0);
+
+  const cinturaInicial = getInitialMetric("cintura");
+  const cinturaAtual = firstFilled(metricas.cintura, base.cintura, pre.cintura, cliente.cintura, 0);
+
   const metricsGrid = document.getElementById("metrics-grid");
   if (metricsGrid) {
-    const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, 0);
-    const pesoAnterior = firstFilled(metricas.pesoAnterior, pre.peso, 0);
-
-    const bfAtual = firstFilled(metricas.bf, base.bf, pre.bf, pre.percentual_gordura, 0);
-    const bfAnterior = firstFilled(metricas.bfAnterior, pre.bf, pre.percentual_gordura, 0);
-
-    const massaAtual = firstFilled(metricas.massa, base.massaMagra, pre.massaMagra, 0);
-    const massaAnterior = firstFilled(metricas.massaAnterior, pre.massaMagra, 0);
-
-    const cinturaAtual = firstFilled(metricas.cintura, base.cintura, pre.cintura, 0);
-    const cinturaAnterior = firstFilled(metricas.cinturaAnterior, pre.cintura, 0);
-
     metricsGrid.innerHTML = [
-      buildMetricCard("Peso", pesoAtual, pesoAnterior, " kg"),
-      buildMetricCard("BF", bfAtual, bfAnterior, "%"),
-      buildMetricCard("Massa magra", massaAtual, massaAnterior, " kg"),
-      buildMetricCard("Cintura", cinturaAtual, cinturaAnterior, " cm")
+      metricCard("Peso", pesoAtual, pesoInicial, " kg"),
+      metricCard("BF", bfAtual, bfInicial, "%"),
+      metricCard("Massa magra", massaAtual, massaInicial, " kg"),
+      metricCard("Cintura", cinturaAtual, cinturaInicial, " cm")
     ].join("");
   }
 
-  // =========================
   // RADAR
-  // =========================
   const radarCanvas = document.getElementById("radar-chart");
   if (radarCanvas && typeof Chart !== "undefined") {
-    const radarAtual = {
-      treino: num(firstFilled(planejamento?.radar?.treino, pre.radar?.treino, 5), 5),
-      dieta: num(firstFilled(planejamento?.radar?.dieta, pre.radar?.dieta, 5), 5),
-      sono: num(firstFilled(planejamento?.radar?.sono, pre.radar?.sono, 5), 5),
-      disciplina: num(firstFilled(planejamento?.radar?.disciplina, pre.radar?.disciplina, 5), 5),
-      mental: num(firstFilled(planejamento?.radar?.mental, pre.radar?.mental, 5), 5)
+    const inicial = {
+      treino: asNumber(firstFilled(pre.radar?.treino, pre.treino_nota, 4), 4),
+      dieta: asNumber(firstFilled(pre.radar?.dieta, pre.dieta_nota, 4), 4),
+      sono: asNumber(firstFilled(pre.radar?.sono, pre.sono_nota, 4), 4),
+      disciplina: asNumber(firstFilled(pre.radar?.disciplina, pre.disciplina_nota, 4), 4),
+      mental: asNumber(firstFilled(pre.radar?.mental, pre.mental_nota, 4), 4)
     };
 
-    const radarInicial = {
-      treino: num(firstFilled(pre.radar?.treino, 4), 4),
-      dieta: num(firstFilled(pre.radar?.dieta, 4), 4),
-      sono: num(firstFilled(pre.radar?.sono, 4), 4),
-      disciplina: num(firstFilled(pre.radar?.disciplina, 4), 4),
-      mental: num(firstFilled(pre.radar?.mental, 4), 4)
+    const atual = {
+      treino: asNumber(firstFilled(radar.treino, inicial.treino, 5), 5),
+      dieta: asNumber(firstFilled(radar.dieta, inicial.dieta, 5), 5),
+      sono: asNumber(firstFilled(radar.sono, inicial.sono, 5), 5),
+      disciplina: asNumber(firstFilled(radar.disciplina, inicial.disciplina, 5), 5),
+      mental: asNumber(firstFilled(radar.mental, inicial.mental, 5), 5)
     };
 
     new Chart(radarCanvas, {
@@ -255,13 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
         datasets: [
           {
             label: "Base inicial",
-            data: Object.values(radarInicial),
+            data: Object.values(inicial),
             borderColor: "rgba(156,176,203,0.9)",
             backgroundColor: "rgba(156,176,203,0.15)"
           },
           {
             label: "Leitura atual",
-            data: Object.values(radarAtual),
+            data: Object.values(atual),
             borderColor: "#47b8ff",
             backgroundColor: "rgba(71,184,255,0.20)"
           }
@@ -288,23 +303,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
   // EVOLUÇÃO TEMPORAL
-  // =========================
   const evolucaoCanvas = document.getElementById("evolucao-chart");
   if (evolucaoCanvas && typeof Chart !== "undefined") {
     let evolucao = Array.isArray(planejamento?.evolucao) ? [...planejamento.evolucao] : [];
 
     if (!evolucao.length) {
       evolucao = [
-        {
-          data: "Inicial",
-          peso: num(firstFilled(pre.peso, base.peso, metricas.pesoAnterior, 0), 0)
-        },
-        {
-          data: "Atual",
-          peso: num(firstFilled(metricas.peso, base.peso, pre.peso, 0), 0)
-        }
+        { data: "Inicial", peso: asNumber(pesoInicial, 0) },
+        { data: "Atual", peso: asNumber(pesoAtual, 0) }
       ];
     }
 
@@ -312,23 +319,19 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "line",
       data: {
         labels: evolucao.map(e => firstFilled(e.data, "Registro")),
-        datasets: [
-          {
-            label: "Peso",
-            data: evolucao.map(e => num(e.peso, 0)),
-            borderColor: "#7cff5a",
-            backgroundColor: "rgba(124,255,90,0.15)",
-            tension: 0.3,
-            fill: false
-          }
-        ]
+        datasets: [{
+          label: "Peso",
+          data: evolucao.map(e => asNumber(e.peso, 0)),
+          borderColor: "#7cff5a",
+          backgroundColor: "rgba(124,255,90,0.15)",
+          tension: 0.3,
+          fill: false
+        }]
       },
       options: {
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            labels: { color: "#dce8f8" }
-          }
+          legend: { labels: { color: "#dce8f8" } }
         },
         scales: {
           x: {
@@ -344,44 +347,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
   // PERIMETRIA
-  // =========================
   const perimetriaGrid = document.getElementById("perimetria-grid");
   if (perimetriaGrid) {
-    const perimetria = planejamento?.perimetria || {
-      cintura: firstFilled(base.cintura, pre.cintura, "—"),
-      quadril: firstFilled(base.quadril, pre.quadril, "—"),
-      peito: firstFilled(base.peito, pre.peito, "—"),
-      coxa: firstFilled(base.coxa, pre.coxa, "—")
+    const perimetriaBase = {
+      cintura: firstFilled(perimetriaPlanejamento.cintura, base.cintura, pre.cintura, cliente.cintura),
+      quadril: firstFilled(perimetriaPlanejamento.quadril, base.quadril, pre.quadril, cliente.quadril),
+      peito: firstFilled(perimetriaPlanejamento.peito, base.peito, pre.peito, cliente.peito),
+      coxa: firstFilled(perimetriaPlanejamento.coxa, base.coxa, pre.coxa, cliente.coxa),
+      braço: firstFilled(perimetriaPlanejamento.braco, base.braco, pre.braco, cliente.braco),
+      abdome: firstFilled(perimetriaPlanejamento.abdome, base.abdome, pre.abdome, cliente.abdome)
     };
 
-    const items = Object.entries(perimetria)
-      .filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "")
-      .slice(0, 8);
+    const items = Object.entries(perimetriaBase).filter(([, value]) => value !== "—");
 
     if (!items.length) {
       perimetriaGrid.innerHTML = `<div class="empty-box">Nenhuma medida registrada até o momento.</div>`;
     } else {
       perimetriaGrid.innerHTML = items.map(([key, value]) => `
         <div class="perimetria-item">
-          <span>${key}</span>
-          <strong>${value}${String(value).includes("cm") || value === "—" ? "" : " cm"}</strong>
+          <span>${toTitle(key)}</span>
+          <strong>${value}${String(value).includes("cm") ? "" : " cm"}</strong>
         </div>
       `).join("");
     }
   }
 
-  // =========================
   // LEITURA TÉCNICA
-  // =========================
   text(
     "diagnostico-leitura",
     firstFilled(
       diagnostico.leitura,
       planejamento?.leituraTecnica,
       pre.leituraTecnica,
-      "Cliente em fase de estruturação diagnóstica. O relatório atual utiliza os dados iniciais disponíveis e deve ser refinado conforme novas avaliações forem registradas."
+      "O caso apresenta relatório inicial estruturado a partir dos dados de entrada do cliente, servindo como linha de base para comparações posteriores."
     )
   );
 
@@ -391,20 +390,18 @@ document.addEventListener("DOMContentLoaded", () => {
       diagnostico.sintese,
       planejamento?.sinteseDiagnostica,
       pre.sinteseDiagnostica,
-      "Ainda sem síntese técnica consolidada para o caso."
+      "Ainda sem síntese diagnóstica posterior consolidada."
     )
   );
 
-  // =========================
   // ANÁLISE COMPORTAMENTAL
-  // =========================
   text(
     "behavior-aderencia",
     firstFilled(
       planejamento?.aderencia,
       habitos?.regraMinima,
       pre.aderencia,
-      "Aderência em observação"
+      "Aderência inicial em observação"
     )
   );
 
@@ -437,15 +434,13 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
-  // =========================
   // PRÓXIMO DIRECIONAMENTO
-  // =========================
   text(
     "next-manter",
     firstFilled(
       planejamento?.manter,
       treino?.frequencia,
-      "Manter o básico executado com consistência."
+      "Manter execução do básico com consistência."
     )
   );
 
@@ -455,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
       planejamento?.ajustar,
       cardio?.frequencia,
       nutricional?.regraMinima,
-      "Ajustar rotina, aderência e previsibilidade do processo."
+      "Ajustar rotina, previsibilidade e aderência."
     )
   );
 
@@ -464,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     firstFilled(
       planejamento?.focoProximoCiclo,
       estrategia?.focoCentral,
-      "Consolidar aderência antes de aumentar complexidade."
+      "Consolidar base comportamental e organização do processo."
     )
   );
 
@@ -478,27 +473,34 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   );
 
-  // =========================
   // TIMELINE
-  // =========================
   const timelineList = document.getElementById("timeline-list");
   if (timelineList) {
     const timeline = acompanhamentos
       .filter(a => String(a.clienteId) === String(clienteId))
       .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
-    if (!timeline.length) {
-      timelineList.innerHTML = `<div class="empty-box">Nenhum acompanhamento registrado até o momento.</div>`;
-    } else {
-      timelineList.innerHTML = timeline.map(item => `
-        <div class="timeline-item">
-          <div class="timeline-item-top">
-            <strong>${firstFilled(item.titulo, "Acompanhamento")}</strong>
-            <span>${formatDateBR(item.data)}</span>
-          </div>
-          <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
+    const linhaInicial = {
+      titulo: "Entrada inicial do caso",
+      data: firstTimelineDate(),
+      descricao: firstFilled(
+        pre.queixa_principal,
+        pre.objetivo,
+        cliente.objetivo,
+        "Cadastro inicial registrado no sistema."
+      )
+    };
+
+    const timelineFinal = timeline.length ? timeline : [linhaInicial];
+
+    timelineList.innerHTML = timelineFinal.map(item => `
+      <div class="timeline-item">
+        <div class="timeline-item-top">
+          <strong>${firstFilled(item.titulo, "Acompanhamento")}</strong>
+          <span>${formatDateBR(item.data)}</span>
         </div>
-      `).join("");
-    }
+        <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
+      </div>
+    `).join("");
   }
 });
