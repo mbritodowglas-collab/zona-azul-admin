@@ -13,6 +13,7 @@
   const stepIndicator = document.getElementById("step-indicator");
 
   let currentStep = 1;
+  let isSubmitting = false;
   const totalSteps = steps.length;
 
   const stepMeta = {
@@ -58,7 +59,7 @@
         button.addEventListener("click", () => {
           buttons.forEach(btn => btn.classList.remove("selected"));
           button.classList.add("selected");
-          hiddenInput.value = button.dataset.value;
+          if (hiddenInput) hiddenInput.value = button.dataset.value;
         });
       });
     });
@@ -76,7 +77,7 @@
         button.addEventListener("click", () => {
           buttons.forEach(btn => btn.classList.remove("selected"));
           button.classList.add("selected");
-          hiddenInput.value = button.dataset.value;
+          if (hiddenInput) hiddenInput.value = button.dataset.value;
         });
       });
     });
@@ -161,50 +162,70 @@
     };
   }
 
+  function setSubmittingState(submitting) {
+    isSubmitting = submitting;
+
+    if (submitBtn) {
+      submitBtn.disabled = submitting;
+      submitBtn.textContent = submitting ? "Enviando..." : "Enviar";
+    }
+
+    if (nextBtn) nextBtn.disabled = submitting;
+    if (prevBtn) prevBtn.disabled = submitting;
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (isSubmitting) return;
+
     const payload = buildPayload();
 
-    const erro = window.ZACalculos.validarFormulario(payload);
+    const erro = window.ZACalculos?.validarFormulario?.(payload);
     if (erro) {
       alert(erro);
       return;
     }
 
-    const lead = window.ZACalculos.criarLead(payload);
-
-    console.log("[Formulario Publico] Lead gerado:", lead);
-
-    const saveResult = window.ZAStorage.saveLead(lead);
-    const syncResult = await window.ZAStorage.syncNow();
-
-    console.log("[Formulario Publico] Resultado save:", saveResult);
-    console.log("[Formulario Publico] Resultado sync:", syncResult);
-
-    if (!syncResult?.ok) {
-      alert(`O lead foi salvo localmente, mas houve falha ao sincronizar com o banco: ${syncResult?.error || "erro desconhecido"}`);
+    const lead = window.ZACalculos?.criarLead?.(payload);
+    if (!lead) {
+      alert("Não foi possível gerar o lead.");
       return;
     }
 
-    form.reset();
-    resetVisualSelections();
-    currentStep = 1;
-    showStep(currentStep);
+    setSubmittingState(true);
 
-    formCard.classList.add("hidden");
-    successCard.classList.remove("hidden");
+    try {
+      const saveResult = window.ZAStorage.saveLead(lead);
+      const syncResult = await window.ZAStorage.syncNow();
 
-    if (saveResult?.action === "updated") {
-      console.log("[Formulario Publico] Lead atualizado na tabela leads.");
-    } else {
-      console.log("[Formulario Publico] Lead criado na tabela leads.");
+      console.log("[Formulario Publico] Lead gerado:", lead);
+      console.log("[Formulario Publico] Resultado save:", saveResult);
+      console.log("[Formulario Publico] Resultado sync:", syncResult);
+
+      form.reset();
+      resetVisualSelections();
+      currentStep = 1;
+      showStep(currentStep);
+
+      formCard.classList.add("hidden");
+      successCard.classList.remove("hidden");
+
+      if (!syncResult?.ok) {
+        console.warn("[Formulario Publico] Falha ao sincronizar com o banco. Lead mantido localmente.");
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("[Formulario Publico] Erro ao enviar:", err);
+      alert("Houve um erro ao enviar suas respostas. Tente novamente.");
+    } finally {
+      setSubmittingState(false);
     }
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   nextBtn?.addEventListener("click", () => {
+    if (isSubmitting) return;
     if (!validateCurrentStep(currentStep)) return;
 
     if (currentStep < totalSteps) {
@@ -215,6 +236,8 @@
   });
 
   prevBtn?.addEventListener("click", () => {
+    if (isSubmitting) return;
+
     if (currentStep > 1) {
       currentStep -= 1;
       showStep(currentStep);
@@ -223,7 +246,7 @@
   });
 
   async function boot() {
-    await window.ZAStorage.init();
+    await window.ZAStorage.init({ force: true });
     setupOptionCards();
     setupScoreButtons();
     showStep(currentStep);
