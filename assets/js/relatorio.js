@@ -174,7 +174,8 @@ window.ZARelatorioCliente = (() => {
   }
 
   function getPerfilTexto() {
-    const avg = Number(getRadarAverage().replace(",", ".")) || 0;
+    const avgText = getRadarAverage();
+    const avg = Number(String(avgText).replace(",", ".")) || 0;
     const sabotagem = String(getSabotagem()).toLowerCase();
 
     if (avg <= 4) {
@@ -285,7 +286,7 @@ window.ZARelatorioCliente = (() => {
     `;
   }
 
-  function renderRadar() {
+  function renderRadarSection() {
     const body = document.getElementById("report-body");
     if (!body) return;
 
@@ -339,12 +340,12 @@ window.ZARelatorioCliente = (() => {
             ticks: {
               stepSize: 2,
               backdropColor: "transparent",
-              color: "rgba(235,240,255,0.72)"
+              color: "rgba(16, 36, 61, 0.70)"
             },
-            grid: { color: "rgba(255,255,255,0.12)" },
-            angleLines: { color: "rgba(255,255,255,0.12)" },
+            grid: { color: "rgba(16, 36, 61, 0.14)" },
+            angleLines: { color: "rgba(16, 36, 61, 0.14)" },
             pointLabels: {
-              color: "rgba(235,240,255,0.88)",
+              color: "rgba(16, 36, 61, 0.92)",
               font: { size: 13 }
             }
           }
@@ -402,7 +403,7 @@ window.ZARelatorioCliente = (() => {
       )}
     `;
 
-    renderRadar();
+    renderRadarSection();
 
     root.insertAdjacentHTML(
       "beforeend",
@@ -492,86 +493,6 @@ window.ZARelatorioCliente = (() => {
     });
   }
 
-  function initStylesFallback() {
-    if (document.getElementById("za-report-inline-styles")) return;
-
-    const style = document.createElement("style");
-    style.id = "za-report-inline-styles";
-    style.textContent = `
-      .report-section {
-        margin-top: 22px;
-        padding: 22px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-      }
-      .report-section h2 {
-        margin: 0 0 14px;
-        color: #fff;
-        font-size: 22px;
-      }
-      .report-section h3 {
-        margin: 0 0 8px;
-        color: #fff;
-        font-size: 16px;
-      }
-      .report-grid {
-        display: grid;
-        gap: 14px;
-      }
-      .report-grid.cols-2 {
-        grid-template-columns: repeat(2, minmax(0,1fr));
-      }
-      .report-grid.cols-3 {
-        grid-template-columns: repeat(3, minmax(0,1fr));
-      }
-      .report-info-card,
-      .report-highlight-card,
-      .report-text-block {
-        padding: 16px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-      .report-info-card span,
-      .report-highlight-card span {
-        display: block;
-        margin-bottom: 8px;
-        color: rgba(226,232,240,0.7);
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-      .report-info-card strong,
-      .report-highlight-card strong {
-        color: #fff;
-        font-size: 20px;
-        line-height: 1.3;
-      }
-      .report-text-block p,
-      .report-mini-text {
-        margin: 0;
-        color: rgba(226,232,240,0.88);
-        line-height: 1.7;
-      }
-      .report-mini-text {
-        margin-top: 10px;
-        font-size: 14px;
-      }
-      .report-chart-wrap {
-        height: 360px;
-        margin-top: 16px;
-      }
-      @media (max-width: 720px) {
-        .report-grid.cols-2,
-        .report-grid.cols-3 {
-          grid-template-columns: 1fr;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
   function showNotFound() {
     const body = document.getElementById("report-body");
     if (body) {
@@ -594,8 +515,6 @@ window.ZARelatorioCliente = (() => {
 
   async function init() {
     registroId = getQueryParam("id");
-
-    initStylesFallback();
 
     if (!registroId) {
       showNotFound();
