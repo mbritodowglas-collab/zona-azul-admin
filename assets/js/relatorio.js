@@ -145,6 +145,14 @@ window.ZARelatorioCliente = (() => {
     return firstFilled(registro?.genero, getPre()?.genero);
   }
 
+  function getParecerProfissional() {
+    return firstFilled(
+      registro?.parecerProfissional,
+      getPre()?.parecerProfissional,
+      ""
+    );
+  }
+
   function getScore(key) {
     const value = firstFilled(registro?.[key], getPre()?.[key], 0);
     const num = Number(value);
@@ -277,6 +285,32 @@ window.ZARelatorioCliente = (() => {
     };
   }
 
+  function salvarParecerProfissional(texto) {
+    if (!registro) return;
+
+    registro.parecerProfissional = texto;
+
+    const clientes = getClientes();
+    const leads = getLeads();
+
+    const clienteIndex = clientes.findIndex(item => String(item.id) === String(registro.id));
+    const leadIndex = leads.findIndex(item => String(item.id) === String(registro.id));
+
+    if (clienteIndex >= 0) {
+      clientes[clienteIndex].parecerProfissional = texto;
+      localStorage.setItem("za_clientes", JSON.stringify(clientes));
+    }
+
+    if (leadIndex >= 0) {
+      leads[leadIndex].parecerProfissional = texto;
+      localStorage.setItem("za_leads", JSON.stringify(leads));
+    }
+
+    if (registro?.preDiagnostico) {
+      registro.preDiagnostico.parecerProfissional = texto;
+    }
+  }
+
   function renderHeader() {
     setText("report-lead-name", getNome());
     setText("report-date", formatDate(new Date().toISOString()));
@@ -284,9 +318,9 @@ window.ZARelatorioCliente = (() => {
     setText("report-cref", CONFIG_PROFISSIONAL.cref);
   }
 
-  function createSection(title, content) {
+  function createSection(title, content, extraClass = "") {
     return `
-      <section class="report-section">
+      <section class="report-section ${extraClass}">
         <h2>${title}</h2>
         ${content}
       </section>
@@ -369,6 +403,7 @@ window.ZARelatorioCliente = (() => {
     const mediaRadar = getRadarAverage();
     const gaps = getTopGaps(3);
     const planoMes1 = getPlanoMes1();
+    const parecerAtual = getParecerProfissional();
 
     root.innerHTML = `
       ${createSection(
@@ -492,6 +527,62 @@ window.ZARelatorioCliente = (() => {
         `
       )
     );
+
+    root.insertAdjacentHTML(
+      "beforeend",
+      createSection(
+        "Parecer profissional",
+        `
+          <div class="report-text-block">
+            <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
+          </div>
+          <div class="parecer-actions">
+            <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
+          </div>
+        `,
+        "no-print"
+      )
+    );
+
+    root.insertAdjacentHTML(
+      "beforeend",
+      createSection(
+        "Parecer profissional",
+        `
+          <div class="report-text-block">
+            <p id="parecer-profissional-view">${parecerAtual === "—" ? "" : parecerAtual}</p>
+          </div>
+        `
+      )
+        .replace(
+          '<section class="report-section ">',
+          `<section class="report-section" id="parecer-render-section" style="${parecerAtual && parecerAtual !== "—" ? "" : "display:none;"}">`
+        )
+    );
+  }
+
+  function renderParecerProfissional() {
+    const input = document.getElementById("parecer-profissional-input");
+    const salvarBtn = document.getElementById("salvar-parecer-btn");
+    const view = document.getElementById("parecer-profissional-view");
+    const viewSection = document.getElementById("parecer-render-section");
+
+    if (!input || !view || !viewSection) return;
+
+    salvarBtn?.addEventListener("click", () => {
+      const texto = input.value.trim();
+      salvarParecerProfissional(texto);
+
+      if (texto) {
+        view.textContent = texto;
+        viewSection.style.display = "";
+      } else {
+        view.textContent = "";
+        viewSection.style.display = "none";
+      }
+
+      alert("Parecer profissional salvo.");
+    });
   }
 
   function bindEvents() {
@@ -502,82 +593,6 @@ window.ZARelatorioCliente = (() => {
 
   function initStylesFallback() {
     if (document.getElementById("za-report-inline-styles")) return;
-
-    const style = document.createElement("style");
-    style.id = "za-report-inline-styles";
-    style.textContent = `
-      .report-section {
-        margin-top: 22px;
-        padding: 22px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-      }
-      .report-section h2 {
-        margin: 0 0 14px;
-        color: #fff;
-        font-size: 22px;
-      }
-      .report-section h3 {
-        margin: 0 0 8px;
-        color: #fff;
-        font-size: 16px;
-      }
-      .report-grid {
-        display: grid;
-        gap: 14px;
-      }
-      .report-grid.cols-2 {
-        grid-template-columns: repeat(2, minmax(0,1fr));
-      }
-      .report-grid.cols-3 {
-        grid-template-columns: repeat(3, minmax(0,1fr));
-      }
-      .report-info-card,
-      .report-highlight-card,
-      .report-text-block {
-        padding: 16px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-      .report-info-card span,
-      .report-highlight-card span {
-        display: block;
-        margin-bottom: 8px;
-        color: rgba(226,232,240,0.7);
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-      .report-info-card strong,
-      .report-highlight-card strong {
-        color: #fff;
-        font-size: 20px;
-        line-height: 1.3;
-      }
-      .report-text-block p,
-      .report-mini-text {
-        margin: 0;
-        color: rgba(226,232,240,0.88);
-        line-height: 1.7;
-      }
-      .report-mini-text {
-        margin-top: 10px;
-        font-size: 14px;
-      }
-      .report-chart-wrap {
-        height: 360px;
-        margin-top: 16px;
-      }
-      @media (max-width: 720px) {
-        .report-grid.cols-2,
-        .report-grid.cols-3 {
-          grid-template-columns: 1fr;
-        }
-      }
-    `;
-    document.head.appendChild(style);
   }
 
   function showNotFound() {
@@ -598,6 +613,7 @@ window.ZARelatorioCliente = (() => {
     renderHeader();
     renderBody();
     bindEvents();
+    renderParecerProfissional();
   }
 
   async function init() {
