@@ -156,6 +156,7 @@
       color: #334155 !important;
       line-height: 1.7;
       font-size: 15px;
+      white-space: pre-wrap;
     }
 
     .report-mini-text {
@@ -180,7 +181,8 @@
     }
 
     .report-actions .btn,
-    .report-actions .btn.secondary {
+    .report-actions .btn.secondary,
+    .parecer-actions .btn {
       color: #fff !important;
       text-decoration: none;
       border: none;
@@ -199,9 +201,29 @@
       border: 1px solid rgba(255,255,255,0.16);
     }
 
-    .report-actions .btn:not(.secondary) {
+    .report-actions .btn:not(.secondary),
+    .parecer-actions .btn {
       background: linear-gradient(135deg, #47b8ff, #1f7cff);
       box-shadow: 0 12px 26px rgba(71,184,255,0.25);
+    }
+
+    .parecer-input {
+      width: 100%;
+      min-height: 220px;
+      border: none;
+      outline: none;
+      resize: vertical;
+      background: transparent;
+      color: #334155;
+      font: inherit;
+      line-height: 1.7;
+    }
+
+    .parecer-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     @media (max-width: 720px) {
@@ -223,11 +245,13 @@
         font-size: 24px;
       }
 
-      .report-actions {
+      .report-actions,
+      .parecer-actions {
         flex-direction: column;
       }
 
-      .report-actions > * {
+      .report-actions > *,
+      .parecer-actions > * {
         width: 100%;
       }
     }
@@ -239,7 +263,8 @@
         color: #111827 !important;
       }
 
-      .report-actions {
+      .report-actions,
+      .no-print {
         display: none !important;
       }
 
@@ -323,6 +348,6 @@
   <script src="../assets/js/storage.js?v=1"></script>
   <script src="../assets/js/calculos.js?v=18"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../assets/js/relatorio.js?v=20"></script>
+  <script src="../assets/js/relatorio.js?v=21"></script>
 </body>
 </html>
