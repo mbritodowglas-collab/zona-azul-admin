@@ -285,11 +285,7 @@ window.ZARelatorioCliente = (() => {
     };
   }
 
-  function salvarParecerProfissional(texto) {
-    if (!registro) return;
-
-    registro.parecerProfissional = texto;
-
+  function persistRegistroAtualizado(texto) {
     const clientes = getClientes();
     const leads = getLeads();
 
@@ -298,17 +294,42 @@ window.ZARelatorioCliente = (() => {
 
     if (clienteIndex >= 0) {
       clientes[clienteIndex].parecerProfissional = texto;
+      if (clientes[clienteIndex].preDiagnostico) {
+        clientes[clienteIndex].preDiagnostico.parecerProfissional = texto;
+      }
       localStorage.setItem("za_clientes", JSON.stringify(clientes));
+
+      if (window.ZAStorage?.updateCliente) {
+        try {
+          window.ZAStorage.updateCliente(clientes[clienteIndex]);
+        } catch (e) {
+          console.warn("Falha ao atualizar cliente via ZAStorage.updateCliente:", e);
+        }
+      } else if (window.ZAStorage?.saveCliente) {
+        try {
+          window.ZAStorage.saveCliente(clientes[clienteIndex]);
+        } catch (e) {
+          console.warn("Falha ao salvar cliente via ZAStorage.saveCliente:", e);
+        }
+      }
     }
 
     if (leadIndex >= 0) {
       leads[leadIndex].parecerProfissional = texto;
       localStorage.setItem("za_leads", JSON.stringify(leads));
     }
+  }
+
+  function salvarParecerProfissional(texto) {
+    if (!registro) return;
+
+    registro.parecerProfissional = texto;
 
     if (registro?.preDiagnostico) {
       registro.preDiagnostico.parecerProfissional = texto;
     }
+
+    persistRegistroAtualizado(texto);
   }
 
   function renderHeader() {
@@ -350,7 +371,10 @@ window.ZARelatorioCliente = (() => {
     const ctx = document.getElementById(canvasId);
     if (!ctx || typeof Chart === "undefined") return;
 
-    if (radarChart) radarChart.destroy();
+    if (radarChart) {
+      radarChart.destroy();
+      radarChart = null;
+    }
 
     radarChart = new Chart(ctx, {
       type: "radar",
@@ -371,6 +395,7 @@ window.ZARelatorioCliente = (() => {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: false,
         plugins: {
           legend: { display: false }
         },
@@ -544,21 +569,19 @@ window.ZARelatorioCliente = (() => {
       )
     );
 
-    root.insertAdjacentHTML(
-      "beforeend",
-      createSection(
-        "Parecer profissional",
-        `
-          <div class="report-text-block">
-            <p id="parecer-profissional-view">${parecerAtual === "—" ? "" : parecerAtual}</p>
-          </div>
-        `
-      )
-        .replace(
-          '<section class="report-section ">',
-          `<section class="report-section" id="parecer-render-section" style="${parecerAtual && parecerAtual !== "—" ? "" : "display:none;"}">`
-        )
+    const parecerSectionHtml = createSection(
+      "Parecer profissional",
+      `
+        <div class="report-text-block">
+          <p id="parecer-profissional-view">${parecerAtual === "—" ? "" : parecerAtual}</p>
+        </div>
+      `
+    ).replace(
+      '<section class="report-section ">',
+      `<section class="report-section" id="parecer-render-section" style="${parecerAtual && parecerAtual !== "—" ? "" : "display:none;"}">`
     );
+
+    root.insertAdjacentHTML("beforeend", parecerSectionHtml);
   }
 
   function renderParecerProfissional() {
@@ -587,7 +610,13 @@ window.ZARelatorioCliente = (() => {
 
   function bindEvents() {
     document.getElementById("print-report-btn")?.addEventListener("click", () => {
-      window.print();
+      if (radarChart) {
+        radarChart.update("none");
+      }
+
+      setTimeout(() => {
+        window.print();
+      }, 150);
     });
   }
 
