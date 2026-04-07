@@ -64,15 +64,16 @@
     }
 
     .premium-report-meta > div {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.16);
       border-radius: 18px;
       padding: 16px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     .premium-report-meta .meta-label {
       display: block;
-      color: rgba(235,243,255,0.7) !important;
+      color: rgba(255,255,255,0.74) !important;
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -82,6 +83,7 @@
     .premium-report-meta strong {
       color: #ffffff !important;
       font-size: 18px;
+      font-weight: 800;
     }
 
     .premium-report-body {
@@ -316,11 +318,20 @@
         color: #47b8ff !important;
       }
 
-      .premium-report-hero h1,
-      .premium-report-subtitle,
-      .premium-report-meta strong,
+      .premium-report-hero h1 {
+        color: #ffffff !important;
+      }
+
+      .premium-report-subtitle {
+        color: rgba(235,243,255,0.88) !important;
+      }
+
       .premium-report-meta .meta-label {
-        color: inherit !important;
+        color: rgba(255,255,255,0.74) !important;
+      }
+
+      .premium-report-meta strong {
+        color: #ffffff !important;
       }
 
       .premium-report-meta {
@@ -330,10 +341,11 @@
       }
 
       .premium-report-meta > div {
-        background: rgba(255,255,255,0.08) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
+        background: rgba(255,255,255,0.16) !important;
+        border: 1px solid rgba(255,255,255,0.18) !important;
         border-radius: 18px !important;
         padding: 16px !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04) !important;
         break-inside: avoid;
         page-break-inside: avoid;
       }
