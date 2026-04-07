@@ -15,7 +15,7 @@
     body {
       background: #061126;
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     .report-premium-wrap {
@@ -39,37 +39,43 @@
       color: #47b8ff;
       font-weight: 800;
       letter-spacing: 0.08em;
-      font-size: 12px;
     }
 
     .premium-report-hero h1 {
       margin: 10px 0;
-      font-size: 28px;
+      line-height: 1.05;
     }
 
-    .premium-report-meta {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(2, 1fr);
-      margin-top: 20px;
+    .premium-report-hero p {
+      margin: 0;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.86);
     }
 
-    /* 🔥 CORREÇÃO DEFINITIVA DOS QUADROS */
+    /* 🔥 CORREÇÃO DO PROBLEMA DOS QUADROS APAGADOS */
     .premium-report-meta > div {
       background: rgba(255,255,255,0.15);
+      backdrop-filter: none;
       border-radius: 14px;
       padding: 14px;
     }
 
     .meta-label {
+      display: block;
+      margin-bottom: 6px;
       font-size: 11px;
       color: rgba(255,255,255,0.7);
-      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
     }
 
     .premium-report-meta strong {
       color: #fff;
       font-size: 16px;
+      line-height: 1.35;
+      display: block;
+      font-weight: 800;
     }
 
     .premium-report-body {
@@ -84,8 +90,18 @@
       background: #fff;
     }
 
+    .report-section:first-child {
+      margin-top: 0;
+    }
+
     .report-section h2 {
-      margin-bottom: 12px;
+      margin: 0 0 14px;
+      color: #10243d;
+    }
+
+    .report-section h3 {
+      margin: 0 0 8px;
+      color: #10243d;
     }
 
     .report-grid {
@@ -108,13 +124,37 @@
     }
 
     .report-info-card span {
-      font-size: 11px;
-      color: #777;
+      display: block;
+      margin-bottom: 8px;
+      color: #6b7280;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
     }
 
     .report-info-card strong {
       display: block;
-      margin-top: 4px;
+      color: #10243d;
+      line-height: 1.4;
+    }
+
+    .report-text-block {
+      background: #f8f8f8;
+      padding: 14px;
+      border-radius: 12px;
+    }
+
+    .report-text-block p,
+    .report-mini-text {
+      margin: 0;
+      color: #334155;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
+    .report-mini-text {
+      margin-top: 8px;
     }
 
     .report-chart-wrap {
@@ -122,6 +162,36 @@
       background: #fff;
       border-radius: 12px;
       padding: 10px;
+    }
+
+    .parecer-input {
+      width: 100%;
+      min-height: 180px;
+      border: none;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 10px;
+      font: inherit;
+      line-height: 1.7;
+      color: #10243d;
+      box-sizing: border-box;
+    }
+
+    .parecer-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
     .btn {
@@ -132,66 +202,39 @@
       border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
     }
 
     .btn.secondary {
       background: #333;
     }
 
-    .report-actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    /* 🔥 PARECER PROFISSIONAL FINAL */
-    .parecer-render {
-      display: block;
-      white-space: pre-wrap;
-      line-height: 1.7;
-      font-size: 14px;
-      color: #334155 !important;
-      background: #f8f8f8 !important;
-      border-radius: 12px;
-      padding: 14px;
-      min-height: 180px;
-      box-sizing: border-box;
-    }
-
-    .parecer-input {
-      width: 100%;
-      min-height: 160px;
-      border-radius: 12px;
-      padding: 12px;
-      border: none;
-      margin-bottom: 10px;
-      font-family: inherit;
-    }
-
     @media (max-width: 720px) {
+      .premium-report-meta,
       .cols-2,
       .cols-3 {
         grid-template-columns: 1fr;
       }
-    }
 
-    .no-print {
-      display: block;
-    }
+      .report-actions {
+        flex-direction: column;
+      }
 
-    @media print {
-      .no-print {
-        display: none !important;
+      .report-actions > * {
+        width: 100%;
       }
     }
   </style>
 </head>
 
 <body>
-
   <main class="report-premium-wrap">
 
-    <div class="report-actions no-print">
+    <div class="report-actions">
       <a href="../pre-diagnostico/" class="btn secondary">Voltar</a>
       <button class="btn" id="print-report-btn">Gerar PDF</button>
     </div>
@@ -199,7 +242,6 @@
     <article class="premium-report-card">
 
       <header class="premium-report-hero">
-
         <div class="premium-report-kicker">TRACKION SYSTEM</div>
 
         <h1>SEU PERFIL DE LONGEVIDADE</h1>
@@ -208,7 +250,7 @@
           Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor.
         </p>
 
-        <div class="premium-report-meta">
+        <div class="premium-report-meta report-grid cols-2">
 
           <div>
             <span class="meta-label">Cliente</span>
@@ -231,66 +273,97 @@
           </div>
 
         </div>
-
       </header>
 
       <div class="premium-report-body" id="report-body"></div>
 
     </article>
-
   </main>
 
   <!-- SISTEMA -->
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/calculos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../assets/js/relatorio.js?v=final"></script>
+  <script src="../assets/js/relatorio.js?v=26"></script>
 
-  <!-- PDF -->
+  <!-- 🚀 PDF ENGINE -->
   <script>
     document.getElementById("print-report-btn").addEventListener("click", async () => {
-
       const btn = document.getElementById("print-report-btn");
+      const originalText = btn.innerText;
+
       btn.innerText = "Gerando PDF...";
       btn.disabled = true;
 
-      const { jsPDF } = window.jspdf;
-      const element = document.querySelector(".premium-report-card");
+      const hiddenForPdf = document.querySelectorAll(".no-pdf");
 
-      await document.fonts.ready;
-      await new Promise(r => setTimeout(r, 300));
+      try {
+        hiddenForPdf.forEach(el => {
+          el.dataset.prevDisplay = el.style.display || "";
+          el.style.display = "none";
+        });
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#f3efe6"
-      });
+        const { jsPDF } = window.jspdf;
+        const element = document.querySelector(".premium-report-card");
 
-      const imgData = canvas.toDataURL("image/jpeg", 1);
+        if (document.fonts?.ready) {
+          await document.fonts.ready;
+        }
 
-      const pdf = new jsPDF("p", "mm", "a4");
+        await new Promise(r => setTimeout(r, 300));
 
-      const imgWidth = 190;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#f3efe6"
+        });
 
-      let heightLeft = imgHeight;
-      let position = 0;
+        const imgData = canvas.toDataURL("image/jpeg", 1);
 
-      pdf.addImage(imgData, "JPEG", 10, position + 10, imgWidth, imgHeight);
-      heightLeft -= 297;
+        const pdf = new jsPDF("p", "mm", "a4");
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 10, position + 10, imgWidth, imgHeight);
-        heightLeft -= 297;
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 10;
+
+        const imgWidth = pageWidth - margin * 2;
+        const ratio = canvas.height / canvas.width;
+        const imgHeight = imgWidth * ratio;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        const nome = document.getElementById("report-lead-name").innerText || "cliente";
+        const nomeSeguro = nome
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^\w\s-]/g, "")
+          .trim()
+          .replace(/\s+/g, "_");
+
+        pdf.save(`Trackion_${nomeSeguro}.pdf`);
+      } catch (err) {
+        console.error("Erro ao gerar PDF:", err);
+        alert("Erro ao gerar o PDF. Tente novamente.");
+      } finally {
+        hiddenForPdf.forEach(el => {
+          el.style.display = el.dataset.prevDisplay || "";
+          delete el.dataset.prevDisplay;
+        });
+
+        btn.innerText = originalText;
+        btn.disabled = false;
       }
-
-      const nome = document.getElementById("report-lead-name").innerText || "cliente";
-      pdf.save(`Trackion_${nome}.pdf`);
-
-      btn.innerText = "Gerar PDF";
-      btn.disabled = false;
     });
   </script>
 
