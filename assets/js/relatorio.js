@@ -616,7 +616,7 @@ window.ZARelatorioCliente = (() => {
 
       setTimeout(() => {
         window.print();
-      }, 150);
+      }, 200);
     });
   }
 
