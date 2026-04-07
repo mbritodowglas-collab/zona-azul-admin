@@ -557,6 +557,86 @@ window.ZARelatorioCliente = (() => {
           style="display:none;"
         ></div>
       </section>
+
+      ${createSection(
+        "Sobre o Trackion System",
+        `
+          <div class="report-metodo">
+            <div class="report-metodo-hero">
+              <span class="report-metodo-kicker">Método • Estrutura • Consistência</span>
+              <h3>Você não precisa apenas de mais esforço. Precisa de estrutura.</h3>
+              <p>
+                O Trackion System foi construído para organizar corpo, comportamento e estilo de vida
+                em um processo prático, sustentável e orientado por pilares reais de longevidade.
+              </p>
+            </div>
+
+            <div class="report-metodo-texto">
+              <p>
+                Os pilares utilizados neste relatório não foram definidos de forma aleatória. Eles se baseiam
+                na observação de padrões presentes nas chamadas Zonas Azuis — regiões do mundo onde as pessoas
+                vivem mais, com mais saúde, autonomia e qualidade de vida.
+              </p>
+
+              <p>
+                A partir desses padrões, o Trackion System organiza a evolução em seis pilares fundamentais:
+                movimento, alimentação, sono, propósito, social e estresse. A lógica do método não está em buscar
+                perfeição, mas em construir consistência suficiente para que a rotina comece a trabalhar a seu favor.
+              </p>
+            </div>
+
+            <div class="report-pilares-grid">
+              <div class="report-pilar-card">
+                <h4>Movimento</h4>
+                <p>Manter o corpo ativo com regularidade, usando o treino como ferramenta de evolução e não como evento isolado.</p>
+              </div>
+
+              <div class="report-pilar-card">
+                <h4>Alimentação</h4>
+                <p>Estruturar escolhas simples e sustentáveis que favoreçam energia, composição corporal e saúde ao longo do tempo.</p>
+              </div>
+
+              <div class="report-pilar-card">
+                <h4>Sono</h4>
+                <p>Melhorar recuperação física e mental, porque consistência sem recuperação vira desgaste e não progresso.</p>
+              </div>
+
+              <div class="report-pilar-card">
+                <h4>Propósito</h4>
+                <p>Dar direção ao processo para que a mudança não dependa apenas de motivação momentânea.</p>
+              </div>
+
+              <div class="report-pilar-card">
+                <h4>Social</h4>
+                <p>Organizar relações e ambiente para reduzir sabotadores e aumentar suporte à mudança de estilo de vida.</p>
+              </div>
+
+              <div class="report-pilar-card">
+                <h4>Estresse</h4>
+                <p>Aprender a lidar com pressão e ruído diário sem perder o controle da rotina e da constância.</p>
+              </div>
+            </div>
+
+            <div class="report-metodo-texto" style="margin-top:16px;">
+              <p>
+                Na prática, o Trackion System ajuda você a aplicar esses pilares com acompanhamento contínuo,
+                direcionamento comportamental, orientação alimentar, avaliações constantes, suporte próximo de
+                dois personais via WhatsApp e treinos personalizados entregues pelo MFit.
+              </p>
+
+              <p>
+                O treino entra como uma ferramenta importante dentro do processo, mas não como o único fator de mudança.
+                O objetivo é integrar corpo, ambiente e comportamento para construir um estilo de vida mais estável,
+                previsível e sustentável.
+              </p>
+            </div>
+
+            <div class="report-metodo-fechamento">
+              Este relatório mostra onde você está hoje. O Trackion System organiza como você evolui a partir daqui.
+            </div>
+          </div>
+        `
+      )}
     `;
 
     renderRadar();
