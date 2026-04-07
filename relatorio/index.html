@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relatório | Trackion System</title>
+
   <link rel="stylesheet" href="../assets/css/global.css?v=18" />
 
+  <!-- PDF ENGINE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <style>
-    .report-premium-shell {
-      background: #061126 !important;
-      color: #f3f8ff !important;
+    body {
+      background: #061126;
     }
 
     .report-premium-wrap {
@@ -22,53 +26,51 @@
       background: linear-gradient(180deg, #0d2342 0%, #061126 100%);
       border-radius: 28px;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
     }
 
     .premium-report-hero {
-      padding: 28px 24px 20px;
+      padding: 32px 28px 24px;
+      color: #fff;
     }
 
     .premium-report-kicker {
       color: #47b8ff;
       font-weight: 800;
-      text-transform: uppercase;
-      font-size: 12px;
+      letter-spacing: 0.08em;
     }
 
     .premium-report-hero h1 {
       margin: 10px 0;
-      font-size: 28px;
     }
 
-    .premium-report-subtitle {
-      font-size: 14px;
-      opacity: 0.85;
-    }
-
-    .premium-report-meta {
-      margin-top: 20px;
-      display: grid;
-      grid-template-columns: repeat(2,1fr);
-      gap: 12px;
-    }
-
+    /* 🔥 CORREÇÃO DO PROBLEMA DOS QUADROS APAGADOS */
     .premium-report-meta > div {
-      background: rgba(255,255,255,0.08);
-      padding: 14px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: none;
       border-radius: 14px;
+      padding: 14px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .premium-report-meta strong {
+      color: #fff;
+      font-size: 16px;
     }
 
     .premium-report-body {
       background: #f3efe6;
-      padding: 20px;
+      padding: 24px;
     }
 
     .report-section {
-      margin-top: 20px;
+      margin-top: 22px;
       padding: 20px;
       border-radius: 18px;
-      background: #fffaf2;
+      background: #fff;
     }
 
     .report-grid {
@@ -76,169 +78,150 @@
       gap: 12px;
     }
 
-    .cols-2 { grid-template-columns: repeat(2,1fr); }
-    .cols-3 { grid-template-columns: repeat(3,1fr); }
+    .cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
 
     .report-info-card {
-      background: #fff;
-      padding: 12px;
+      background: #f5f5f5;
+      padding: 14px;
       border-radius: 12px;
     }
 
     .report-chart-wrap {
-      height: 300px;
-      margin-top: 10px;
+      height: 320px;
       background: #fff;
       border-radius: 12px;
-    }
-
-    .report-actions {
-      margin-bottom: 16px;
+      padding: 10px;
     }
 
     .btn {
-      padding: 10px 16px;
-      border-radius: 12px;
+      background: #47b8ff;
+      color: #fff;
       border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
-      background: linear-gradient(135deg,#47b8ff,#1f7cff);
-      color: white;
     }
 
     .btn.secondary {
-      background: rgba(255,255,255,0.1);
+      background: #333;
     }
-
-    .parecer-input {
-      width: 100%;
-      min-height: 200px;
-    }
-
-    /* ========================= PRINT ========================= */
-
-    @media print {
-      @page {
-        size: A4;
-        margin: 10mm;
-      }
-
-      html {
-        zoom: 1 !important;
-      }
-
-      html, body {
-        background: #f3efe6 !important;
-        -webkit-print-color-adjust: exact !important;
-      }
-
-      .report-actions {
-        display: none !important;
-      }
-
-      .premium-report-card {
-        background: #f3efe6 !important;
-        box-shadow: none !important;
-      }
-
-      .premium-report-hero {
-        background: linear-gradient(180deg,#0d2342,#061126) !important;
-        color: #fff !important;
-        padding: 20px !important;
-      }
-
-      .premium-report-meta > div {
-        background: rgba(255,255,255,0.15) !important;
-      }
-
-      .premium-report-body {
-        background: #f3efe6 !important;
-      }
-
-      .report-section {
-        background: #fffaf2 !important;
-        break-inside: avoid;
-      }
-
-      .report-grid.cols-2 {
-        grid-template-columns: 1fr !important;
-      }
-
-      .report-grid.cols-3 {
-        grid-template-columns: repeat(2,1fr) !important;
-      }
-
-      .report-info-card {
-        background: #fff !important;
-      }
-
-      .report-chart-wrap {
-        background: #fff !important;
-      }
-
-      #parecer-render-section {
-        break-inside: avoid;
-      }
-    }
-
   </style>
 </head>
 
-<body class="report-premium-shell">
-
+<body>
   <main class="report-premium-wrap">
 
     <div class="report-actions">
-      <button class="btn secondary" onclick="history.back()">Voltar</button>
-      <button class="btn" id="print-report-btn">Baixar PDF</button>
+      <a href="../pre-diagnostico/" class="btn secondary">Voltar</a>
+      <button class="btn" id="print-report-btn">Gerar PDF</button>
     </div>
 
     <article class="premium-report-card">
 
       <header class="premium-report-hero">
-        <div class="premium-report-kicker">◆ TRACKION SYSTEM ◆</div>
+        <div class="premium-report-kicker">TRACKION SYSTEM</div>
 
         <h1>SEU PERFIL DE LONGEVIDADE</h1>
 
-        <p class="premium-report-subtitle">
-          Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor — aplicado de forma prática pelo Trackion System.
+        <p>
+          Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor.
         </p>
 
-        <div class="premium-report-meta">
+        <div class="premium-report-meta report-grid cols-2">
+
           <div>
-            <span>Cliente</span>
-            <strong id="report-lead-name">...</strong>
+            <span class="meta-label">Cliente</span>
+            <strong id="report-lead-name">Carregando...</strong>
           </div>
 
           <div>
-            <span>Data</span>
-            <strong id="report-date">...</strong>
+            <span class="meta-label">Data</span>
+            <strong id="report-date">--</strong>
           </div>
 
           <div>
-            <span>Profissional</span>
-            <strong id="report-profissional">...</strong>
+            <span class="meta-label">Responsável</span>
+            <strong id="report-profissional">Márcio Dowglas</strong>
           </div>
 
           <div>
-            <span>CREF</span>
-            <strong id="report-cref">...</strong>
+            <span class="meta-label">CREF</span>
+            <strong id="report-cref">CREF XXXXX</strong>
           </div>
+
         </div>
       </header>
 
       <div class="premium-report-body" id="report-body"></div>
 
     </article>
-
   </main>
 
+  <!-- SISTEMA -->
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/calculos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../assets/js/relatorio.js?v=22"></script>
 
+  <!-- 🚀 PDF ENGINE -->
   <script>
-    document.getElementById("print-report-btn")
-      .addEventListener("click", () => window.print());
+    document.getElementById("print-report-btn").addEventListener("click", async () => {
+
+      const btn = document.getElementById("print-report-btn");
+      btn.innerText = "Gerando PDF...";
+      btn.disabled = true;
+
+      const { jsPDF } = window.jspdf;
+
+      const element = document.querySelector(".premium-report-card");
+
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 300));
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f3efe6"
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 1);
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 10;
+
+      const imgWidth = pageWidth - margin * 2;
+      const ratio = canvas.height / canvas.width;
+      const imgHeight = imgWidth * ratio;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const nome = document.getElementById("report-lead-name").innerText || "cliente";
+      pdf.save(`Trackion_${nome}.pdf`);
+
+      btn.innerText = "Gerar PDF";
+      btn.disabled = false;
+    });
   </script>
 
 </body>
