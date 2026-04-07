@@ -538,12 +538,24 @@ window.ZARelatorioCliente = (() => {
 
       <section class="report-section">
         <h2>Parecer profissional</h2>
-        <div class="report-text-block">
-          <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
+
+        <div class="parecer-editor no-pdf">
+          <textarea
+            id="parecer-profissional-input"
+            class="parecer-input"
+            placeholder="Cole aqui sua análise profissional..."
+          >${parecerAtual === "—" ? "" : parecerAtual}</textarea>
+
+          <div class="parecer-actions no-pdf">
+            <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
+          </div>
         </div>
-        <div class="parecer-actions no-pdf">
-          <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
-        </div>
+
+        <div
+          id="parecer-profissional-view"
+          class="report-text-block parecer-render"
+          style="${parecerAtual && parecerAtual !== "—" ? "" : "display:none;"}"
+        >${parecerAtual === "—" ? "" : parecerAtual}</div>
       </section>
     `;
 
@@ -557,10 +569,20 @@ window.ZARelatorioCliente = (() => {
   }
 
   function bindEvents() {
-    document.getElementById("salvar-parecer-btn")?.addEventListener("click", () => {
-      const input = document.getElementById("parecer-profissional-input");
+    const salvarBtn = document.getElementById("salvar-parecer-btn");
+    const input = document.getElementById("parecer-profissional-input");
+    const view = document.getElementById("parecer-profissional-view");
+
+    salvarBtn?.addEventListener("click", () => {
       const texto = input?.value?.trim() || "";
+
       salvarParecerProfissional(texto);
+
+      if (view) {
+        view.textContent = texto;
+        view.style.display = texto ? "" : "none";
+      }
+
       autoResizeTextarea(input);
       alert("Parecer profissional salvo.");
     });
