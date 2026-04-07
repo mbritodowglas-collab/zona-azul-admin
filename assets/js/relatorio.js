@@ -296,7 +296,15 @@ window.ZARelatorioCliente = (() => {
     };
   }
 
-  function persistRegistroAtualizado(texto) {
+  function salvarParecerProfissional(texto) {
+    if (!registro) return;
+
+    registro.parecerProfissional = texto;
+
+    if (registro?.preDiagnostico) {
+      registro.preDiagnostico.parecerProfissional = texto;
+    }
+
     const clientes = getClientes();
     const leads = getLeads();
 
@@ -317,18 +325,6 @@ window.ZARelatorioCliente = (() => {
     }
   }
 
-  function salvarParecerProfissional(texto) {
-    if (!registro) return;
-
-    registro.parecerProfissional = texto;
-
-    if (registro?.preDiagnostico) {
-      registro.preDiagnostico.parecerProfissional = texto;
-    }
-
-    persistRegistroAtualizado(texto);
-  }
-
   function renderHeader() {
     const prof = getProfissionalAtual();
 
@@ -338,29 +334,30 @@ window.ZARelatorioCliente = (() => {
     setText("report-cref", prof.cref);
   }
 
-  function createSection(title, content, extraClass = "", sectionId = "") {
+  function createSection(title, content) {
     return `
-      <section class="report-section ${extraClass}" ${sectionId ? `id="${sectionId}"` : ""}>
+      <section class="report-section">
         <h2>${title}</h2>
         ${content}
       </section>
     `;
   }
 
-  function renderRadar() {
-    const radarHost = document.getElementById("section-radar");
-    if (!radarHost) return;
-
-    radarHost.innerHTML = `
-      <h2>Radar inicial de condição</h2>
-      <div class="report-text-block">
-        <p>Esse radar mostra sua condição percebida hoje nos 6 pilares centrais do processo. Ele funciona como ponto de partida para entender onde estão seus maiores gargalos e onde existe base melhor construída.</p>
-      </div>
-      <div class="report-chart-wrap">
-        <canvas id="pre-radar-chart"></canvas>
-      </div>
+  function renderRadarSection() {
+    return `
+      <section class="report-section">
+        <h2>Radar inicial de condição</h2>
+        <div class="report-text-block">
+          <p>Esse radar mostra sua condição percebida hoje nos 6 pilares centrais do processo. Ele funciona como ponto de partida para entender onde estão seus maiores gargalos e onde existe base melhor construída.</p>
+        </div>
+        <div class="report-chart-wrap">
+          <canvas id="pre-radar-chart"></canvas>
+        </div>
+      </section>
     `;
+  }
 
+  function renderRadar() {
     const ctx = document.getElementById("pre-radar-chart");
     if (!ctx || typeof Chart === "undefined") return;
 
@@ -435,9 +432,7 @@ window.ZARelatorioCliente = (() => {
             <div class="report-info-card"><span>Data de nascimento</span><strong>${formatRaw(getNascimento())}</strong></div>
             <div class="report-info-card"><span>Gênero</span><strong>${formatRaw(getGenero())}</strong></div>
           </div>
-        `,
-        "",
-        "section-identificacao"
+        `
       )}
 
       ${createSection(
@@ -461,12 +456,10 @@ window.ZARelatorioCliente = (() => {
             <h3>Meta para 6 meses</h3>
             <p>${formatRaw(getMeta6Meses())}</p>
           </div>
-        `,
-        "",
-        "section-condicao"
+        `
       )}
 
-      ${createSection("", "", "", "section-radar")}
+      ${renderRadarSection()}
 
       ${createSection(
         "Leitura automática inicial",
@@ -474,9 +467,7 @@ window.ZARelatorioCliente = (() => {
           <div class="report-text-block">
             <p>${getPerfilTexto()}</p>
           </div>
-        `,
-        "",
-        "section-leitura"
+        `
       )}
 
       ${createSection(
@@ -493,9 +484,7 @@ window.ZARelatorioCliente = (() => {
               </div>
             `).join("")}
           </div>
-        `,
-        "",
-        "section-gaps"
+        `
       )}
 
       ${createSection(
@@ -515,9 +504,7 @@ window.ZARelatorioCliente = (() => {
               <strong>${planoMes1.habito}</strong>
             </div>
           </div>
-        `,
-        "",
-        "section-solucoes"
+        `
       )}
 
       ${createSection(
@@ -540,291 +527,30 @@ window.ZARelatorioCliente = (() => {
           <div class="report-text-block">
             <p>O objetivo deste primeiro momento não é complexidade. É criar base, reduzir ruído e gerar tração suficiente para que o processo se torne sustentável.</p>
           </div>
-        `,
-        "",
-        "section-plano"
+        `
       )}
 
-      ${createSection(
-        "Parecer profissional",
-        `
-          <div class="report-text-block">
-            <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
-          </div>
-          <div class="parecer-actions">
-            <button class="btn primary" id="salvar-parecer-btn" type="button">Salvar parecer</button>
-          </div>
-        `,
-        "no-print",
-        "section-parecer-editor"
-      )}
-
-      ${createSection(
-        "Parecer profissional",
-        `
-          <div class="report-text-block">
-            <p id="parecer-profissional-view">${parecerAtual === "—" ? "" : parecerAtual}</p>
-          </div>
-        `,
-        "",
-        "section-parecer-view"
-      )}
+      <section class="report-section">
+        <h2>Parecer profissional</h2>
+        <div class="report-text-block">
+          <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
+        </div>
+        <div class="parecer-actions">
+          <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
+        </div>
+      </section>
     `;
-
-    const parecerView = document.getElementById("section-parecer-view");
-    if (!parecerAtual || parecerAtual === "—") {
-      parecerView.style.display = "none";
-    }
 
     renderRadar();
   }
 
-  function renderParecerProfissional() {
-    const input = document.getElementById("parecer-profissional-input");
-    const salvarBtn = document.getElementById("salvar-parecer-btn");
-    const view = document.getElementById("parecer-profissional-view");
-    const viewSection = document.getElementById("section-parecer-view");
-
-    if (!input || !view || !viewSection) return;
-
-    salvarBtn?.addEventListener("click", () => {
-      const texto = input.value.trim();
+  function bindEvents() {
+    document.getElementById("salvar-parecer-btn")?.addEventListener("click", () => {
+      const input = document.getElementById("parecer-profissional-input");
+      const texto = input?.value?.trim() || "";
       salvarParecerProfissional(texto);
-
-      if (texto) {
-        view.textContent = texto;
-        viewSection.style.display = "";
-      } else {
-        view.textContent = "";
-        viewSection.style.display = "none";
-      }
-
       alert("Parecer profissional salvo.");
     });
-  }
-
-  async function wait(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async function waitForFonts() {
-    if (document.fonts?.ready) {
-      try {
-        await document.fonts.ready;
-      } catch (_) {}
-    }
-  }
-
-  async function waitForImages(container) {
-    const images = Array.from(container.querySelectorAll("img"));
-    await Promise.all(
-      images.map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      })
-    );
-  }
-
-  function getSafeFileName(text) {
-    return String(text || "cliente")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^\w\- ]+/g, "")
-      .trim()
-      .replace(/\s+/g, "_");
-  }
-
-  function cloneForPdf(element) {
-    const clone = element.cloneNode(true);
-    clone.style.margin = "0";
-    clone.style.width = `${element.offsetWidth}px`;
-    clone.style.boxSizing = "border-box";
-    clone.querySelectorAll(".no-print, #section-parecer-editor, #salvar-parecer-btn").forEach(el => el.remove());
-    return clone;
-  }
-
-  async function renderBlockCanvas(element, backgroundColor = "#f3efe6") {
-    return await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor,
-      logging: false,
-      imageTimeout: 15000,
-      removeContainer: true,
-      windowWidth: Math.max(document.documentElement.scrollWidth, element.scrollWidth || element.offsetWidth),
-      windowHeight: Math.max(document.documentElement.scrollHeight, element.scrollHeight || element.offsetHeight),
-      scrollX: 0,
-      scrollY: 0
-    });
-  }
-
-  function addCanvasCentered(pdf, canvas, opts = {}) {
-    const pageWidth = 210;
-    const pageHeight = 297;
-    const marginX = opts.marginX ?? 10;
-    const marginY = opts.marginY ?? 10;
-    const maxWidth = pageWidth - marginX * 2;
-    const maxHeight = pageHeight - marginY * 2;
-
-    const ratio = canvas.height / canvas.width;
-    let renderWidth = maxWidth;
-    let renderHeight = renderWidth * ratio;
-
-    if (renderHeight > maxHeight) {
-      renderHeight = maxHeight;
-      renderWidth = renderHeight / ratio;
-    }
-
-    const x = (pageWidth - renderWidth) / 2;
-    const y = marginY;
-
-    pdf.addImage(
-      canvas.toDataURL("image/jpeg", 0.96),
-      "JPEG",
-      x,
-      y,
-      renderWidth,
-      renderHeight,
-      undefined,
-      "FAST"
-    );
-  }
-
-  async function gerarPdfManual() {
-    const btn = document.getElementById("print-report-btn");
-    const originalText = btn?.textContent || "Gerar PDF";
-    if (btn) {
-      btn.textContent = "Gerando PDF...";
-      btn.disabled = true;
-    }
-
-    try {
-      const { jsPDF } = window.jspdf;
-
-      await waitForFonts();
-      await waitForImages(document);
-      if (radarChart) radarChart.update("none");
-      await wait(250);
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-        compress: true
-      });
-
-      const pageDefs = [
-        {
-          build: () => {
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "1000px";
-            wrapper.style.background = "#f3efe6";
-            wrapper.style.padding = "0";
-            wrapper.style.boxSizing = "border-box";
-            const hero = document.querySelector(".premium-report-hero");
-            wrapper.appendChild(cloneForPdf(hero));
-            return wrapper;
-          },
-          background: "#f3efe6"
-        },
-        {
-          build: () => {
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "1000px";
-            wrapper.style.background = "#f3efe6";
-            wrapper.style.padding = "24px";
-            wrapper.style.boxSizing = "border-box";
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-identificacao")));
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-condicao")));
-            return wrapper;
-          },
-          background: "#f3efe6"
-        },
-        {
-          build: () => {
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "1000px";
-            wrapper.style.background = "#f3efe6";
-            wrapper.style.padding = "24px";
-            wrapper.style.boxSizing = "border-box";
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-radar")));
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-leitura")));
-            return wrapper;
-          },
-          background: "#f3efe6"
-        },
-        {
-          build: () => {
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "1000px";
-            wrapper.style.background = "#f3efe6";
-            wrapper.style.padding = "24px";
-            wrapper.style.boxSizing = "border-box";
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-gaps")));
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-solucoes")));
-            return wrapper;
-          },
-          background: "#f3efe6"
-        },
-        {
-          build: () => {
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "1000px";
-            wrapper.style.background = "#f3efe6";
-            wrapper.style.padding = "24px";
-            wrapper.style.boxSizing = "border-box";
-            wrapper.appendChild(cloneForPdf(document.getElementById("section-plano")));
-            const parecer = document.getElementById("section-parecer-view");
-            if (parecer && getParecerProfissional()) {
-              wrapper.appendChild(cloneForPdf(parecer));
-            }
-            return wrapper;
-          },
-          background: "#f3efe6"
-        }
-      ];
-
-      for (let i = 0; i < pageDefs.length; i++) {
-        const temp = pageDefs[i].build();
-        temp.style.position = "fixed";
-        temp.style.left = "-10000px";
-        temp.style.top = "0";
-        temp.style.zIndex = "-1";
-        document.body.appendChild(temp);
-
-        const canvas = await renderBlockCanvas(temp, pageDefs[i].background);
-        document.body.removeChild(temp);
-
-        if (i > 0) pdf.addPage();
-        addCanvasCentered(pdf, canvas, { marginX: 10, marginY: 10 });
-      }
-
-      const today = new Date().toISOString().slice(0, 10);
-      const leadName = document.getElementById("report-lead-name")?.textContent?.trim() || "cliente";
-      const safeName = getSafeFileName(leadName);
-
-      pdf.save(`Trackion_Perfil_${safeName}_${today}.pdf`);
-    } catch (err) {
-      console.error("Erro ao gerar PDF:", err);
-      alert("Erro ao gerar o PDF. Tente novamente.");
-    } finally {
-      if (btn) {
-        btn.textContent = originalText;
-        btn.disabled = false;
-      }
-    }
-  }
-
-  function bindEvents() {
-    document.getElementById("print-report-btn")?.addEventListener("click", gerarPdfManual);
-  }
-
-  function initStylesFallback() {
-    if (document.getElementById("za-report-inline-styles")) return;
   }
 
   function showNotFound() {
@@ -845,13 +571,10 @@ window.ZARelatorioCliente = (() => {
     renderHeader();
     renderBody();
     bindEvents();
-    renderParecerProfissional();
   }
 
   async function init() {
     registroId = getQueryParam("id");
-
-    initStylesFallback();
 
     if (!registroId) {
       showNotFound();
