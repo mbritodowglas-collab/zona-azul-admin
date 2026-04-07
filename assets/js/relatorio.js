@@ -331,6 +331,7 @@ window.ZARelatorioCliente = (() => {
 
   function renderHeader() {
     const prof = getProfissionalAtual();
+
     setText("report-lead-name", getNome());
     setText("report-date", formatDate(new Date().toISOString()));
     setText("report-profissional", prof.nome);
@@ -551,7 +552,7 @@ window.ZARelatorioCliente = (() => {
             <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
           </div>
           <div class="parecer-actions">
-            <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
+            <button class="btn primary" id="salvar-parecer-btn" type="button">Salvar parecer</button>
           </div>
         `,
         "no-print",
@@ -718,14 +719,12 @@ window.ZARelatorioCliente = (() => {
 
       const pageDefs = [
         {
-          id: "page-capa",
           build: () => {
             const wrapper = document.createElement("div");
             wrapper.style.width = "1000px";
             wrapper.style.background = "#f3efe6";
             wrapper.style.padding = "0";
             wrapper.style.boxSizing = "border-box";
-
             const hero = document.querySelector(".premium-report-hero");
             wrapper.appendChild(cloneForPdf(hero));
             return wrapper;
@@ -733,69 +732,53 @@ window.ZARelatorioCliente = (() => {
           background: "#f3efe6"
         },
         {
-          id: "page-identificacao-condicao",
           build: () => {
             const wrapper = document.createElement("div");
             wrapper.style.width = "1000px";
             wrapper.style.background = "#f3efe6";
             wrapper.style.padding = "24px";
             wrapper.style.boxSizing = "border-box";
-
-            const s1 = document.getElementById("section-identificacao");
-            const s2 = document.getElementById("section-condicao");
-            wrapper.appendChild(cloneForPdf(s1));
-            wrapper.appendChild(cloneForPdf(s2));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-identificacao")));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-condicao")));
             return wrapper;
           },
           background: "#f3efe6"
         },
         {
-          id: "page-radar-leitura",
           build: () => {
             const wrapper = document.createElement("div");
             wrapper.style.width = "1000px";
             wrapper.style.background = "#f3efe6";
             wrapper.style.padding = "24px";
             wrapper.style.boxSizing = "border-box";
-
-            const radar = document.getElementById("section-radar");
-            const leitura = document.getElementById("section-leitura");
-            wrapper.appendChild(cloneForPdf(radar));
-            wrapper.appendChild(cloneForPdf(leitura));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-radar")));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-leitura")));
             return wrapper;
           },
           background: "#f3efe6"
         },
         {
-          id: "page-gaps-solucoes",
           build: () => {
             const wrapper = document.createElement("div");
             wrapper.style.width = "1000px";
             wrapper.style.background = "#f3efe6";
             wrapper.style.padding = "24px";
             wrapper.style.boxSizing = "border-box";
-
-            const gaps = document.getElementById("section-gaps");
-            const solucoes = document.getElementById("section-solucoes");
-            wrapper.appendChild(cloneForPdf(gaps));
-            wrapper.appendChild(cloneForPdf(solucoes));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-gaps")));
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-solucoes")));
             return wrapper;
           },
           background: "#f3efe6"
         },
         {
-          id: "page-plano-parecer",
           build: () => {
             const wrapper = document.createElement("div");
             wrapper.style.width = "1000px";
             wrapper.style.background = "#f3efe6";
             wrapper.style.padding = "24px";
             wrapper.style.boxSizing = "border-box";
-
-            const plano = document.getElementById("section-plano");
+            wrapper.appendChild(cloneForPdf(document.getElementById("section-plano")));
             const parecer = document.getElementById("section-parecer-view");
-
-            wrapper.appendChild(cloneForPdf(plano));
             if (parecer && getParecerProfissional()) {
               wrapper.appendChild(cloneForPdf(parecer));
             }
@@ -867,6 +850,7 @@ window.ZARelatorioCliente = (() => {
 
   async function init() {
     registroId = getQueryParam("id");
+
     initStylesFallback();
 
     if (!registroId) {
