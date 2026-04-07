@@ -155,8 +155,106 @@
       display: block !important;
     }
 
+    /* ===== BLOCO PREMIUM TRACKION SYSTEM ===== */
+    .report-metodo {
+      margin-top: 28px;
+      padding: 24px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+      border: 1px solid rgba(71, 184, 255, 0.18);
+      box-shadow: 0 12px 30px rgba(16, 36, 61, 0.08);
+    }
+
+    .report-metodo-hero {
+      padding: 18px 18px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #10243d 0%, #173252 100%);
+      color: #fff;
+      margin-bottom: 18px;
+    }
+
+    .report-metodo-kicker {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #47b8ff;
+    }
+
+    .report-metodo-hero h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.1;
+      color: #fff;
+    }
+
+    .report-metodo-hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.86);
+      line-height: 1.7;
+    }
+
+    .report-metodo-texto {
+      background: rgba(255,255,255,0.72);
+      border-radius: 16px;
+      padding: 16px;
+      color: #334155;
+      line-height: 1.8;
+    }
+
+    .report-metodo-texto p {
+      margin: 0 0 14px;
+    }
+
+    .report-metodo-texto p:last-child {
+      margin-bottom: 0;
+    }
+
+    .report-pilares-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .report-pilar-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 36, 61, 0.08);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 6px 18px rgba(16, 24, 40, 0.05);
+    }
+
+    .report-pilar-card h4 {
+      margin: 0 0 8px;
+      color: #10243d;
+      font-size: 15px;
+    }
+
+    .report-pilar-card p {
+      margin: 0;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .report-metodo-fechamento {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(71, 184, 255, 0.08);
+      border-left: 5px solid #47b8ff;
+      color: #10243d;
+      font-weight: 600;
+      line-height: 1.7;
+    }
+
     @media (max-width: 720px) {
-      .cols-2, .cols-3 {
+      .cols-2,
+      .cols-3,
+      .report-pilares-grid {
         grid-template-columns: 1fr;
       }
     }
