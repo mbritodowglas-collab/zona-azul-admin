@@ -325,6 +325,12 @@ window.ZARelatorioCliente = (() => {
     }
   }
 
+  function autoResizeTextarea(el) {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+
   function renderHeader() {
     const prof = getProfissionalAtual();
 
@@ -535,13 +541,19 @@ window.ZARelatorioCliente = (() => {
         <div class="report-text-block">
           <textarea id="parecer-profissional-input" class="parecer-input" placeholder="Cole aqui sua análise profissional...">${parecerAtual === "—" ? "" : parecerAtual}</textarea>
         </div>
-        <div class="parecer-actions">
+        <div class="parecer-actions no-pdf">
           <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
         </div>
       </section>
     `;
 
     renderRadar();
+
+    const parecerInput = document.getElementById("parecer-profissional-input");
+    if (parecerInput) {
+      autoResizeTextarea(parecerInput);
+      parecerInput.addEventListener("input", () => autoResizeTextarea(parecerInput));
+    }
   }
 
   function bindEvents() {
@@ -549,6 +561,7 @@ window.ZARelatorioCliente = (() => {
       const input = document.getElementById("parecer-profissional-input");
       const texto = input?.value?.trim() || "";
       salvarParecerProfissional(texto);
+      autoResizeTextarea(input);
       alert("Parecer profissional salvo.");
     });
   }
@@ -576,15 +589,10 @@ window.ZARelatorioCliente = (() => {
   async function init() {
     registroId = getQueryParam("id");
 
-    if (!registroId) {
-      showNotFound();
-      return;
-    }
-
     await window.ZAStorage.init({ force: true });
     registro = getRegistroById(registroId);
 
-    if (!registro) {
+    if (!registroId || !registro) {
       showNotFound();
       return;
     }
