@@ -213,6 +213,32 @@
       background: #333;
     }
 
+    /* ✅ CSS NOVO DO PARECER */
+    .parecer-render {
+      display: none;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-size: 14px;
+      color: #334155 !important;
+      background: #f8f8f8 !important;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 180px;
+      box-sizing: border-box;
+    }
+
+    @media print {
+      .parecer-editor,
+      .parecer-actions,
+      .no-pdf {
+        display: none !important;
+      }
+
+      .parecer-render {
+        display: block !important;
+      }
+    }
+
     @media (max-width: 720px) {
       .premium-report-meta,
       .cols-2,
@@ -353,7 +379,7 @@
 
         pdf.save(`Trackion_${nomeSeguro}.pdf`);
       } catch (err) {
-        console.error("Erro ao gerar PDF:", err);
+        console.error("Erro ao gerar o PDF:", err);
         alert("Erro ao gerar o PDF. Tente novamente.");
       } finally {
         hiddenForPdf.forEach(el => {
