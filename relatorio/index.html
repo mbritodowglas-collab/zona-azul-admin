@@ -43,39 +43,22 @@
 
     .premium-report-hero h1 {
       margin: 10px 0;
-      line-height: 1.05;
     }
 
-    .premium-report-hero p {
-      margin: 0;
-      line-height: 1.7;
-      color: rgba(255,255,255,0.86);
-    }
-
-    /* 🔥 CORREÇÃO DO PROBLEMA DOS QUADROS APAGADOS */
     .premium-report-meta > div {
       background: rgba(255,255,255,0.15);
-      backdrop-filter: none;
       border-radius: 14px;
       padding: 14px;
     }
 
     .meta-label {
-      display: block;
-      margin-bottom: 6px;
       font-size: 11px;
       color: rgba(255,255,255,0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      line-height: 1.35;
     }
 
     .premium-report-meta strong {
       color: #fff;
       font-size: 16px;
-      line-height: 1.35;
-      display: block;
-      font-weight: 800;
     }
 
     .premium-report-body {
@@ -90,32 +73,13 @@
       background: #fff;
     }
 
-    .report-section:first-child {
-      margin-top: 0;
-    }
-
-    .report-section h2 {
-      margin: 0 0 14px;
-      color: #10243d;
-    }
-
-    .report-section h3 {
-      margin: 0 0 8px;
-      color: #10243d;
-    }
-
     .report-grid {
       display: grid;
       gap: 12px;
     }
 
-    .cols-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .cols-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
 
     .report-info-card {
       background: #f5f5f5;
@@ -123,38 +87,12 @@
       border-radius: 12px;
     }
 
-    .report-info-card span {
-      display: block;
-      margin-bottom: 8px;
-      color: #6b7280;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      line-height: 1.35;
-    }
-
-    .report-info-card strong {
-      display: block;
-      color: #10243d;
-      line-height: 1.4;
-    }
-
     .report-text-block {
       background: #f8f8f8;
       padding: 14px;
       border-radius: 12px;
-    }
-
-    .report-text-block p,
-    .report-mini-text {
-      margin: 0;
-      color: #334155;
-      line-height: 1.75;
       white-space: pre-wrap;
-    }
-
-    .report-mini-text {
-      margin-top: 8px;
+      line-height: 1.7;
     }
 
     .report-chart-wrap {
@@ -168,30 +106,12 @@
       width: 100%;
       min-height: 180px;
       border: none;
-      outline: none;
       resize: none;
       overflow: hidden;
       background: #f5f5f5;
       border-radius: 10px;
       padding: 10px;
-      font: inherit;
       line-height: 1.7;
-      color: #10243d;
-      box-sizing: border-box;
-    }
-
-    .parecer-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .report-actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
     }
 
     .btn {
@@ -202,56 +122,42 @@
       border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
     }
 
     .btn.secondary {
       background: #333;
     }
 
-    /* ✅ CSS NOVO DO PARECER */
+    .report-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* 🔥 ESSENCIAL PRO PDF */
     .parecer-render {
       display: none;
       white-space: pre-wrap;
       line-height: 1.7;
       font-size: 14px;
-      color: #334155 !important;
-      background: #f8f8f8 !important;
+      color: #334155;
+      background: #f8f8f8;
       border-radius: 12px;
       padding: 14px;
       min-height: 180px;
-      box-sizing: border-box;
     }
 
-    @media print {
-      .parecer-editor,
-      .parecer-actions,
-      .no-pdf {
-        display: none !important;
-      }
+    body.pdf-capture .no-pdf {
+      display: none !important;
+    }
 
-      .parecer-render {
-        display: block !important;
-      }
+    body.pdf-capture .parecer-render {
+      display: block !important;
     }
 
     @media (max-width: 720px) {
-      .premium-report-meta,
-      .cols-2,
-      .cols-3 {
+      .cols-2, .cols-3 {
         grid-template-columns: 1fr;
-      }
-
-      .report-actions {
-        flex-direction: column;
-      }
-
-      .report-actions > * {
-        width: 100%;
       }
     }
   </style>
@@ -272,12 +178,9 @@
 
         <h1>SEU PERFIL DE LONGEVIDADE</h1>
 
-        <p>
-          Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor.
-        </p>
+        <p>Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor.</p>
 
         <div class="premium-report-meta report-grid cols-2">
-
           <div>
             <span class="meta-label">Cliente</span>
             <strong id="report-lead-name">Carregando...</strong>
@@ -297,7 +200,6 @@
             <span class="meta-label">CREF</span>
             <strong id="report-cref">003918-G/AM</strong>
           </div>
-
         </div>
       </header>
 
@@ -312,31 +214,22 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../assets/js/relatorio.js?v=26"></script>
 
-  <!-- 🚀 PDF ENGINE -->
+  <!-- PDF -->
   <script>
     document.getElementById("print-report-btn").addEventListener("click", async () => {
-      const btn = document.getElementById("print-report-btn");
-      const originalText = btn.innerText;
 
+      const btn = document.getElementById("print-report-btn");
       btn.innerText = "Gerando PDF...";
       btn.disabled = true;
 
-      const hiddenForPdf = document.querySelectorAll(".no-pdf");
-
       try {
-        hiddenForPdf.forEach(el => {
-          el.dataset.prevDisplay = el.style.display || "";
-          el.style.display = "none";
-        });
+        document.body.classList.add("pdf-capture");
+
+        await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 300));
 
         const { jsPDF } = window.jspdf;
         const element = document.querySelector(".premium-report-card");
-
-        if (document.fonts?.ready) {
-          await document.fonts.ready;
-        }
-
-        await new Promise(r => setTimeout(r, 300));
 
         const canvas = await html2canvas(element, {
           scale: 2,
@@ -345,7 +238,6 @@
         });
 
         const imgData = canvas.toDataURL("image/jpeg", 1);
-
         const pdf = new jsPDF("p", "mm", "a4");
 
         const pageWidth = 210;
@@ -359,7 +251,7 @@
         let heightLeft = imgHeight;
         let position = 0;
 
-        pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
+        pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);
         heightLeft -= pageHeight;
 
         while (heightLeft > 0) {
@@ -370,26 +262,17 @@
         }
 
         const nome = document.getElementById("report-lead-name").innerText || "cliente";
-        const nomeSeguro = nome
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^\w\s-]/g, "")
-          .trim()
-          .replace(/\s+/g, "_");
+        pdf.save(`Trackion_${nome}.pdf`);
 
-        pdf.save(`Trackion_${nomeSeguro}.pdf`);
       } catch (err) {
-        console.error("Erro ao gerar o PDF:", err);
-        alert("Erro ao gerar o PDF. Tente novamente.");
+        console.error(err);
+        alert("Erro ao gerar PDF");
       } finally {
-        hiddenForPdf.forEach(el => {
-          el.style.display = el.dataset.prevDisplay || "";
-          delete el.dataset.prevDisplay;
-        });
-
-        btn.innerText = originalText;
+        document.body.classList.remove("pdf-capture");
+        btn.innerText = "Gerar PDF";
         btn.disabled = false;
       }
+
     });
   </script>
 
