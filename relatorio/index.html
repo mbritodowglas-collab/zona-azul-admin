@@ -47,16 +47,6 @@
       padding: 14px;
     }
 
-    .meta-label {
-      font-size: 11px;
-      color: rgba(255,255,255,0.7);
-    }
-
-    .premium-report-meta strong {
-      color: #fff;
-      font-size: 16px;
-    }
-
     .premium-report-body {
       background: #f3efe6;
       padding: 24px;
@@ -106,7 +96,6 @@
       background: #f5f5f5;
       border-radius: 10px;
       padding: 10px;
-      line-height: 1.7;
     }
 
     .btn {
@@ -119,9 +108,7 @@
       cursor: pointer;
     }
 
-    .btn.secondary {
-      background: #333;
-    }
+    .btn.secondary { background: #333; }
 
     .report-actions {
       display: flex;
@@ -135,20 +122,14 @@
       white-space: pre-wrap;
       line-height: 1.7;
       background: #f8f8f8;
-      border-radius: 12px;
       padding: 14px;
+      border-radius: 12px;
     }
 
-    body.pdf-capture .no-pdf {
-      display: none !important;
-    }
+    body.pdf-capture .no-pdf { display: none !important; }
+    body.pdf-capture .parecer-render { display: block !important; }
 
-    body.pdf-capture .parecer-render {
-      display: block !important;
-    }
-
-    /* ===== TRACKION PREMIUM ===== */
-
+    /* TRACKION BLOCO FINAL */
     .report-metodo {
       margin-top: 28px;
       padding: 24px;
@@ -158,29 +139,23 @@
     }
 
     .report-metodo-hero {
-      padding: 20px;
+      padding: 18px;
       border-radius: 18px;
       background: linear-gradient(135deg, #10243d 0%, #173252 100%);
+      color: #fff;
       margin-bottom: 18px;
-      color: #fff !important;
-    }
-
-    .report-metodo-kicker {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      color: #6fd3ff;
     }
 
     .report-metodo-hero h3 {
-      margin: 10px 0;
-      font-size: 26px;
-      font-weight: 800;
+      margin: 0 0 8px;
+      font-size: 22px;
       color: #fff;
     }
 
-    .report-metodo-hero p {
-      color: rgba(255,255,255,0.95);
+    .report-metodo-texto {
+      background: rgba(255,255,255,0.75);
+      padding: 16px;
+      border-radius: 16px;
       line-height: 1.7;
     }
 
@@ -193,25 +168,18 @@
 
     .report-pilar-card {
       background: #fff;
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
     }
 
     .report-metodo-fechamento {
       margin-top: 16px;
-      padding: 16px;
-      border-radius: 16px;
-      background: rgba(71, 184, 255, 0.08);
-      border-left: 5px solid #47b8ff;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(71,184,255,0.08);
+      border-left: 4px solid #47b8ff;
       font-weight: 600;
-    }
-
-    @media (max-width: 720px) {
-      .cols-2,
-      .cols-3,
-      .report-pilares-grid {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -229,25 +197,13 @@
       <header class="premium-report-hero">
         <div class="premium-report-kicker">TRACKION SYSTEM</div>
         <h1>SEU PERFIL DE LONGEVIDADE</h1>
-        <p>Baseado nas Zonas Azuis</p>
+        <p>Baseado nas Zonas Azuis.</p>
 
         <div class="premium-report-meta report-grid cols-2">
-          <div>
-            <span class="meta-label">Cliente</span>
-            <strong id="report-lead-name">Carregando...</strong>
-          </div>
-          <div>
-            <span class="meta-label">Data</span>
-            <strong id="report-date">--</strong>
-          </div>
-          <div>
-            <span class="meta-label">Responsável</span>
-            <strong id="report-profissional">Márcio</strong>
-          </div>
-          <div>
-            <span class="meta-label">CREF</span>
-            <strong id="report-cref">003918</strong>
-          </div>
+          <div><strong id="report-lead-name">...</strong></div>
+          <div><strong id="report-date">...</strong></div>
+          <div><strong id="report-profissional">Márcio</strong></div>
+          <div><strong id="report-cref">CREF</strong></div>
         </div>
       </header>
 
@@ -256,11 +212,10 @@
     </article>
   </main>
 
-  <!-- JS -->
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/calculos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../assets/js/relatorio.js?v=26"></script>
+  <script src="../assets/js/relatorio.js?v=30"></script>
 
   <script>
     document.getElementById("print-report-btn").addEventListener("click", async () => {
@@ -272,19 +227,16 @@
       const { jsPDF } = window.jspdf;
       const element = document.querySelector(".premium-report-card");
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#f3efe6"
-      });
-
+      const canvas = await html2canvas(element, { scale: 2 });
       const imgData = canvas.toDataURL("image/jpeg", 1);
+
       const pdf = new jsPDF("p", "mm", "a4");
 
-      pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
+      const imgWidth = 190;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
 
-      const nome = document.getElementById("report-lead-name").innerText || "cliente";
-      pdf.save(`Trackion_${nome}.pdf`);
+      pdf.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
+      pdf.save("Trackion.pdf");
 
       document.body.classList.remove("pdf-capture");
     });
