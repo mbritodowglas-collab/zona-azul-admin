@@ -41,10 +41,6 @@
       letter-spacing: 0.08em;
     }
 
-    .premium-report-hero h1 {
-      margin: 10px 0;
-    }
-
     .premium-report-meta > div {
       background: rgba(255,255,255,0.15);
       border-radius: 14px;
@@ -107,7 +103,6 @@
       min-height: 180px;
       border: none;
       resize: none;
-      overflow: hidden;
       background: #f5f5f5;
       border-radius: 10px;
       padding: 10px;
@@ -134,17 +129,14 @@
       margin-bottom: 16px;
     }
 
-    /* 🔥 ESSENCIAL PRO PDF */
+    /* PDF */
     .parecer-render {
       display: none;
       white-space: pre-wrap;
       line-height: 1.7;
-      font-size: 14px;
-      color: #334155;
       background: #f8f8f8;
       border-radius: 12px;
       padding: 14px;
-      min-height: 180px;
     }
 
     body.pdf-capture .no-pdf {
@@ -155,89 +147,54 @@
       display: block !important;
     }
 
-    /* ===== BLOCO PREMIUM TRACKION SYSTEM ===== */
+    /* ===== TRACKION PREMIUM ===== */
+
     .report-metodo {
       margin-top: 28px;
       padding: 24px;
       border-radius: 22px;
       background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
       border: 1px solid rgba(71, 184, 255, 0.18);
-      box-shadow: 0 12px 30px rgba(16, 36, 61, 0.08);
     }
 
     .report-metodo-hero {
-      padding: 18px 18px 16px;
+      padding: 20px;
       border-radius: 18px;
       background: linear-gradient(135deg, #10243d 0%, #173252 100%);
-      color: #fff;
       margin-bottom: 18px;
+      color: #fff !important;
     }
 
     .report-metodo-kicker {
-      display: block;
-      margin-bottom: 8px;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #47b8ff;
+      color: #6fd3ff;
     }
 
     .report-metodo-hero h3 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      line-height: 1.1;
+      margin: 10px 0;
+      font-size: 26px;
+      font-weight: 800;
       color: #fff;
     }
 
     .report-metodo-hero p {
-      margin: 0;
-      color: rgba(255,255,255,0.86);
+      color: rgba(255,255,255,0.95);
       line-height: 1.7;
-    }
-
-    .report-metodo-texto {
-      background: rgba(255,255,255,0.72);
-      border-radius: 16px;
-      padding: 16px;
-      color: #334155;
-      line-height: 1.8;
-    }
-
-    .report-metodo-texto p {
-      margin: 0 0 14px;
-    }
-
-    .report-metodo-texto p:last-child {
-      margin-bottom: 0;
     }
 
     .report-pilares-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
       margin-top: 16px;
     }
 
     .report-pilar-card {
-      background: #ffffff;
-      border: 1px solid rgba(16, 36, 61, 0.08);
+      background: #fff;
       border-radius: 16px;
       padding: 14px;
-      box-shadow: 0 6px 18px rgba(16, 24, 40, 0.05);
-    }
-
-    .report-pilar-card h4 {
-      margin: 0 0 8px;
-      color: #10243d;
-      font-size: 15px;
-    }
-
-    .report-pilar-card p {
-      margin: 0;
-      color: #475569;
-      font-size: 14px;
-      line-height: 1.7;
     }
 
     .report-metodo-fechamento {
@@ -246,9 +203,7 @@
       border-radius: 16px;
       background: rgba(71, 184, 255, 0.08);
       border-left: 5px solid #47b8ff;
-      color: #10243d;
       font-weight: 600;
-      line-height: 1.7;
     }
 
     @media (max-width: 720px) {
@@ -273,30 +228,25 @@
 
       <header class="premium-report-hero">
         <div class="premium-report-kicker">TRACKION SYSTEM</div>
-
         <h1>SEU PERFIL DE LONGEVIDADE</h1>
-
-        <p>Baseado nas Zonas Azuis — regiões onde as pessoas vivem mais e melhor.</p>
+        <p>Baseado nas Zonas Azuis</p>
 
         <div class="premium-report-meta report-grid cols-2">
           <div>
             <span class="meta-label">Cliente</span>
             <strong id="report-lead-name">Carregando...</strong>
           </div>
-
           <div>
             <span class="meta-label">Data</span>
             <strong id="report-date">--</strong>
           </div>
-
           <div>
             <span class="meta-label">Responsável</span>
-            <strong id="report-profissional">Márcio Dowglas</strong>
+            <strong id="report-profissional">Márcio</strong>
           </div>
-
           <div>
             <span class="meta-label">CREF</span>
-            <strong id="report-cref">003918-G/AM</strong>
+            <strong id="report-cref">003918</strong>
           </div>
         </div>
       </header>
@@ -306,71 +256,37 @@
     </article>
   </main>
 
-  <!-- SISTEMA -->
+  <!-- JS -->
   <script src="../assets/js/storage.js"></script>
   <script src="../assets/js/calculos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../assets/js/relatorio.js?v=26"></script>
 
-  <!-- PDF -->
   <script>
     document.getElementById("print-report-btn").addEventListener("click", async () => {
+      document.body.classList.add("pdf-capture");
 
-      const btn = document.getElementById("print-report-btn");
-      btn.innerText = "Gerando PDF...";
-      btn.disabled = true;
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 300));
 
-      try {
-        document.body.classList.add("pdf-capture");
+      const { jsPDF } = window.jspdf;
+      const element = document.querySelector(".premium-report-card");
 
-        await document.fonts.ready;
-        await new Promise(r => setTimeout(r, 300));
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f3efe6"
+      });
 
-        const { jsPDF } = window.jspdf;
-        const element = document.querySelector(".premium-report-card");
+      const imgData = canvas.toDataURL("image/jpeg", 1);
+      const pdf = new jsPDF("p", "mm", "a4");
 
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: "#f3efe6"
-        });
+      pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
 
-        const imgData = canvas.toDataURL("image/jpeg", 1);
-        const pdf = new jsPDF("p", "mm", "a4");
+      const nome = document.getElementById("report-lead-name").innerText || "cliente";
+      pdf.save(`Trackion_${nome}.pdf`);
 
-        const pageWidth = 210;
-        const pageHeight = 297;
-        const margin = 10;
-
-        const imgWidth = pageWidth - margin * 2;
-        const ratio = canvas.height / canvas.width;
-        const imgHeight = imgWidth * ratio;
-
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
-        const nome = document.getElementById("report-lead-name").innerText || "cliente";
-        pdf.save(`Trackion_${nome}.pdf`);
-
-      } catch (err) {
-        console.error(err);
-        alert("Erro ao gerar PDF");
-      } finally {
-        document.body.classList.remove("pdf-capture");
-        btn.innerText = "Gerar PDF";
-        btn.disabled = false;
-      }
-
+      document.body.classList.remove("pdf-capture");
     });
   </script>
 
