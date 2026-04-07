@@ -262,6 +262,10 @@
         margin: 10mm;
       }
 
+      html {
+        zoom: 1 !important;
+      }
+
       html, body {
         width: auto;
         height: auto;
@@ -291,7 +295,7 @@
         background: linear-gradient(180deg, #0d2342 0%, #061126 100%) !important;
         color: #f3f8ff !important;
         border-radius: 28px !important;
-        overflow: hidden !important;
+        overflow: visible !important;
         box-shadow: 0 20px 50px rgba(0,0,0,0.25) !important;
         border: 1px solid rgba(255,255,255,0.08) !important;
       }
@@ -304,6 +308,8 @@
         padding: 32px 28px 24px !important;
         break-inside: avoid;
         page-break-inside: avoid;
+        page-break-after: always;
+        break-after: page;
       }
 
       .premium-report-kicker {
@@ -365,11 +371,11 @@
       }
 
       .report-grid.cols-2 {
-        grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+        grid-template-columns: 1fr !important;
       }
 
       .report-grid.cols-3 {
-        grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       }
 
       .report-info-card,
@@ -466,6 +472,6 @@
   <script src="../assets/js/storage.js?v=1"></script>
   <script src="../assets/js/calculos.js?v=18"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="../assets/js/relatorio.js?v=21"></script>
+  <script src="../assets/js/relatorio.js?v=22"></script>
 </body>
 </html>
