@@ -546,7 +546,7 @@ window.ZARelatorioCliente = (() => {
             placeholder="Cole aqui sua análise profissional..."
           >${parecerAtual === "—" ? "" : parecerAtual}</textarea>
 
-          <div class="parecer-actions no-pdf">
+          <div class="parecer-actions">
             <button class="btn" id="salvar-parecer-btn" type="button">Salvar parecer</button>
           </div>
         </div>
@@ -554,8 +554,8 @@ window.ZARelatorioCliente = (() => {
         <div
           id="parecer-profissional-view"
           class="report-text-block parecer-render"
-          style="${parecerAtual && parecerAtual !== "—" ? "" : "display:none;"}"
-        >${parecerAtual === "—" ? "" : parecerAtual}</div>
+          style="display:none;"
+        ></div>
       </section>
     `;
 
@@ -572,6 +572,12 @@ window.ZARelatorioCliente = (() => {
     const salvarBtn = document.getElementById("salvar-parecer-btn");
     const input = document.getElementById("parecer-profissional-input");
     const view = document.getElementById("parecer-profissional-view");
+
+    const parecerInicial = input?.value?.trim() || "";
+    if (view && parecerInicial) {
+      view.textContent = parecerInicial;
+      view.style.display = "";
+    }
 
     salvarBtn?.addEventListener("click", () => {
       const texto = input?.value?.trim() || "";
