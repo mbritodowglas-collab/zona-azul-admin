@@ -202,18 +202,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="summary-item">
         <span class="summary-label">${label}</span>
         <div class="summary-value">${valor}</div>
-        <div style="margin-top:10px; color: var(--muted); font-size: 13px; line-height: 1.6;">
+        <div style="margin-top:10px; color: #64748b; font-size: 13px; line-height: 1.6;">
           Referência: ${referencia}<br>
           Observação: ${observacao}
         </div>
       </div>
     `;
-  }
-
-  function maybeHideSectionById(id, shouldShow) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.toggle("hidden", !shouldShow);
   }
 
   const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
@@ -248,6 +242,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   text("report-cliente-meta-nome", nomeCliente);
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
+  text("report-cliente-meta-fase-side", faseCliente);
 
   const voltarLink = document.getElementById("voltar-cliente-link");
   if (voltarLink) {
@@ -314,46 +309,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  const radarInicial = {
-    movimento: asNumber(firstFilled(pre.score_movimento, pre.radar?.movimento, 4), 4),
-    alimentacao: asNumber(firstFilled(pre.score_alimentacao, pre.radar?.alimentacao, 4), 4),
-    sono: asNumber(firstFilled(pre.score_sono, pre.radar?.sono, 4), 4),
-    proposito: asNumber(firstFilled(pre.score_proposito, pre.radar?.proposito, 4), 4),
-    social: asNumber(firstFilled(pre.score_social, pre.radar?.social, 4), 4),
-    estresse: asNumber(firstFilled(pre.score_estresse, pre.radar?.estresse, 4), 4)
-  };
+  function getRadarSourceFromRegistro(source = {}) {
+    return {
+      movimento: asNumber(firstFilled(source.score_movimento, source.movimento, source.radar?.movimento, source.radar?.treino, 0), 0),
+      alimentacao: asNumber(firstFilled(source.score_alimentacao, source.alimentacao, source.radar?.alimentacao, source.radar?.dieta, 0), 0),
+      sono: asNumber(firstFilled(source.score_sono, source.sono, source.radar?.sono, 0), 0),
+      proposito: asNumber(firstFilled(source.score_proposito, source.proposito, source.radar?.proposito, source.radar?.disciplina, 0), 0),
+      social: asNumber(firstFilled(source.score_social, source.social, source.radar?.social, 0), 0),
+      estresse: asNumber(firstFilled(source.score_estresse, source.estresse, source.radar?.estresse, source.radar?.mental, 0), 0)
+    };
+  }
 
   const radarAtual = {
-    movimento: asNumber(firstFilled(radar.movimento, radar.treino, radarInicial.movimento, 5), 5),
-    alimentacao: asNumber(firstFilled(radar.alimentacao, radar.dieta, radarInicial.alimentacao, 5), 5),
-    sono: asNumber(firstFilled(radar.sono, radarInicial.sono, 5), 5),
-    proposito: asNumber(firstFilled(radar.proposito, radar.disciplina, radarInicial.proposito, 5), 5),
-    social: asNumber(firstFilled(radar.social, radarInicial.social, 5), 5),
-    estresse: asNumber(firstFilled(radar.estresse, radar.mental, radarInicial.estresse, 5), 5)
+    movimento: asNumber(firstFilled(radar.movimento, radar.treino, pre.score_movimento, 5), 5),
+    alimentacao: asNumber(firstFilled(radar.alimentacao, radar.dieta, pre.score_alimentacao, 5), 5),
+    sono: asNumber(firstFilled(radar.sono, pre.score_sono, 5), 5),
+    proposito: asNumber(firstFilled(radar.proposito, radar.disciplina, pre.score_proposito, 5), 5),
+    social: asNumber(firstFilled(radar.social, pre.score_social, 5), 5),
+    estresse: asNumber(firstFilled(radar.estresse, radar.mental, pre.score_estresse, 5), 5)
   };
 
-  const hasRadar = Object.values(radarAtual).some(v => Number.isFinite(v));
+  let radarAnterior = null;
+  let radarLabelAnterior = "Base inicial";
+
+  if (reavaliacoes.length) {
+    const reavaliacaoAnterior = reavaliacoes
+      .slice()
+      .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0))[0];
+
+    radarAnterior = getRadarSourceFromRegistro(reavaliacaoAnterior);
+    radarLabelAnterior = "Última avaliação";
+  } else if (hasContent(pre)) {
+    radarAnterior = getRadarSourceFromRegistro(pre);
+    radarLabelAnterior = "Base inicial";
+  }
 
   const radarCanvas = document.getElementById("radar-chart");
-  if (radarCanvas && typeof Chart !== "undefined" && hasRadar) {
+  const hasRadarAtual = Object.values(radarAtual).some(v => Number.isFinite(v) && v > 0);
+
+  if (radarCanvas && typeof Chart !== "undefined" && hasRadarAtual) {
+    const datasets = [];
+
+    if (radarAnterior && Object.values(radarAnterior).some(v => Number.isFinite(v) && v > 0)) {
+      datasets.push({
+        label: radarLabelAnterior,
+        data: Object.values(radarAnterior),
+        borderColor: "rgba(140, 156, 181, 0.95)",
+        backgroundColor: "rgba(140, 156, 181, 0.14)",
+        pointBackgroundColor: "rgba(140, 156, 181, 0.95)",
+        pointBorderColor: "#ffffff",
+        borderWidth: 2
+      });
+    }
+
+    datasets.push({
+      label: "Avaliação atual",
+      data: Object.values(radarAtual),
+      borderColor: "#47b8ff",
+      backgroundColor: "rgba(71,184,255,0.20)",
+      pointBackgroundColor: "#47b8ff",
+      pointBorderColor: "#ffffff",
+      borderWidth: 2
+    });
+
     new Chart(radarCanvas, {
       type: "radar",
       data: {
         labels: ["Movimento", "Alimentação", "Sono", "Propósito", "Social", "Estresse"],
-        datasets: [
-          {
-            label: "Base inicial",
-            data: Object.values(radarInicial),
-            borderColor: "rgba(156,176,203,0.9)",
-            backgroundColor: "rgba(156,176,203,0.15)"
-          },
-          {
-            label: "Leitura atual",
-            data: Object.values(radarAtual),
-            borderColor: "#47b8ff",
-            backgroundColor: "rgba(71,184,255,0.20)"
-          }
-        ]
+        datasets
       },
       options: {
         maintainAspectRatio: false,
@@ -362,14 +385,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             min: 0,
             max: 10,
             ticks: { display: false },
-            grid: { color: "rgba(255,255,255,0.10)" },
-            angleLines: { color: "rgba(255,255,255,0.08)" },
-            pointLabels: { color: "#dce8f8" }
+            grid: { color: "rgba(16,24,40,0.12)" },
+            angleLines: { color: "rgba(16,24,40,0.08)" },
+            pointLabels: { color: "#334155" }
           }
         },
         plugins: {
           legend: {
-            labels: { color: "#dce8f8" }
+            labels: { color: "#334155" }
           }
         }
       }
@@ -403,16 +426,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       options: {
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: "#dce8f8" } }
+          legend: { labels: { color: "#334155" } }
         },
         scales: {
           x: {
-            ticks: { color: "#dce8f8" },
-            grid: { color: "rgba(255,255,255,0.06)" }
+            ticks: { color: "#334155" },
+            grid: { color: "rgba(16,24,40,0.06)" }
           },
           y: {
-            ticks: { color: "#dce8f8" },
-            grid: { color: "rgba(255,255,255,0.06)" }
+            ticks: { color: "#334155" },
+            grid: { color: "rgba(16,24,40,0.06)" }
           }
         }
       }
@@ -637,57 +660,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   ].some(hasContent);
 
   const examesEntries = Object.entries(exames).filter(([, value]) => hasContent(value));
-  let examesSection = document.getElementById("exames-section");
-  if (!examesSection && examesEntries.length) {
-    const perimetriaSection = document.querySelector("#perimetria-grid")?.closest(".card");
-    if (perimetriaSection) {
-      examesSection = document.createElement("section");
-      examesSection.className = "card full-width";
-      examesSection.id = "exames-section";
-      examesSection.innerHTML = `
-        <h3 class="section-title">Controle Geral por Exames</h3>
-        <p class="section-subtitle">
-          Marcadores laboratoriais registrados no acompanhamento para leitura complementar do processo.
-        </p>
-        <div id="exames-grid" class="summary-grid"></div>
-      `;
-      perimetriaSection.insertAdjacentElement("afterend", examesSection);
-    }
+  const examesSection = document.getElementById("exames-section");
+  const examesGrid = document.getElementById("exames-grid");
+
+  if (examesSection && examesGrid && examesEntries.length) {
+    examesGrid.innerHTML = examesEntries.map(([key, value]) => {
+      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+        return exameCard(
+          toTitle(key),
+          firstFilled(value.valor, "—"),
+          firstFilled(value.referencia, "—"),
+          firstFilled(value.observacao, "Sem observação")
+        );
+      }
+      return exameCard(toTitle(key), value, "—", "Sem observação");
+    }).join("");
   }
 
-  if (examesSection) {
-    const examesGrid = examesSection.querySelector("#exames-grid");
-    if (examesGrid) {
-      examesGrid.innerHTML = examesEntries.map(([key, value]) => {
-        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-          return exameCard(
-            toTitle(key),
-            firstFilled(value.valor, "—"),
-            firstFilled(value.referencia, "—"),
-            firstFilled(value.observacao, "Sem observação")
-          );
-        }
-        return exameCard(toTitle(key), value, "—", "Sem observação");
-      }).join("");
-    }
+  const radarSection = document.getElementById("radar-section");
+  if (radarSection) {
+    radarSection.classList.toggle("hidden", !hasRadarAtual);
   }
 
-  maybeHideSectionById(
-    "radar-chart",
-    hasRadar
-  );
-  maybeHideSectionById(
-    "evolucao-chart",
-    evolucao.length > 0
-  );
+  const evolucaoSection = document.getElementById("evolucao-section");
+  if (evolucaoSection) {
+    evolucaoSection.classList.toggle("hidden", !(evolucao.length > 0));
+  }
 
-  const radarSection = document.getElementById("radar-chart")?.closest(".card");
-  if (radarSection) radarSection.classList.toggle("hidden", !hasRadar);
-
-  const evolucaoSection = document.getElementById("evolucao-chart")?.closest(".card");
-  if (evolucaoSection) evolucaoSection.classList.toggle("hidden", !(evolucao.length > 0));
-
-  const perimetriaSection = document.getElementById("perimetria-grid")?.closest(".card");
+  const perimetriaSection = document.getElementById("perimetria-section");
   if (perimetriaSection) {
     const temPerimetria = Object.keys(perimetriaPlanejamento).length > 0 ||
       ["cintura", "quadril", "peito", "coxa", "braco", "abdome"].some(key =>
@@ -696,16 +696,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     perimetriaSection.classList.toggle("hidden", !temPerimetria);
   }
 
-  const leituraSection = document.getElementById("diagnostico-leitura")?.closest(".card");
-  if (leituraSection) leituraSection.classList.toggle("hidden", !hasLeituraTecnica);
+  const leituraSection = document.getElementById("leitura-section");
+  if (leituraSection) {
+    leituraSection.classList.toggle("hidden", !hasLeituraTecnica);
+  }
 
-  const behaviorSection = document.getElementById("behavior-aderencia")?.closest(".card");
-  if (behaviorSection) behaviorSection.classList.toggle("hidden", !hasComportamento);
+  const behaviorSection = document.getElementById("behavior-section");
+  if (behaviorSection) {
+    behaviorSection.classList.toggle("hidden", !hasComportamento);
+  }
 
-  const nextSection = document.getElementById("next-manter")?.closest(".card");
-  if (nextSection) nextSection.classList.toggle("hidden", !hasDirecionamento);
+  const nextSection = document.getElementById("next-section");
+  if (nextSection) {
+    nextSection.classList.toggle("hidden", !hasDirecionamento);
+  }
 
   if (examesSection) {
     examesSection.classList.toggle("hidden", !examesEntries.length);
+  }
+
+  const metricsSection = document.getElementById("metrics-section");
+  if (metricsSection) {
+    metricsSection.classList.toggle("hidden", !hasMetricasComparativas);
   }
 });
