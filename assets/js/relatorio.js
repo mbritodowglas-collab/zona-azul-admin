@@ -562,9 +562,10 @@ window.ZARelatorioCliente = (() => {
         "Sobre o Trackion System",
         `
           <div class="report-metodo">
+
             <div class="report-metodo-hero">
               <span class="report-metodo-kicker">Método • Estrutura • Consistência</span>
-              <h3>Você não precisa apenas de mais esforço. Precisa de estrutura.</h3>
+              <h3>Mais do que esforço, você precisa de estrutura.</h3>
               <p>
                 O Trackion System foi construído para organizar corpo, comportamento e estilo de vida
                 em um processo prático, sustentável e orientado por pilares reais de longevidade.
