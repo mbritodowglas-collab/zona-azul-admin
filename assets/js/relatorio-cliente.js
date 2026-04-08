@@ -1,21 +1,31 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const clienteId = urlParams.get("id");
 
   const printBtn = document.getElementById("print-report-btn");
   if (printBtn) {
-    printBtn.addEventListener("click", () => {
-      window.print();
-    });
+    printBtn.addEventListener("click", () => window.print());
+  }
+
+  if (window.ZAStorage?.init) {
+    await window.ZAStorage.init({ force: true });
+  }
+
+  const notFoundEl = document.getElementById("relatorio-not-found");
+  const relatorioPage = document.getElementById("relatorio-page");
+
+  function showNotFound() {
+    notFoundEl?.classList.remove("hidden");
+    relatorioPage?.classList.add("hidden");
   }
 
   if (!clienteId) {
-    document.getElementById("relatorio-not-found")?.classList.remove("hidden");
+    showNotFound();
     return;
   }
 
-  const clientes = JSON.parse(localStorage.getItem("za_clientes") || "[]");
-  const leads = JSON.parse(localStorage.getItem("za_leads") || "[]");
+  const clientes = window.ZAStorage?.getClientes?.() || JSON.parse(localStorage.getItem("za_clientes") || "[]");
+  const leads = window.ZAStorage?.getLeads?.() || JSON.parse(localStorage.getItem("za_leads") || "[]");
 
   const cliente = clientes.find(c => String(c.id) === String(clienteId));
   const leadRelacionado =
@@ -24,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     null;
 
   if (!cliente) {
-    document.getElementById("relatorio-not-found")?.classList.remove("hidden");
+    showNotFound();
     return;
   }
 
@@ -41,9 +51,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const nutricional = planejamento.nutricional || {};
   const radar = planejamento.radar || {};
   const perimetriaPlanejamento = planejamento.perimetria || {};
+  const exames = planejamento.exames || relatorioCompleto.exames || cliente.exames || {};
   const profissional = planejamento.profissional || {};
   const acompanhamentos = Array.isArray(cliente.acompanhamentos) ? cliente.acompanhamentos : [];
   const timelineCliente = Array.isArray(cliente.timeline) ? cliente.timeline : [];
+  const evolucaoPlanejamento = Array.isArray(planejamento.evolucao) ? planejamento.evolucao : [];
+  const reavaliacoes = Array.isArray(cliente.reavaliacoes) ? cliente.reavaliacoes : [];
+
+  const PROFISSIONAIS = {
+    marcio: {
+      nome: "Márcio Dowglas",
+      cref: "003918-G/AM"
+    },
+    filipe: {
+      nome: "Filipe Oliveira",
+      cref: "008318-G/AM"
+    }
+  };
+
+  function getProfissionalAtual() {
+    const key = (localStorage.getItem("profissional_ativo") || "marcio").toLowerCase();
+    return PROFISSIONAIS[key] || PROFISSIONAIS.marcio;
+  }
 
   function firstFilled(...values) {
     for (const value of values) {
@@ -56,18 +85,20 @@ document.addEventListener("DOMContentLoaded", () => {
     return "—";
   }
 
+  function hasContent(value) {
+    if (value === null || value === undefined) return false;
+    if (typeof value === "number") return true;
+    if (typeof value === "boolean") return true;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === "object") return Object.keys(value).length > 0;
+    return String(value).trim() !== "" && String(value).trim() !== "—";
+  }
+
   function asNumber(value, fallback = 0) {
     if (value === null || value === undefined || value === "") return fallback;
     const cleaned = String(value).replace(",", ".").replace(/[^\d.-]/g, "");
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : fallback;
-  }
-
-  function toTitle(value) {
-    if (!value || value === "—") return "—";
-    return String(value)
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
   function formatDateBR(value) {
@@ -84,6 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initials(name) {
     return String(name || "C").trim().charAt(0).toUpperCase();
+  }
+
+  function toTitle(value) {
+    if (!value || value === "—") return "—";
+    return String(value)
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
   function getObjetivo() {
@@ -113,6 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (value !== "—") return value;
     }
     return 0;
+  }
+
+  function createEmptyBox(texto) {
+    return `<div class="empty-box">${texto}</div>`;
   }
 
   function metricCard(label, atual, anterior, suffix = "") {
@@ -146,12 +188,41 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
+  function perimetriaCard(label, value) {
+    return `
+      <div class="perimetria-item">
+        <span>${label}</span>
+        <strong>${String(value).includes("cm") ? value : `${value} cm`}</strong>
+      </div>
+    `;
+  }
+
+  function exameCard(label, valor, referencia = "—", observacao = "—") {
+    return `
+      <div class="summary-item">
+        <span class="summary-label">${label}</span>
+        <div class="summary-value">${valor}</div>
+        <div style="margin-top:10px; color: var(--muted); font-size: 13px; line-height: 1.6;">
+          Referência: ${referencia}<br>
+          Observação: ${observacao}
+        </div>
+      </div>
+    `;
+  }
+
+  function maybeHideSectionById(id, shouldShow) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle("hidden", !shouldShow);
+  }
+
   const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
   const emailCliente = firstFilled(cliente.email, pre.email, "");
   const objetivoCliente = getObjetivo();
   const faseCliente = getFase();
-  const nomeProfissional = firstFilled(profissional.nome, "Márcio Dowglas");
-  const crefProfissional = firstFilled(profissional.cref, "—");
+  const profAtivo = getProfissionalAtual();
+  const nomeProfissional = firstFilled(profissional.nome, profAtivo.nome);
+  const crefProfissional = firstFilled(profissional.cref, profAtivo.cref);
 
   text("report-profissional-nome", nomeProfissional);
   text("report-profissional-cref", crefProfissional);
@@ -177,6 +248,11 @@ document.addEventListener("DOMContentLoaded", () => {
   text("report-cliente-meta-nome", nomeCliente);
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
+
+  const voltarLink = document.getElementById("voltar-cliente-link");
+  if (voltarLink) {
+    voltarLink.href = `../cliente/index.html?id=${clienteId}`;
+  }
 
   text("summary-objetivo", objetivoCliente);
   text(
@@ -223,47 +299,57 @@ document.addEventListener("DOMContentLoaded", () => {
   const cinturaAtual = firstFilled(metricas.cintura, base.cintura, pre.cintura, cliente.cintura, 0);
 
   const metricsGrid = document.getElementById("metrics-grid");
+  const hasMetricasComparativas = [pesoAtual, bfAtual, massaAtual, cinturaAtual].some(hasContent);
+
   if (metricsGrid) {
-    metricsGrid.innerHTML = [
-      metricCard("Peso", pesoAtual, pesoInicial, " kg"),
-      metricCard("BF", bfAtual, bfInicial, "%"),
-      metricCard("Massa magra", massaAtual, massaInicial, " kg"),
-      metricCard("Cintura", cinturaAtual, cinturaInicial, " cm")
-    ].join("");
+    if (!hasMetricasComparativas) {
+      metricsGrid.innerHTML = createEmptyBox("Nenhuma métrica comparativa registrada até o momento.");
+    } else {
+      metricsGrid.innerHTML = [
+        metricCard("Peso", pesoAtual, pesoInicial, " kg"),
+        metricCard("BF", bfAtual, bfInicial, "%"),
+        metricCard("Massa magra", massaAtual, massaInicial, " kg"),
+        metricCard("Cintura", cinturaAtual, cinturaInicial, " cm")
+      ].join("");
+    }
   }
 
+  const radarInicial = {
+    movimento: asNumber(firstFilled(pre.score_movimento, pre.radar?.movimento, 4), 4),
+    alimentacao: asNumber(firstFilled(pre.score_alimentacao, pre.radar?.alimentacao, 4), 4),
+    sono: asNumber(firstFilled(pre.score_sono, pre.radar?.sono, 4), 4),
+    proposito: asNumber(firstFilled(pre.score_proposito, pre.radar?.proposito, 4), 4),
+    social: asNumber(firstFilled(pre.score_social, pre.radar?.social, 4), 4),
+    estresse: asNumber(firstFilled(pre.score_estresse, pre.radar?.estresse, 4), 4)
+  };
+
+  const radarAtual = {
+    movimento: asNumber(firstFilled(radar.movimento, radar.treino, radarInicial.movimento, 5), 5),
+    alimentacao: asNumber(firstFilled(radar.alimentacao, radar.dieta, radarInicial.alimentacao, 5), 5),
+    sono: asNumber(firstFilled(radar.sono, radarInicial.sono, 5), 5),
+    proposito: asNumber(firstFilled(radar.proposito, radar.disciplina, radarInicial.proposito, 5), 5),
+    social: asNumber(firstFilled(radar.social, radarInicial.social, 5), 5),
+    estresse: asNumber(firstFilled(radar.estresse, radar.mental, radarInicial.estresse, 5), 5)
+  };
+
+  const hasRadar = Object.values(radarAtual).some(v => Number.isFinite(v));
+
   const radarCanvas = document.getElementById("radar-chart");
-  if (radarCanvas && typeof Chart !== "undefined") {
-    const inicial = {
-      treino: asNumber(firstFilled(pre.radar?.treino, pre.treino_nota, 4), 4),
-      dieta: asNumber(firstFilled(pre.radar?.dieta, pre.dieta_nota, 4), 4),
-      sono: asNumber(firstFilled(pre.radar?.sono, pre.sono_nota, 4), 4),
-      disciplina: asNumber(firstFilled(pre.radar?.disciplina, pre.disciplina_nota, 4), 4),
-      mental: asNumber(firstFilled(pre.radar?.mental, pre.mental_nota, 4), 4)
-    };
-
-    const atual = {
-      treino: asNumber(firstFilled(radar.treino, inicial.treino, 5), 5),
-      dieta: asNumber(firstFilled(radar.dieta, inicial.dieta, 5), 5),
-      sono: asNumber(firstFilled(radar.sono, inicial.sono, 5), 5),
-      disciplina: asNumber(firstFilled(radar.disciplina, inicial.disciplina, 5), 5),
-      mental: asNumber(firstFilled(radar.mental, inicial.mental, 5), 5)
-    };
-
+  if (radarCanvas && typeof Chart !== "undefined" && hasRadar) {
     new Chart(radarCanvas, {
       type: "radar",
       data: {
-        labels: ["Treino", "Dieta", "Sono", "Disciplina", "Mental"],
+        labels: ["Movimento", "Alimentação", "Sono", "Propósito", "Social", "Estresse"],
         datasets: [
           {
             label: "Base inicial",
-            data: Object.values(inicial),
+            data: Object.values(radarInicial),
             borderColor: "rgba(156,176,203,0.9)",
             backgroundColor: "rgba(156,176,203,0.15)"
           },
           {
             label: "Leitura atual",
-            data: Object.values(atual),
+            data: Object.values(radarAtual),
             borderColor: "#47b8ff",
             backgroundColor: "rgba(71,184,255,0.20)"
           }
@@ -291,16 +377,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const evolucaoCanvas = document.getElementById("evolucao-chart");
-  if (evolucaoCanvas && typeof Chart !== "undefined") {
-    let evolucao = Array.isArray(planejamento.evolucao) ? [...planejamento.evolucao] : [];
+  let evolucao = [...evolucaoPlanejamento];
 
-    if (!evolucao.length) {
-      evolucao = [
-        { data: "Inicial", peso: asNumber(pesoInicial, 0) },
-        { data: "Atual", peso: asNumber(pesoAtual, 0) }
-      ];
-    }
+  if (!evolucao.length && hasContent(pesoInicial) && hasContent(pesoAtual)) {
+    evolucao = [
+      { data: "Inicial", peso: asNumber(pesoInicial, 0) },
+      { data: "Atual", peso: asNumber(pesoAtual, 0) }
+    ];
+  }
 
+  if (evolucaoCanvas && typeof Chart !== "undefined" && evolucao.length) {
     new Chart(evolucaoCanvas, {
       type: "line",
       data: {
@@ -347,14 +433,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const items = Object.entries(perimetriaBase).filter(([, value]) => value !== "—");
 
     if (!items.length) {
-      perimetriaGrid.innerHTML = `<div class="empty-box">Nenhuma medida registrada até o momento.</div>`;
+      perimetriaGrid.innerHTML = createEmptyBox("Nenhuma medida registrada até o momento.");
     } else {
-      perimetriaGrid.innerHTML = items.map(([key, value]) => `
-        <div class="perimetria-item">
-          <span>${toTitle(key)}</span>
-          <strong>${value}${String(value).includes("cm") ? "" : " cm"}</strong>
-        </div>
-      `).join("");
+      perimetriaGrid.innerHTML = items
+        .map(([key, value]) => perimetriaCard(toTitle(key), value))
+        .join("");
     }
   }
 
@@ -365,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
       diagnostico.leitura,
       planejamento.leituraTecnica,
       pre.leituraTecnica,
-      "O caso apresenta relatório inicial estruturado a partir dos dados de entrada do cliente."
+      "O caso apresenta leitura técnica estruturada a partir dos dados de entrada e do acompanhamento do cliente."
     )
   );
 
@@ -379,16 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
       "Ainda sem síntese diagnóstica posterior consolidada."
     )
   );
-
-  const focoEl = document.getElementById("diagnostico-foco");
-  if (focoEl) {
-    focoEl.textContent = firstFilled(
-      diagnostico.foco,
-      estrategia.focoCentral,
-      planejamento.focoProximoCiclo,
-      "—"
-    );
-  }
 
   text(
     "behavior-aderencia",
@@ -489,6 +562,12 @@ document.addEventListener("DOMContentLoaded", () => {
       descricao: item.descricao
     }));
 
+    const timelineReavaliacoes = reavaliacoes.map(item => ({
+      titulo: firstFilled(item.titulo, "Reavaliação"),
+      data: item.data,
+      descricao: firstFilled(item.descricao, item.resumo, "Reavaliação registrada no sistema.")
+    }));
+
     const linhaInicial = {
       titulo: "Entrada inicial do caso",
       data: firstFilled(cliente.data_inicio, cliente.updatedAt, cliente.createdAt, pre.created_at, new Date().toISOString()),
@@ -500,7 +579,7 @@ document.addEventListener("DOMContentLoaded", () => {
       )
     };
 
-    const timelineFinal = [...timelineAcompanhamentos, ...timelineBase];
+    const timelineFinal = [...timelineAcompanhamentos, ...timelineBase, ...timelineReavaliacoes];
     if (!timelineFinal.length) timelineFinal.push(linhaInicial);
 
     timelineFinal.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
@@ -514,5 +593,119 @@ document.addEventListener("DOMContentLoaded", () => {
         <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
       </div>
     `).join("");
+  }
+
+  const hasLeituraTecnica = hasContent(firstFilled(
+    relatorioCompleto.leituraTecnica,
+    diagnostico.leitura,
+    planejamento.leituraTecnica,
+    pre.leituraTecnica
+  )) || hasContent(firstFilled(
+    relatorioCompleto.sinteseDiagnostica,
+    diagnostico.sintese,
+    planejamento.sinteseDiagnostica,
+    pre.sinteseDiagnostica
+  ));
+
+  const hasComportamento = [
+    relatorioCompleto.aderencia,
+    planejamento.aderencia,
+    habitos.regraMinima,
+    relatorioCompleto.ambiente,
+    habitos.ajusteAmbiente,
+    planejamento.ambiente,
+    relatorioCompleto.sabotadores,
+    planejamento.sabotadores,
+    pre.sabotadores,
+    relatorioCompleto.leituraComportamental,
+    planejamento.leituraComportamental
+  ].some(hasContent);
+
+  const hasDirecionamento = [
+    relatorioCompleto.manter,
+    planejamento.manter,
+    treino.frequencia,
+    relatorioCompleto.ajustar,
+    planejamento.ajustar,
+    cardio.frequencia,
+    nutricional.regraMinima,
+    relatorioCompleto.focoProximoCiclo,
+    planejamento.focoProximoCiclo,
+    estrategia.focoCentral,
+    relatorioCompleto.metaPrincipal,
+    planejamento.metaPrincipal
+  ].some(hasContent);
+
+  const examesEntries = Object.entries(exames).filter(([, value]) => hasContent(value));
+  let examesSection = document.getElementById("exames-section");
+  if (!examesSection && examesEntries.length) {
+    const perimetriaSection = document.querySelector("#perimetria-grid")?.closest(".card");
+    if (perimetriaSection) {
+      examesSection = document.createElement("section");
+      examesSection.className = "card full-width";
+      examesSection.id = "exames-section";
+      examesSection.innerHTML = `
+        <h3 class="section-title">Controle Geral por Exames</h3>
+        <p class="section-subtitle">
+          Marcadores laboratoriais registrados no acompanhamento para leitura complementar do processo.
+        </p>
+        <div id="exames-grid" class="summary-grid"></div>
+      `;
+      perimetriaSection.insertAdjacentElement("afterend", examesSection);
+    }
+  }
+
+  if (examesSection) {
+    const examesGrid = examesSection.querySelector("#exames-grid");
+    if (examesGrid) {
+      examesGrid.innerHTML = examesEntries.map(([key, value]) => {
+        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+          return exameCard(
+            toTitle(key),
+            firstFilled(value.valor, "—"),
+            firstFilled(value.referencia, "—"),
+            firstFilled(value.observacao, "Sem observação")
+          );
+        }
+        return exameCard(toTitle(key), value, "—", "Sem observação");
+      }).join("");
+    }
+  }
+
+  maybeHideSectionById(
+    "radar-chart",
+    hasRadar
+  );
+  maybeHideSectionById(
+    "evolucao-chart",
+    evolucao.length > 0
+  );
+
+  const radarSection = document.getElementById("radar-chart")?.closest(".card");
+  if (radarSection) radarSection.classList.toggle("hidden", !hasRadar);
+
+  const evolucaoSection = document.getElementById("evolucao-chart")?.closest(".card");
+  if (evolucaoSection) evolucaoSection.classList.toggle("hidden", !(evolucao.length > 0));
+
+  const perimetriaSection = document.getElementById("perimetria-grid")?.closest(".card");
+  if (perimetriaSection) {
+    const temPerimetria = Object.keys(perimetriaPlanejamento).length > 0 ||
+      ["cintura", "quadril", "peito", "coxa", "braco", "abdome"].some(key =>
+        hasContent(firstFilled(base[key], pre[key], cliente[key]))
+      );
+    perimetriaSection.classList.toggle("hidden", !temPerimetria);
+  }
+
+  const leituraSection = document.getElementById("diagnostico-leitura")?.closest(".card");
+  if (leituraSection) leituraSection.classList.toggle("hidden", !hasLeituraTecnica);
+
+  const behaviorSection = document.getElementById("behavior-aderencia")?.closest(".card");
+  if (behaviorSection) behaviorSection.classList.toggle("hidden", !hasComportamento);
+
+  const nextSection = document.getElementById("next-manter")?.closest(".card");
+  if (nextSection) nextSection.classList.toggle("hidden", !hasDirecionamento);
+
+  if (examesSection) {
+    examesSection.classList.toggle("hidden", !examesEntries.length);
   }
 });
