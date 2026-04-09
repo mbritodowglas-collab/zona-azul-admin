@@ -414,6 +414,259 @@ window.ZALancamentos = (() => {
     return clienteObj;
   }
 
+  function ensureArray(value) {
+    return Array.isArray(value) ? value : [];
+  }
+
+  function ensureTimelineStructure(clienteObj) {
+    if (!Array.isArray(clienteObj.timeline)) {
+      clienteObj.timeline = [];
+    }
+    return clienteObj;
+  }
+
+  function mediaCampos(id1, id2) {
+    const a = num(id1);
+    const b = num(id2);
+
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      return Number(((a + b) / 2).toFixed(1));
+    }
+
+    if (Number.isFinite(a)) return a;
+    if (Number.isFinite(b)) return b;
+    return "";
+  }
+
+  function buildTestesNormalizados() {
+    const testes = [];
+
+    const overhead = val("teste-overhead");
+    if (overhead) {
+      testes.push({
+        nome: "Overhead Squat / Mobilidade",
+        valor: overhead,
+        classificacao: "",
+        observacao: ""
+      });
+    }
+
+    const thomas = val("teste-thomas");
+    if (thomas) {
+      testes.push({
+        nome: "Thomas Test",
+        valor: thomas,
+        classificacao: "",
+        observacao: ""
+      });
+    }
+
+    const sentar = val("teste-sentar-alcancar");
+    if (sentar) {
+      testes.push({
+        nome: "Sentar e alcançar",
+        valor: sentar,
+        classificacao: "",
+        observacao: ""
+      });
+    }
+
+    const stepFc = val("teste-step-fc");
+    if (stepFc) {
+      testes.push({
+        nome: "Step test / FC recuperação",
+        valor: stepFc,
+        classificacao: "",
+        observacao: ""
+      });
+    }
+
+    const stepBorg = val("teste-step-borg");
+    if (stepBorg) {
+      testes.push({
+        nome: "Step test / Borg",
+        valor: stepBorg,
+        classificacao: "",
+        observacao: ""
+      });
+    }
+
+    const stepClassificacao = val("teste-step-classificacao");
+    if (stepClassificacao) {
+      testes.push({
+        nome: "Step test / Classificação",
+        valor: stepClassificacao,
+        classificacao: stepClassificacao,
+        observacao: ""
+      });
+    }
+
+    return testes;
+  }
+
+  function buildAvaliacaoNormalizada() {
+    const sessaoData = document.getElementById("sessao-data")?.value || new Date().toISOString();
+    const sessaoTipo = document.getElementById("sessao-tipo")?.value || "";
+    const sessaoProtocoloRaw = document.getElementById("sessao-protocolo")?.value || "";
+    const sessaoProtocolo = sessaoTipo === "online" ? "A" : sessaoProtocoloRaw;
+
+    const radarRevisado = getRadarRevisadoFromInputs();
+    const dadosBase = getDadosBaseEditados();
+
+    const objetivoAtual = firstFilled(
+      val("pre-objetivo"),
+      dadosBase.objetivo,
+      cliente?.objetivo,
+      cliente?.objetivo_principal
+    );
+
+    const faseAtual = firstFilled(
+      cliente?.fase_nome,
+      cliente?.fase_atual,
+      cliente?.fase,
+      "Fase não definida"
+    );
+
+    const gorduraAtual = firstFilled(val("gordura-dobras"), val("gordura-marinha"));
+
+    return {
+      id: `avaliacao:${sessaoData}:${sessaoProtocolo || "sem-protocolo"}`,
+      tipo: ensureArray(cliente?.avaliacoes).length === 0 ? "avaliacao_inicial" : "reavaliacao",
+      data: sessaoData,
+      titulo: "Avaliação técnica",
+      protocolo: sessaoProtocolo,
+      resumo: firstFilled(val("diag-sintese"), val("diag-leitura"), val("pre-resumo")),
+      objetivo: objetivoAtual,
+      fase: faseAtual,
+
+      pilares: {
+        movimento: Number.isFinite(radarRevisado.movimento) ? radarRevisado.movimento : 0,
+        alimentacao: Number.isFinite(radarRevisado.alimentacao) ? radarRevisado.alimentacao : 0,
+        sono: Number.isFinite(radarRevisado.sono) ? radarRevisado.sono : 0,
+        proposito: Number.isFinite(radarRevisado.proposito) ? radarRevisado.proposito : 0,
+        social: Number.isFinite(radarRevisado.social) ? radarRevisado.social : 0,
+        estresse: Number.isFinite(radarRevisado.estresse) ? radarRevisado.estresse : 0
+      },
+
+      metricas: {
+        peso: val("peso"),
+        bf: gorduraAtual,
+        massa_magra: "",
+        cintura: val("cintura"),
+        rcq: val("rcq"),
+        rce: val("rce"),
+        altura: val("altura")
+      },
+
+      perimetria: {
+        peito: val("torax"),
+        cintura: val("cintura"),
+        abdome: val("abdomen"),
+        quadril: val("quadril"),
+        braco: mediaCampos("braco-direito", "braco-esquerdo"),
+        coxa: mediaCampos("coxa-direita", "coxa-esquerda"),
+        panturrilha: val("panturrilha")
+      },
+
+      dobras: {
+        tricipital: val("dobra-triceps"),
+        subescapular: val("dobra-subescapular"),
+        peitoral: val("dobra-peitoral"),
+        axilar_media: val("dobra-axilar"),
+        suprailiaca: val("dobra-suprailiaca"),
+        abdominal: val("dobra-abdominal"),
+        coxa: val("dobra-coxa"),
+        panturrilha: ""
+      },
+
+      analise: {
+        leitura: val("diag-leitura"),
+        sintese: val("diag-sintese"),
+        aderencia: val("acomp-aderencia"),
+        ambiente: val("foco-ambiente"),
+        sabotadores: firstFilled(val("diag-gargalo"), val("gap1-causa")),
+        leitura_comportamental: val("diag-sintese"),
+        avanco_principal: "",
+        gargalo_principal: val("diag-gargalo"),
+        prioridade: val("diag-prioridade")
+      },
+
+      direcionamento: {
+        manter: "",
+        ajustar: "",
+        foco: firstFilled(val("foco-gap"), val("diag-prioridade")),
+        meta: firstFilled(val("foco-habito"), document.getElementById("comb-proxima-sessao")?.value || "")
+      },
+
+      exames: {},
+      testes: buildTestesNormalizados(),
+
+      meta_trackion: {
+        tipo_sessao: sessaoTipo,
+        protocolo_aplicado: sessaoProtocolo,
+        combinados: {
+          plano_enviado: checked("comb-plano-enviado"),
+          termo_assinado: checked("comb-termo"),
+          checkin_explicado: checked("comb-checkin"),
+          proxima_sessao: document.getElementById("comb-proxima-sessao")?.value || "",
+          protocolo_aplicado_confirmado: val("comb-protocolo-aplicado")
+        }
+      }
+    };
+  }
+
+  function upsertAvaliacaoAtualNoCliente(clienteObj, avaliacaoNormalizada) {
+    const avaliacoes = ensureArray(clienteObj.avaliacoes);
+
+    const sameSessionIndex = avaliacoes.findIndex((item) => {
+      const mesmaData = String(item?.data || "") === String(avaliacaoNormalizada.data || "");
+      const mesmoProtocolo = String(item?.protocolo || "") === String(avaliacaoNormalizada.protocolo || "");
+      return mesmaData && mesmoProtocolo;
+    });
+
+    if (sameSessionIndex >= 0) {
+      const existente = avaliacoes[sameSessionIndex];
+      avaliacoes[sameSessionIndex] = {
+        ...existente,
+        ...avaliacaoNormalizada,
+        pilares: { ...(existente?.pilares || {}), ...(avaliacaoNormalizada.pilares || {}) },
+        metricas: { ...(existente?.metricas || {}), ...(avaliacaoNormalizada.metricas || {}) },
+        perimetria: { ...(existente?.perimetria || {}), ...(avaliacaoNormalizada.perimetria || {}) },
+        dobras: { ...(existente?.dobras || {}), ...(avaliacaoNormalizada.dobras || {}) },
+        analise: { ...(existente?.analise || {}), ...(avaliacaoNormalizada.analise || {}) },
+        direcionamento: { ...(existente?.direcionamento || {}), ...(avaliacaoNormalizada.direcionamento || {}) },
+        exames: { ...(existente?.exames || {}), ...(avaliacaoNormalizada.exames || {}) },
+        testes: Array.isArray(avaliacaoNormalizada.testes) && avaliacaoNormalizada.testes.length
+          ? avaliacaoNormalizada.testes
+          : (existente?.testes || [])
+      };
+    } else {
+      avaliacoes.push(avaliacaoNormalizada);
+    }
+
+    avaliacoes.sort((a, b) => new Date(a?.data || 0) - new Date(b?.data || 0));
+    clienteObj.avaliacoes = avaliacoes;
+    return clienteObj;
+  }
+
+  function upsertTimelineEvento(clienteObj, evento) {
+    clienteObj = ensureTimelineStructure(clienteObj);
+
+    const existe = clienteObj.timeline.findIndex((item) => {
+      return (
+        String(item?.tipo || "") === String(evento?.tipo || "") &&
+        String(item?.data || "") === String(evento?.data || "") &&
+        String(item?.descricao || "") === String(evento?.descricao || "")
+      );
+    });
+
+    if (existe === -1) {
+      clienteObj.timeline.unshift(evento);
+    }
+
+    return clienteObj;
+  }
+
   function buildAvaliacaoHistorica(sessao, avaliacao) {
     return {
       data: sessao.data || new Date().toISOString(),
@@ -862,6 +1115,15 @@ window.ZALancamentos = (() => {
       buildAvaliacaoHistorica(sessaoAtual, avaliacao)
     );
 
+    const avaliacaoNormalizada = buildAvaliacaoNormalizada();
+    clienteAtualizado = upsertAvaliacaoAtualNoCliente(clienteAtualizado, avaliacaoNormalizada);
+
+    clienteAtualizado = upsertTimelineEvento(clienteAtualizado, {
+      tipo: "avaliacao",
+      data: avaliacaoNormalizada.data || new Date().toISOString(),
+      descricao: `Avaliação registrada. Protocolo: ${avaliacaoNormalizada.protocolo || "não definido"}.`
+    });
+
     const ok = updateCliente(clienteAtualizado);
     if (!ok) {
       showFeedback("Não foi possível salvar sessão e avaliação.", "Erro", "⚠");
@@ -870,7 +1132,7 @@ window.ZALancamentos = (() => {
 
     cliente = clienteAtualizado;
     renderSessaoEAvaliacao();
-    await syncAndHandle("Sessão e avaliação salvas com sucesso. Histórico atualizado também.");
+    await syncAndHandle("Sessão e avaliação salvas com sucesso. Avaliação principal atualizada também.");
   }
 
   function renderAnaliseCaso() {
@@ -979,6 +1241,31 @@ window.ZALancamentos = (() => {
       buildRadarHistorico(radarRevisado, tipoHistorico)
     );
 
+    const avaliacaoNormalizada = buildAvaliacaoNormalizada();
+    avaliacaoNormalizada.analise = {
+      ...avaliacaoNormalizada.analise,
+      leitura: val("diag-leitura"),
+      sintese: val("diag-sintese"),
+      ambiente: val("foco-ambiente"),
+      sabotadores: firstFilled(val("diag-gargalo"), val("gap1-causa")),
+      gargalo_principal: val("diag-gargalo"),
+      prioridade: val("diag-prioridade")
+    };
+
+    avaliacaoNormalizada.direcionamento = {
+      ...avaliacaoNormalizada.direcionamento,
+      foco: firstFilled(val("foco-gap"), val("diag-prioridade")),
+      meta: firstFilled(val("foco-habito"), document.getElementById("comb-proxima-sessao")?.value || "")
+    };
+
+    clienteAtualizado = upsertAvaliacaoAtualNoCliente(clienteAtualizado, avaliacaoNormalizada);
+
+    clienteAtualizado = upsertTimelineEvento(clienteAtualizado, {
+      tipo: "analise",
+      data: avaliacaoNormalizada.data || new Date().toISOString(),
+      descricao: `Análise do caso atualizada. Gargalo principal: ${val("diag-gargalo") || "não informado"}.`
+    });
+
     const ok = updateCliente(clienteAtualizado);
     if (!ok) {
       showFeedback("Não foi possível salvar a análise do caso.", "Erro", "⚠");
@@ -987,7 +1274,7 @@ window.ZALancamentos = (() => {
 
     cliente = clienteAtualizado;
     renderAnaliseCaso();
-    await syncAndHandle("Análise do caso salva com sucesso. Gaps atualizados automaticamente pelo radar.");
+    await syncAndHandle("Análise do caso salva com sucesso. Avaliação principal atualizada também.");
   }
 
   function renderAcompanhamentos() {
@@ -1002,7 +1289,7 @@ window.ZALancamentos = (() => {
     }
 
     if (!acompanhamentos.length) {
-      lista.innerHTML = `<div class="cliente-placeholder-box">Nenhum acompanhamento salvo ainda.</div>`;
+      lista.innerHTML = `<div class="empty-state">Nenhum acompanhamento salvo ainda.</div>`;
       return;
     }
 
@@ -1048,12 +1335,24 @@ window.ZALancamentos = (() => {
 
     acompanhamentos.push(novo);
 
-    const clienteAtualizado = {
+    let clienteAtualizado = {
       ...cliente,
       acompanhamentos,
       acompanhamentoUpdatedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
+    const descricaoTimeline = [
+      novo.evolucao ? `Evolução: ${novo.evolucao}` : "",
+      novo.dificuldades ? `Dificuldades: ${novo.dificuldades}` : "",
+      novo.ajustes ? `Ajustes: ${novo.ajustes}` : ""
+    ].filter(Boolean).join(" | ");
+
+    clienteAtualizado = upsertTimelineEvento(clienteAtualizado, {
+      tipo: "acompanhamento",
+      data: novo.data || new Date().toISOString(),
+      descricao: descricaoTimeline || "Acompanhamento registrado no sistema."
+    });
 
     const ok = updateCliente(clienteAtualizado);
     if (!ok) {
