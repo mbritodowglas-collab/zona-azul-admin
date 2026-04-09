@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const perimetriaPlanejamento = planejamento.perimetria || {};
   const examesPlanejamento = planejamento.exames || {};
   const profissionalPlanejamento = planejamento.profissional || {};
+  const dobrasPlanejamento = planejamento.dobras || {};
+  const testesPlanejamento = planejamento.testes || [];
 
   const PROFISSIONAIS = {
     marcio: {
@@ -184,15 +186,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     `;
   }
 
-  function perimetriaCard(label, value) {
-    return `
-      <div class="perimetria-item">
-        <span>${label}</span>
-        <strong>${String(value).includes("cm") ? value : `${value} cm`}</strong>
-      </div>
-    `;
-  }
-
   function exameCard(label, valor, referencia = "—", observacao = "—") {
     return `
       <div class="summary-item">
@@ -202,6 +195,15 @@ document.addEventListener("DOMContentLoaded", async () => {
           Referência: ${referencia}<br>
           Observação: ${observacao}
         </div>
+      </div>
+    `;
+  }
+
+  function perimetriaCard(label, value) {
+    return `
+      <div class="perimetria-item">
+        <span>${label}</span>
+        <strong>${String(value).includes("cm") ? value : `${value} cm`}</strong>
       </div>
     `;
   }
@@ -241,14 +243,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const partes = [];
 
-    if (asNumber(pesoAtual, 0) > 0) {
-      partes.push("Já existe registro de peso no relatório");
-    }
-
-    if (asNumber(cinturaAtual, 0) > 0) {
-      partes.push("há medida de cintura lançada");
-    }
-
+    if (asNumber(pesoAtual, 0) > 0) partes.push("Já existe registro de peso no relatório");
+    if (asNumber(cinturaAtual, 0) > 0) partes.push("há medida de cintura lançada");
     if (asNumber(rcqAtual, 0) > 0 || asNumber(rceAtual, 0) > 0) {
       partes.push("e já há base inicial para leitura de distribuição corporal");
     }
@@ -272,6 +268,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     return abertura + fechamento;
+  }
+
+  function buildSimpleStatusHTML(title, filledCount, totalCount, protocolo, extra = "") {
+    const comparativo = filledCount >= 2 ? "Parcial" : "Muito limitado";
+
+    return `
+      <div class="status-list">
+        <div class="status-row">
+          <span>Protocolo usado</span>
+          <strong>${getProtocolDisplayName(protocolo)}</strong>
+        </div>
+        <div class="status-row">
+          <span>${title}</span>
+          <strong>${filledCount} de ${totalCount}</strong>
+        </div>
+        <div class="status-row">
+          <span>Comparativo disponível</span>
+          <strong>${comparativo}</strong>
+        </div>
+        <div class="status-row">
+          <span>Leitura do bloco</span>
+          <strong>${extra || "Em construção"}</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  function buildSimpleReading(filledCount, totalCount, baseText) {
+    if (filledCount === 0) {
+      return "Ainda não há lançamentos suficientes para leitura automática deste bloco.";
+    }
+    if (filledCount < totalCount) {
+      return `${baseText} O bloco já possui dados parciais, mas ainda depende de novos lançamentos para uma leitura comparativa mais robusta.`;
+    }
+    return `${baseText} O conjunto de dados atual já permite uma leitura mais consistente deste bloco.`;
   }
 
   function getLegacyPrePilares() {
@@ -303,6 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const direcao = raw.direcionamento || raw.proximoCiclo || {};
     const perimetria = raw.perimetria || {};
     const exames = raw.exames || {};
+    const dobras = raw.dobras || {};
     const testes = Array.isArray(raw.testes) ? raw.testes : [];
 
     return {
@@ -343,6 +375,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         braco: firstFilled(perimetria.braco, raw.braco),
         coxa: firstFilled(perimetria.coxa, raw.coxa),
         panturrilha: firstFilled(perimetria.panturrilha, raw.panturrilha)
+      },
+
+      dobras: {
+        tricipital: firstFilled(dobras.tricipital, raw.tricipital),
+        subescapular: firstFilled(dobras.subescapular, raw.subescapular),
+        peitoral: firstFilled(dobras.peitoral, raw.peitoral),
+        axilar_media: firstFilled(dobras.axilar_media, raw.axilar_media),
+        suprailiaca: firstFilled(dobras.suprailiaca, raw.suprailiaca),
+        abdominal: firstFilled(dobras.abdominal, raw.abdominal),
+        coxa: firstFilled(dobras.coxa, raw.coxa_dobra, raw.coxa),
+        panturrilha: firstFilled(dobras.panturrilha, raw.panturrilha_dobra, raw.panturrilha)
       },
 
       analise: {
@@ -449,8 +492,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       focoProximoCiclo: firstFilled(relatorioCompleto.focoProximoCiclo, planejamento.focoProximoCiclo, estrategia.focoCentral),
       metaPrincipal: firstFilled(relatorioCompleto.metaPrincipal, planejamento.metaPrincipal, estrategia.objetivo30d, cliente.objetivo),
       perimetria: perimetriaPlanejamento,
+      dobras: dobrasPlanejamento,
       exames: examesPlanejamento || relatorioCompleto.exames || cliente.exames || {},
-      testes: Array.isArray(planejamento.testes) ? planejamento.testes : []
+      testes: Array.isArray(testesPlanejamento) ? testesPlanejamento : []
     }, "reavaliacao");
 
     const legacyReavaliacoes = Array.isArray(cliente.reavaliacoes)
@@ -554,13 +598,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const hoje = formatDateBR(new Date());
   text("report-data-geracao", hoje);
-  text("report-data-geracao-2", hoje);
   text("report-fase-chip", `Fase atual: ${faseCliente}`);
   text("report-objetivo-chip", `Objetivo: ${objetivoCliente}`);
   text("report-cliente-meta-nome", nomeCliente);
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
-  text("report-cliente-meta-fase-side", faseCliente);
 
   const voltarLink = document.getElementById("voltar-cliente-link");
   if (voltarLink) {
@@ -568,89 +610,63 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   text("summary-objetivo", objetivoCliente);
-  text(
-    "summary-avanco",
-    firstFilled(avaliacaoAtual.analise.avanco_principal, "Leitura do avanço ainda não registrada.")
-  );
-  text(
-    "summary-gargalo",
-    firstFilled(avaliacaoAtual.analise.gargalo_principal, "Gargalo principal ainda não registrado.")
-  );
-  text(
-    "summary-prioridade",
-    firstFilled(avaliacaoAtual.analise.prioridade, avaliacaoAtual.direcionamento.foco, "Prioridade do próximo ciclo ainda não definida.")
-  );
+  text("summary-avanco", firstFilled(avaliacaoAtual.analise.avanco_principal, "Leitura do avanço ainda não registrada."));
+  text("summary-gargalo", firstFilled(avaliacaoAtual.analise.gargalo_principal, "Gargalo principal ainda não registrado."));
+  text("summary-prioridade", firstFilled(avaliacaoAtual.analise.prioridade, avaliacaoAtual.direcionamento.foco, "Prioridade do próximo ciclo ainda não definida."));
 
   const protocoloFisico = String(firstFilled(avaliacaoAtual.protocolo, "")).toLowerCase();
+  const isMarinha = protocoloFisico.includes("marinha");
+  const usesPerimetria = protocoloFisico.includes("perimetria") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
+  const usesDobras = protocoloFisico.includes("dobras") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
+  const usesTestes = protocoloFisico.includes("teste") || protocoloFisico.includes("funcional") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
 
   const pesoAnterior = firstFilled(avaliacaoAnterior?.metricas?.peso, 0);
   const pesoAtual = firstFilled(avaliacaoAtual.metricas.peso, 0);
-
   const bfAnterior = firstFilled(avaliacaoAnterior?.metricas?.bf, 0);
   const bfAtual = firstFilled(avaliacaoAtual.metricas.bf, 0);
-
   const massaAnterior = firstFilled(avaliacaoAnterior?.metricas?.massa_magra, 0);
   const massaAtual = firstFilled(avaliacaoAtual.metricas.massa_magra, 0);
-
   const cinturaAnterior = firstFilled(avaliacaoAnterior?.metricas?.cintura, 0);
   const cinturaAtual = firstFilled(avaliacaoAtual.metricas.cintura, 0);
-
   const rcqAnterior = firstFilled(avaliacaoAnterior?.metricas?.rcq, 0);
   const rcqAtual = firstFilled(avaliacaoAtual.metricas.rcq, 0);
-
   const rceAnterior = firstFilled(avaliacaoAnterior?.metricas?.rce, 0);
   const rceAtual = firstFilled(avaliacaoAtual.metricas.rce, 0);
-
-  const isMarinha = protocoloFisico.includes("marinha");
 
   const indicadores = [
     {
       label: "Peso",
       status: asNumber(pesoAtual, 0) > 0 ? "filled" : "empty",
-      html: asNumber(pesoAtual, 0) > 0
-        ? metricCard("Peso", pesoAtual, pesoAnterior, " kg")
-        : metricCardEmpty("Peso")
+      html: asNumber(pesoAtual, 0) > 0 ? metricCard("Peso", pesoAtual, pesoAnterior, " kg") : metricCardEmpty("Peso")
     },
     {
       label: "BF",
       status: asNumber(bfAtual, 0) > 0 ? "filled" : "empty",
-      html: asNumber(bfAtual, 0) > 0
-        ? metricCard("BF", bfAtual, bfAnterior, "%")
-        : metricCardEmpty("BF")
+      html: asNumber(bfAtual, 0) > 0 ? metricCard("BF", bfAtual, bfAnterior, "%") : metricCardEmpty("BF")
     },
     {
       label: "Cintura",
       status: asNumber(cinturaAtual, 0) > 0 ? "filled" : "empty",
-      html: asNumber(cinturaAtual, 0) > 0
-        ? metricCard("Cintura", cinturaAtual, cinturaAnterior, " cm")
-        : metricCardEmpty("Cintura")
+      html: asNumber(cinturaAtual, 0) > 0 ? metricCard("Cintura", cinturaAtual, cinturaAnterior, " cm") : metricCardEmpty("Cintura")
     },
     {
       label: "RCQ",
       status: asNumber(rcqAtual, 0) > 0 ? "filled" : "empty",
-      html: asNumber(rcqAtual, 0) > 0
-        ? metricCard("RCQ", rcqAtual, rcqAnterior, "")
-        : metricCardEmpty("RCQ")
+      html: asNumber(rcqAtual, 0) > 0 ? metricCard("RCQ", rcqAtual, rcqAnterior, "") : metricCardEmpty("RCQ")
     },
     {
       label: "RCE",
       status: asNumber(rceAtual, 0) > 0 ? "filled" : "empty",
-      html: asNumber(rceAtual, 0) > 0
-        ? metricCard("RCE", rceAtual, rceAnterior, "")
-        : metricCardEmpty("RCE")
+      html: asNumber(rceAtual, 0) > 0 ? metricCard("RCE", rceAtual, rceAnterior, "") : metricCardEmpty("RCE")
     },
     {
       label: "Massa magra",
-      status: isMarinha
-        ? "na"
-        : (asNumber(massaAtual, 0) > 0 ? "filled" : "empty"),
+      status: isMarinha ? "na" : (asNumber(massaAtual, 0) > 0 ? "filled" : "empty"),
       html: isMarinha
         ? metricCardNotApplicable("Massa magra")
-        : (
-            asNumber(massaAtual, 0) > 0
-              ? metricCard("Massa magra", massaAtual, massaAnterior, " kg")
-              : metricCardEmpty("Massa magra")
-          )
+        : (asNumber(massaAtual, 0) > 0
+            ? metricCard("Massa magra", massaAtual, massaAnterior, " kg")
+            : metricCardEmpty("Massa magra"))
     }
   ];
 
@@ -708,7 +724,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const radarCanvas = document.getElementById("radar-chart");
   const radarAtual = avaliacaoAtual.pilares || {};
   const radarAnterior = avaliacaoAnterior?.pilares || null;
-
   const hasRadarAtual = Object.values(radarAtual).some((v) => Number.isFinite(v) && v > 0);
   const hasRadarAnterior = radarAnterior && Object.values(radarAnterior).some((v) => Number.isFinite(v) && v > 0);
 
@@ -820,89 +835,188 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   } else if (evolucaoCanvas?.parentElement) {
-    evolucaoCanvas.parentElement.innerHTML = createEmptyBox();
+    evolucaoCanvas.parentElement.innerHTML = createEmptyBox("Ainda não há histórico suficiente para este gráfico.");
   }
 
+  const perimetriaSection = document.getElementById("perimetria-section");
   const perimetriaGrid = document.getElementById("perimetria-grid");
-  if (perimetriaGrid) {
+  if (perimetriaSection && perimetriaGrid) {
     const perimetriaAtual = avaliacaoAtual.perimetria || {};
     const items = Object.entries(perimetriaAtual).filter(([, value]) => value !== "—" && hasContent(value));
 
-    if (!items.length) {
-      perimetriaGrid.innerHTML = createEmptyBox();
+    if (usesPerimetria) {
+      perimetriaSection.classList.remove("hidden");
+      perimetriaGrid.innerHTML = items.length
+        ? items.map(([key, value]) => perimetriaCard(toTitle(key), value)).join("")
+        : createEmptyBox();
     } else {
-      perimetriaGrid.innerHTML = items
-        .map(([key, value]) => perimetriaCard(toTitle(key), value))
-        .join("");
+      perimetriaSection.classList.add("hidden");
     }
   }
 
-  text(
-    "diagnostico-leitura",
-    firstFilled(avaliacaoAtual.analise.leitura, "Ainda não há leitura técnica registrada.")
-  );
+  const dobrasSection = document.getElementById("dobras-section");
+  const dobrasGrid = document.getElementById("dobras-grid");
+  const dobrasStatusContent = document.getElementById("dobras-status-content");
+  const dobrasReadingContent = document.getElementById("dobras-reading-content");
 
-  text(
-    "diagnostico-sintese",
-    firstFilled(avaliacaoAtual.analise.sintese, "Ainda não há síntese diagnóstica.")
-  );
+  const dobrasMap = [
+    { key: "tricipital", label: "Tricipital" },
+    { key: "subescapular", label: "Subescapular" },
+    { key: "peitoral", label: "Peitoral" },
+    { key: "axilar_media", label: "Axilar média" },
+    { key: "suprailiaca", label: "Suprailíaca" },
+    { key: "abdominal", label: "Abdominal" },
+    { key: "coxa", label: "Coxa" },
+    { key: "panturrilha", label: "Panturrilha" }
+  ];
 
-  text(
-    "behavior-aderencia",
-    firstFilled(avaliacaoAtual.analise.aderencia, "—")
-  );
+  if (dobrasSection && dobrasGrid && dobrasStatusContent && dobrasReadingContent) {
+    if (usesDobras) {
+      dobrasSection.classList.remove("hidden");
 
-  text(
-    "behavior-ambiente",
-    firstFilled(avaliacaoAtual.analise.ambiente, "—")
-  );
+      const dobrasAtual = avaliacaoAtual.dobras || {};
+      const dobrasAnterior = avaliacaoAnterior?.dobras || {};
 
-  text(
-    "behavior-sabotadores",
-    firstFilled(avaliacaoAtual.analise.sabotadores, "—")
-  );
+      const dobrasCards = dobrasMap.map((item) => {
+        const atual = firstFilled(dobrasAtual[item.key], 0);
+        const anterior = firstFilled(dobrasAnterior[item.key], 0);
 
-  text(
-    "behavior-leitura",
-    firstFilled(avaliacaoAtual.analise.leitura_comportamental, "Ainda não há leitura comportamental registrada.")
-  );
+        if (asNumber(atual, 0) > 0) {
+          return {
+            status: "filled",
+            html: metricCard(item.label, atual, anterior, " mm")
+          };
+        }
 
-  text(
-    "next-manter",
-    firstFilled(avaliacaoAtual.direcionamento.manter, "Ainda não definido")
-  );
+        return {
+          status: "empty",
+          html: metricCardEmpty(item.label)
+        };
+      });
 
-  text(
-    "next-ajustar",
-    firstFilled(avaliacaoAtual.direcionamento.ajustar, "Ainda não definido")
-  );
+      dobrasGrid.innerHTML = dobrasCards.map((item) => item.html).join("");
 
-  text(
-    "next-foco",
-    firstFilled(avaliacaoAtual.direcionamento.foco, "Ainda não definido")
-  );
+      const dobrasFilled = countFilledIndicadores(dobrasCards);
+      dobrasStatusContent.innerHTML = buildSimpleStatusHTML(
+        "Dobras lançadas",
+        dobrasFilled,
+        dobrasCards.length,
+        protocoloFisico,
+        dobrasFilled >= 4 ? "Parcial" : "Inicial"
+      );
 
-  text(
-    "next-meta",
-    firstFilled(avaliacaoAtual.direcionamento.meta, "Ainda não definida")
-  );
+      dobrasReadingContent.innerHTML = `
+        <div class="auto-reading-text">
+          ${buildSimpleReading(
+            dobrasFilled,
+            dobrasCards.length,
+            "As dobras cutâneas já começam a fornecer uma base de leitura da composição corporal."
+          )}
+        </div>
+      `;
+    } else {
+      dobrasSection.classList.add("hidden");
+    }
+  }
+
+  const testesSection = document.getElementById("testes-section");
+  const testesGrid = document.getElementById("testes-grid");
+  const testesStatusContent = document.getElementById("testes-status-content");
+  const testesReadingContent = document.getElementById("testes-reading-content");
+
+  const testesBase = Array.isArray(avaliacaoAtual.testes) && avaliacaoAtual.testes.length
+    ? avaliacaoAtual.testes
+    : [];
+
+  if (testesSection && testesGrid && testesStatusContent && testesReadingContent) {
+    if (usesTestes) {
+      testesSection.classList.remove("hidden");
+
+      const testesCards = testesBase.length
+        ? testesBase.map((item) => {
+            const valor = firstFilled(item.valor, item.resultado, item.descricao, "");
+            return {
+              status: hasContent(valor) ? "filled" : "empty",
+              html: hasContent(valor)
+                ? `
+                  <div class="metric-card">
+                    <span class="metric-label">${firstFilled(item.nome, item.titulo, "Teste")}</span>
+                    <div class="metric-values is-single">
+                      <div>
+                        <small>Resultado</small>
+                        <strong>${valor}</strong>
+                      </div>
+                    </div>
+                    <div class="metric-helper">${firstFilled(item.classificacao, item.observacao, "Teste registrado")}</div>
+                  </div>
+                `
+                : metricCardEmpty(firstFilled(item.nome, item.titulo, "Teste"))
+            };
+          })
+        : [
+            { status: "empty", html: metricCardEmpty("Teste funcional") },
+            { status: "empty", html: metricCardEmpty("Flexibilidade") },
+            { status: "empty", html: metricCardEmpty("Resistência muscular") },
+            { status: "empty", html: metricCardEmpty("Capacidade cardiorrespiratória") }
+          ];
+
+      testesGrid.innerHTML = testesCards.map((item) => item.html).join("");
+
+      const testesFilled = countFilledIndicadores(testesCards);
+      testesStatusContent.innerHTML = buildSimpleStatusHTML(
+        "Testes lançados",
+        testesFilled,
+        testesCards.length,
+        protocoloFisico,
+        testesFilled >= 2 ? "Parcial" : "Inicial"
+      );
+
+      testesReadingContent.innerHTML = `
+        <div class="auto-reading-text">
+          ${buildSimpleReading(
+            testesFilled,
+            testesCards.length,
+            "Os testes físicos já começam a oferecer uma leitura funcional complementar do caso."
+          )}
+        </div>
+      `;
+    } else {
+      testesSection.classList.add("hidden");
+    }
+  }
+
+  text("diagnostico-leitura", firstFilled(avaliacaoAtual.analise.leitura, "Ainda não há leitura técnica registrada."));
+  text("diagnostico-sintese", firstFilled(avaliacaoAtual.analise.sintese, "Ainda não há síntese diagnóstica."));
+  text("behavior-aderencia", firstFilled(avaliacaoAtual.analise.aderencia, "—"));
+  text("behavior-ambiente", firstFilled(avaliacaoAtual.analise.ambiente, "—"));
+  text("behavior-sabotadores", firstFilled(avaliacaoAtual.analise.sabotadores, "—"));
+  text("behavior-leitura", firstFilled(avaliacaoAtual.analise.leitura_comportamental, "Ainda não há leitura comportamental registrada."));
+  text("next-manter", firstFilled(avaliacaoAtual.direcionamento.manter, "Ainda não definido"));
+  text("next-ajustar", firstFilled(avaliacaoAtual.direcionamento.ajustar, "Ainda não definido"));
+  text("next-foco", firstFilled(avaliacaoAtual.direcionamento.foco, "Ainda não definido"));
+  text("next-meta", firstFilled(avaliacaoAtual.direcionamento.meta, "Ainda não definida"));
 
   const examesSection = document.getElementById("exames-section");
   const examesGrid = document.getElementById("exames-grid");
   const examesEntries = Object.entries(avaliacaoAtual.exames || {}).filter(([, value]) => hasContent(value));
 
-  if (examesSection && examesGrid && examesEntries.length) {
-    examesGrid.innerHTML = examesEntries.map(([key, value]) => {
-      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-        return exameCard(
-          toTitle(key),
-          firstFilled(value.valor, "—"),
-          firstFilled(value.referencia, "—"),
-          firstFilled(value.observacao, "Sem observação")
-        );
-      }
-      return exameCard(toTitle(key), value, "—", "Sem observação");
-    }).join("");
+  if (examesSection && examesGrid) {
+    if (examesEntries.length) {
+      examesSection.classList.remove("hidden");
+      examesGrid.innerHTML = examesEntries.map(([key, value]) => {
+        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+          return exameCard(
+            toTitle(key),
+            firstFilled(value.valor, "—"),
+            firstFilled(value.referencia, "—"),
+            firstFilled(value.observacao, "Sem observação")
+          );
+        }
+        return exameCard(toTitle(key), value, "—", "Sem observação");
+      }).join("");
+    } else {
+      examesSection.classList.add("hidden");
+    }
   }
 
   const timelineList = document.getElementById("timeline-list");
@@ -951,18 +1065,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
       </div>
     `).join("");
-  }
-
-  const perimetriaSection = document.getElementById("perimetria-section");
-  if (perimetriaSection) {
-    const shouldShowPerimetria =
-      !protocoloFisico.includes("marinha") &&
-      Object.values(avaliacaoAtual.perimetria || {}).some(hasContent);
-
-    perimetriaSection.classList.toggle("hidden", !shouldShowPerimetria);
-  }
-
-  if (examesSection) {
-    examesSection.classList.toggle("hidden", !examesEntries.length);
   }
 });
