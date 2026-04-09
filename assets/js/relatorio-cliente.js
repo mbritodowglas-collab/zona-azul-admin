@@ -160,6 +160,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     `;
   }
 
+  function metricCardEmpty(label, message = "Ainda não lançado") {
+    return `
+      <div class="metric-card is-empty">
+        <span class="metric-label">${label}</span>
+        <div class="metric-values is-single">
+          <div class="metric-empty-text">${message}</div>
+        </div>
+        <div class="metric-helper">Aguardando preenchimento para comparação.</div>
+      </div>
+    `;
+  }
+
+  function metricCardNotApplicable(label, message = "Não aplicável a este protocolo") {
+    return `
+      <div class="metric-card is-na">
+        <span class="metric-label">${label}</span>
+        <div class="metric-values is-single">
+          <div class="metric-empty-text">${message}</div>
+        </div>
+        <div class="metric-helper">Este indicador não entra na leitura do protocolo atual.</div>
+      </div>
+    `;
+  }
+
   function perimetriaCard(label, value) {
     return `
       <div class="perimetria-item">
@@ -180,6 +204,74 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </div>
     `;
+  }
+
+  function getProtocolDisplayName(protocolo) {
+    const p = String(protocolo || "").toLowerCase();
+
+    if (!p) return "Não definido";
+    if (p.includes("marinha")) return "Marinha";
+    if (p.includes("perimetria")) return "Perimetria";
+    if (p.includes("completo")) return "Avaliação completa";
+    if (p.includes("dobras")) return "Dobras cutâneas";
+    if (p.includes("funcional")) return "Funcional";
+
+    return protocolo;
+  }
+
+  function countFilledIndicadores(indicadores) {
+    return indicadores.filter((item) => item.status === "filled").length;
+  }
+
+  function buildLeituraFisicaAutomatica({
+    pesoAtual,
+    bfAtual,
+    cinturaAtual,
+    rcqAtual,
+    rceAtual,
+    protocoloFisico,
+    filledCount,
+    totalCount
+  }) {
+    const protocolo = String(protocoloFisico || "").toLowerCase();
+
+    if (filledCount === 0) {
+      return "Ainda não há dados físicos lançados para gerar leitura automática deste bloco.";
+    }
+
+    const partes = [];
+
+    if (asNumber(pesoAtual, 0) > 0) {
+      partes.push("Já existe registro de peso no relatório");
+    }
+
+    if (asNumber(cinturaAtual, 0) > 0) {
+      partes.push("há medida de cintura lançada");
+    }
+
+    if (asNumber(rcqAtual, 0) > 0 || asNumber(rceAtual, 0) > 0) {
+      partes.push("e já há base inicial para leitura de distribuição corporal");
+    }
+
+    let abertura = partes.length
+      ? `${partes.join(", ")}.`
+      : "Há dados físicos parciais registrados no sistema.";
+
+    let fechamento = " A leitura comparativa completa dependerá do lançamento progressivo dos demais indicadores do protocolo atual.";
+
+    if (protocolo.includes("marinha")) {
+      fechamento = " Como o protocolo atual segue a lógica da Marinha, os indicadores mais coerentes para acompanhamento aqui são peso, cintura, RCQ, RCE e percentual de gordura quando disponível.";
+    }
+
+    if (filledCount >= Math.ceil(totalCount / 2)) {
+      fechamento = " O bloco já começa a oferecer uma leitura comparativa útil, mas ainda pode ganhar mais precisão conforme novos dados forem lançados.";
+    }
+
+    if (filledCount === totalCount) {
+      fechamento = " O conjunto atual de indicadores já permite uma leitura física mais completa dentro do protocolo utilizado.";
+    }
+
+    return abertura + fechamento;
   }
 
   function getLegacyPrePilares() {
@@ -388,7 +480,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     : buildAvaliacoesFromLegacy();
 
   const avaliacaoAtual = avaliacoes[avaliacoes.length - 1] || normalizeAvaliacao({}, "reavaliacao");
-
   let avaliacaoAnterior = avaliacoes.length > 1 ? avaliacoes[avaliacoes.length - 2] : null;
 
   const prePilares = getLegacyPrePilares();
@@ -461,7 +552,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const avatar = document.getElementById("report-avatar");
   if (avatar) avatar.textContent = initials(nomeCliente);
 
-  text("report-data-geracao", formatDateBR(new Date()));
+  const hoje = formatDateBR(new Date());
+  text("report-data-geracao", hoje);
+  text("report-data-geracao-2", hoje);
   text("report-fase-chip", `Fase atual: ${faseCliente}`);
   text("report-objetivo-chip", `Objetivo: ${objetivoCliente}`);
   text("report-cliente-meta-nome", nomeCliente);
@@ -508,40 +601,108 @@ document.addEventListener("DOMContentLoaded", async () => {
   const rceAnterior = firstFilled(avaliacaoAnterior?.metricas?.rce, 0);
   const rceAtual = firstFilled(avaliacaoAtual.metricas.rce, 0);
 
-  const mostrarMassaMagra =
-    hasContent(massaAtual) &&
-    asNumber(massaAtual, 0) > 0 &&
-    !protocoloFisico.includes("marinha");
+  const isMarinha = protocoloFisico.includes("marinha");
 
-  const metricCards = [];
-
-  if (hasContent(pesoAtual) && asNumber(pesoAtual, 0) > 0) {
-    metricCards.push(metricCard("Peso", pesoAtual, pesoAnterior, " kg"));
-  }
-
-  if (hasContent(bfAtual) && asNumber(bfAtual, 0) > 0) {
-    metricCards.push(metricCard("BF", bfAtual, bfAnterior, "%"));
-  }
-
-  if (mostrarMassaMagra) {
-    metricCards.push(metricCard("Massa magra", massaAtual, massaAnterior, " kg"));
-  }
-
-  if (hasContent(cinturaAtual) && asNumber(cinturaAtual, 0) > 0) {
-    metricCards.push(metricCard("Cintura", cinturaAtual, cinturaAnterior, " cm"));
-  }
-
-  if (hasContent(rcqAtual) && asNumber(rcqAtual, 0) > 0) {
-    metricCards.push(metricCard("RCQ", rcqAtual, rcqAnterior, ""));
-  }
-
-  if (hasContent(rceAtual) && asNumber(rceAtual, 0) > 0) {
-    metricCards.push(metricCard("RCE", rceAtual, rceAnterior, ""));
-  }
+  const indicadores = [
+    {
+      label: "Peso",
+      status: asNumber(pesoAtual, 0) > 0 ? "filled" : "empty",
+      html: asNumber(pesoAtual, 0) > 0
+        ? metricCard("Peso", pesoAtual, pesoAnterior, " kg")
+        : metricCardEmpty("Peso")
+    },
+    {
+      label: "BF",
+      status: asNumber(bfAtual, 0) > 0 ? "filled" : "empty",
+      html: asNumber(bfAtual, 0) > 0
+        ? metricCard("BF", bfAtual, bfAnterior, "%")
+        : metricCardEmpty("BF")
+    },
+    {
+      label: "Cintura",
+      status: asNumber(cinturaAtual, 0) > 0 ? "filled" : "empty",
+      html: asNumber(cinturaAtual, 0) > 0
+        ? metricCard("Cintura", cinturaAtual, cinturaAnterior, " cm")
+        : metricCardEmpty("Cintura")
+    },
+    {
+      label: "RCQ",
+      status: asNumber(rcqAtual, 0) > 0 ? "filled" : "empty",
+      html: asNumber(rcqAtual, 0) > 0
+        ? metricCard("RCQ", rcqAtual, rcqAnterior, "")
+        : metricCardEmpty("RCQ")
+    },
+    {
+      label: "RCE",
+      status: asNumber(rceAtual, 0) > 0 ? "filled" : "empty",
+      html: asNumber(rceAtual, 0) > 0
+        ? metricCard("RCE", rceAtual, rceAnterior, "")
+        : metricCardEmpty("RCE")
+    },
+    {
+      label: "Massa magra",
+      status: isMarinha
+        ? "na"
+        : (asNumber(massaAtual, 0) > 0 ? "filled" : "empty"),
+      html: isMarinha
+        ? metricCardNotApplicable("Massa magra")
+        : (
+            asNumber(massaAtual, 0) > 0
+              ? metricCard("Massa magra", massaAtual, massaAnterior, " kg")
+              : metricCardEmpty("Massa magra")
+          )
+    }
+  ];
 
   const metricsGrid = document.getElementById("metrics-grid");
   if (metricsGrid) {
-    metricsGrid.innerHTML = metricCards.length ? metricCards.join("") : createEmptyBox();
+    metricsGrid.innerHTML = indicadores.map((item) => item.html).join("");
+  }
+
+  const coletaStatusContent = document.getElementById("coleta-status-content");
+  if (coletaStatusContent) {
+    const preenchidos = countFilledIndicadores(indicadores);
+    const comparativoDisponivel = preenchidos >= 2 ? "Parcial" : "Muito limitado";
+    const proximaColeta = preenchidos >= 4 ? "Reavaliação estratégica" : "Completar indicadores físicos";
+
+    coletaStatusContent.innerHTML = `
+      <div class="status-list">
+        <div class="status-row">
+          <span>Protocolo usado</span>
+          <strong>${getProtocolDisplayName(protocoloFisico)}</strong>
+        </div>
+        <div class="status-row">
+          <span>Indicadores lançados</span>
+          <strong>${preenchidos} de ${indicadores.length}</strong>
+        </div>
+        <div class="status-row">
+          <span>Comparativo disponível</span>
+          <strong>${comparativoDisponivel}</strong>
+        </div>
+        <div class="status-row">
+          <span>Próxima coleta sugerida</span>
+          <strong>${proximaColeta}</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  const leituraFisicaContent = document.getElementById("leitura-fisica-content");
+  if (leituraFisicaContent) {
+    leituraFisicaContent.innerHTML = `
+      <div class="auto-reading-text">
+        ${buildLeituraFisicaAutomatica({
+          pesoAtual,
+          bfAtual,
+          cinturaAtual,
+          rcqAtual,
+          rceAtual,
+          protocoloFisico,
+          filledCount: countFilledIndicadores(indicadores),
+          totalCount: indicadores.length
+        })}
+      </div>
+    `;
   }
 
   const radarCanvas = document.getElementById("radar-chart");
