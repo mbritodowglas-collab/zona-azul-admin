@@ -43,6 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  const pre = cliente.preDiagnostico || leadRelacionado || {};
+
   const PROFISSIONAIS = {
     marcio: {
       nome: "Márcio Dowglas",
@@ -304,7 +306,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function buildAvaliacoesFromLegacy() {
-    const pre = cliente.preDiagnostico || leadRelacionado || {};
     const planejamento = cliente.planejamento || {};
     const relatorioCompleto = cliente.relatorioCompleto || {};
     const base = cliente.dadosBaseEditados || {};
@@ -409,7 +410,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }, "reavaliacao");
 
     const legacyReavaliacoes = Array.isArray(cliente.reavaliacoes)
-      ? cliente.reavaliacoes.map((item, index) =>
+      ? cliente.reavaliacoes.map((item) =>
           normalizeAvaliacao(
             {
               ...item,
@@ -423,11 +424,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         )
       : [];
 
-    const result = [avaliacaoBase, ...legacyReavaliacoes, avaliacaoAtual]
+    return [avaliacaoBase, ...legacyReavaliacoes, avaliacaoAtual]
       .filter(Boolean)
       .sort((a, b) => new Date(a.data || 0) - new Date(b.data || 0));
-
-    return result;
   }
 
   const avaliacoes = Array.isArray(cliente.avaliacoes) && cliente.avaliacoes.length
@@ -444,14 +443,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const acompanhamentos = Array.isArray(cliente.acompanhamentos) ? cliente.acompanhamentos : [];
   const timelineCliente = Array.isArray(cliente.timeline) ? cliente.timeline : [];
 
-  const nomeCliente = firstFilled(cliente.nome, pre?.nome, "Cliente");
-  const emailCliente = firstFilled(cliente.email, pre?.email, "");
+  const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
+  const emailCliente = firstFilled(cliente.email, pre.email, "");
   const objetivoCliente = firstFilled(
     avaliacaoAtual.objetivo,
     cliente.objetivo,
-    pre?.objetivo,
-    pre?.objetivo_principal,
-    pre?.objetivo_fisico
+    pre.objetivo,
+    pre.objetivo_principal,
+    pre.objetivo_fisico
   );
   const faseCliente = firstFilled(
     avaliacaoAtual.fase,
@@ -480,9 +479,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const reportMeta = firstFilled(
     cliente.dadosBaseEditados?.observacaoInicial,
-    pre?.rotina,
-    pre?.queixa_principal,
-    pre?.queixa,
+    pre.rotina,
+    pre.queixa_principal,
+    pre.queixa,
     cliente.objetivo,
     ""
   );
@@ -580,10 +579,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const metricsGrid = document.getElementById("metrics-grid");
-  const hasMetricasComparativas = metricCards.length > 0;
-
   if (metricsGrid) {
-    metricsGrid.innerHTML = hasMetricasComparativas
+    metricsGrid.innerHTML = metricCards.length
       ? metricCards.join("")
       : createEmptyBox();
   }
@@ -649,10 +646,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const evolucaoCanvas = document.getElementById("evolucao-chart");
-  let evolucao = avaliacoes
+  const evolucao = avaliacoes
     .filter((av) => hasContent(av.metricas?.peso) && asNumber(av.metricas?.peso, 0) > 0)
-    .map((av, index) => ({
-      data: firstFilled(av.data, `Registro ${index + 1}`),
+    .map((av) => ({
+      data: av.data,
       peso: asNumber(av.metricas?.peso, 0)
     }));
 
@@ -851,24 +848,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     `).join("");
   }
 
-  const hasLeituraTecnica =
-    hasContent(avaliacaoAtual.analise.leitura) ||
-    hasContent(avaliacaoAtual.analise.sintese);
-
-  const hasComportamento = [
-    avaliacaoAtual.analise.aderencia,
-    avaliacaoAtual.analise.ambiente,
-    avaliacaoAtual.analise.sabotadores,
-    avaliacaoAtual.analise.leitura_comportamental
-  ].some(hasContent);
-
-  const hasDirecionamento = [
-    avaliacaoAtual.direcionamento.manter,
-    avaliacaoAtual.direcionamento.ajustar,
-    avaliacaoAtual.direcionamento.foco,
-    avaliacaoAtual.direcionamento.meta
-  ].some(hasContent);
-
   const radarSection = document.getElementById("radar-section");
   if (radarSection) {
     radarSection.classList.toggle("hidden", false);
@@ -881,7 +860,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const perimetriaSection = document.getElementById("perimetria-section");
   if (perimetriaSection) {
-    const shouldShowPerimetria = !protocoloFisico.includes("marinha") && Object.values(avaliacaoAtual.perimetria || {}).some(hasContent);
+    const shouldShowPerimetria =
+      !protocoloFisico.includes("marinha") &&
+      Object.values(avaliacaoAtual.perimetria || {}).some(hasContent);
+
     perimetriaSection.classList.toggle("hidden", !shouldShowPerimetria);
   }
 
