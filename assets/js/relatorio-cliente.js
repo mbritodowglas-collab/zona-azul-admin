@@ -44,6 +44,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const pre = cliente.preDiagnostico || leadRelacionado || {};
+  const planejamento = cliente.planejamento || {};
+  const relatorioCompleto = cliente.relatorioCompleto || {};
+  const base = cliente.dadosBaseEditados || {};
+  const estrategia = planejamento.estrategia || {};
+  const diagnostico = planejamento.diagnostico || {};
+  const metricas = planejamento.metricas || {};
+  const habitos = planejamento.habitos || {};
+  const treino = planejamento.treino || {};
+  const cardio = planejamento.cardio || {};
+  const nutricional = planejamento.nutricional || {};
+  const radar = planejamento.radar || {};
+  const perimetriaPlanejamento = planejamento.perimetria || {};
+  const exames = planejamento.exames || relatorioCompleto.exames || cliente.exames || {};
+  const profissional = planejamento.profissional || {};
+  const acompanhamentos = Array.isArray(cliente.acompanhamentos) ? cliente.acompanhamentos : [];
+  const timelineCliente = Array.isArray(cliente.timeline) ? cliente.timeline : [];
+  const evolucaoPlanejamento = Array.isArray(planejamento.evolucao) ? planejamento.evolucao : [];
+  const reavaliacoes = Array.isArray(cliente.reavaliacoes) ? cliente.reavaliacoes : [];
 
   const PROFISSIONAIS = {
     marcio: {
@@ -111,7 +129,36 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
-  function createEmptyBox(texto = "Ainda não há lançamentos para este bloco.") {
+  function getObjetivo() {
+    return firstFilled(
+      estrategia.objetivo30d,
+      base.objetivo,
+      pre.objetivo,
+      pre.objetivo_principal,
+      pre.objetivo_fisico,
+      cliente.objetivo
+    );
+  }
+
+  function getFase() {
+    return firstFilled(
+      estrategia.fase,
+      cliente.fase_nome,
+      cliente.fase_atual,
+      cliente.fase,
+      "Fase não definida"
+    );
+  }
+
+  function getInitialMetric(...keys) {
+    for (const key of keys) {
+      const value = firstFilled(base[key], pre[key], cliente[key]);
+      if (value !== "—") return value;
+    }
+    return 0;
+  }
+
+  function createEmptyBox(texto) {
     return `<div class="empty-box">${texto}</div>`;
   }
 
@@ -135,7 +182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <strong>${atualNum}${suffix}</strong>
           </div>
           <div>
-            <small>Anterior</small>
+            <small>Inicial</small>
             <strong>${anteriorNum}${suffix}</strong>
           </div>
         </div>
@@ -160,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="summary-item">
         <span class="summary-label">${label}</span>
         <div class="summary-value">${valor}</div>
-        <div style="margin-top:10px; color:#64748b; font-size:13px; line-height:1.6;">
+        <div style="margin-top:10px; color: #64748b; font-size: 13px; line-height: 1.6;">
           Referência: ${referencia}<br>
           Observação: ${observacao}
         </div>
@@ -168,309 +215,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     `;
   }
 
-  function normalizeAvaliacao(raw = {}, fallbackTipo = "reavaliacao") {
-    const pilares = raw.pilares || raw.radar || {};
-    const metricas = raw.metricas || {};
-    const analise = raw.analise || {};
-    const direcao = raw.direcionamento || raw.proximoCiclo || {};
-    const perimetria = raw.perimetria || {};
-    const exames = raw.exames || {};
-    const testes = Array.isArray(raw.testes) ? raw.testes : [];
-
-    return {
-      id: raw.id || null,
-      tipo: raw.tipo || fallbackTipo,
-      data: raw.data || raw.createdAt || raw.updatedAt || null,
-      titulo: raw.titulo || null,
-      protocolo: raw.protocolo || raw.protocoloFisico || raw.protocolo_fisico || "",
-      resumo: raw.resumo || raw.descricao || null,
-
-      objetivo: firstFilled(
-        raw.objetivo,
-        raw.objetivo_principal,
-        raw.objetivo_fisico
-      ),
-
-      fase: firstFilled(raw.fase, raw.fase_atual, raw.fase_nome),
-
-      pilares: {
-        movimento: asNumber(firstFilled(
-          pilares.movimento,
-          pilares.treino,
-          raw.score_movimento,
-          raw.movimento
-        ), 0),
-        alimentacao: asNumber(firstFilled(
-          pilares.alimentacao,
-          pilares.dieta,
-          raw.score_alimentacao,
-          raw.alimentacao
-        ), 0),
-        sono: asNumber(firstFilled(
-          pilares.sono,
-          raw.score_sono,
-          raw.sono
-        ), 0),
-        proposito: asNumber(firstFilled(
-          pilares.proposito,
-          pilares.disciplina,
-          raw.score_proposito,
-          raw.proposito
-        ), 0),
-        social: asNumber(firstFilled(
-          pilares.social,
-          raw.score_social,
-          raw.social
-        ), 0),
-        estresse: asNumber(firstFilled(
-          pilares.estresse,
-          pilares.mental,
-          raw.score_estresse,
-          raw.estresse
-        ), 0)
-      },
-
-      metricas: {
-        peso: firstFilled(metricas.peso, raw.peso),
-        bf: firstFilled(metricas.bf, raw.bf, raw.percentual_gordura),
-        massa_magra: firstFilled(metricas.massa_magra, metricas.massa, raw.massaMagra, raw.massa),
-        cintura: firstFilled(metricas.cintura, raw.cintura),
-        rcq: firstFilled(metricas.rcq, raw.rcq),
-        rce: firstFilled(metricas.rce, raw.rce),
-        altura: firstFilled(metricas.altura, raw.altura)
-      },
-
-      perimetria: {
-        peito: firstFilled(perimetria.peito, raw.peito),
-        cintura: firstFilled(perimetria.cintura, raw.cintura),
-        abdome: firstFilled(perimetria.abdome, raw.abdome),
-        quadril: firstFilled(perimetria.quadril, raw.quadril),
-        braco: firstFilled(perimetria.braco, raw.braco),
-        coxa: firstFilled(perimetria.coxa, raw.coxa),
-        panturrilha: firstFilled(perimetria.panturrilha, raw.panturrilha)
-      },
-
-      analise: {
-        leitura: firstFilled(
-          analise.leitura,
-          raw.leituraTecnica,
-          raw.leitura
-        ),
-        sintese: firstFilled(
-          analise.sintese,
-          raw.sinteseDiagnostica,
-          raw.sintese
-        ),
-        aderencia: firstFilled(
-          analise.aderencia,
-          raw.aderencia
-        ),
-        ambiente: firstFilled(
-          analise.ambiente,
-          raw.ambiente
-        ),
-        sabotadores: firstFilled(
-          analise.sabotadores,
-          raw.sabotadores,
-          raw.maior_dificuldade
-        ),
-        leitura_comportamental: firstFilled(
-          analise.leitura_comportamental,
-          raw.leituraComportamental
-        ),
-        avanco_principal: firstFilled(
-          analise.avanco_principal,
-          raw.avancoPrincipal
-        ),
-        gargalo_principal: firstFilled(
-          analise.gargalo_principal,
-          raw.gargaloPrincipal
-        ),
-        prioridade: firstFilled(
-          analise.prioridade,
-          raw.prioridade,
-          raw.foco
-        )
-      },
-
-      direcionamento: {
-        manter: firstFilled(direcao.manter, raw.manter),
-        ajustar: firstFilled(direcao.ajustar, raw.ajustar),
-        foco: firstFilled(direcao.foco, raw.focoProximoCiclo, raw.foco),
-        meta: firstFilled(direcao.meta, raw.metaPrincipal, raw.meta)
-      },
-
-      exames,
-      testes
-    };
-  }
-
-  function buildAvaliacoesFromLegacy() {
-    const planejamento = cliente.planejamento || {};
-    const relatorioCompleto = cliente.relatorioCompleto || {};
-    const base = cliente.dadosBaseEditados || {};
-    const estrategia = planejamento.estrategia || {};
-    const diagnostico = planejamento.diagnostico || {};
-    const metricas = planejamento.metricas || {};
-    const habitos = planejamento.habitos || {};
-    const treino = planejamento.treino || {};
-    const cardio = planejamento.cardio || {};
-    const nutricional = planejamento.nutricional || {};
-    const radar = planejamento.radar || {};
-    const perimetriaPlanejamento = planejamento.perimetria || {};
-
-    const avaliacaoBase = normalizeAvaliacao({
-      id: "legacy-pre",
-      tipo: "pre_diagnostico",
-      data: firstFilled(pre.created_at, cliente.createdAt, cliente.data_inicio),
-      protocolo: pre.protocolo || "base",
-      objetivo: firstFilled(pre.objetivo, pre.objetivo_principal, pre.objetivo_fisico, cliente.objetivo),
-      fase: cliente.fase || cliente.fase_atual || cliente.fase_nome,
-      score_movimento: pre.score_movimento,
-      score_alimentacao: pre.score_alimentacao,
-      score_sono: pre.score_sono,
-      score_proposito: pre.score_proposito,
-      score_social: pre.score_social,
-      score_estresse: pre.score_estresse,
-      peso: firstFilled(base.peso, pre.peso, cliente.peso),
-      bf: firstFilled(base.bf, pre.bf, pre.percentual_gordura, cliente.bf),
-      massaMagra: firstFilled(base.massaMagra, pre.massaMagra, cliente.massaMagra),
-      cintura: firstFilled(base.cintura, pre.cintura, cliente.cintura),
-      rcq: firstFilled(base.rcq, pre.rcq, cliente.rcq),
-      rce: firstFilled(base.rce, pre.rce, cliente.rce),
-      altura: firstFilled(base.altura, pre.altura, cliente.altura),
-      ambiente: pre.ambiente,
-      sabotadores: firstFilled(pre.sabotadores, pre.maior_dificuldade),
-      aderencia: pre.aderencia,
-      leituraComportamental: pre.leituraComportamental,
-      leituraTecnica: pre.leituraTecnica,
-      sinteseDiagnostica: pre.sinteseDiagnostica,
-      avancoPrincipal: "Leitura inicial construída a partir do pré-diagnóstico.",
-      gargaloPrincipal: firstFilled(pre.dificuldade_principal, pre.maior_dificuldade, pre.queixa_principal),
-      prioridade: "Estruturar base inicial",
-      manter: "Manter engajamento e observação inicial do caso.",
-      ajustar: "Ajustar consistência e previsibilidade da rotina.",
-      focoProximoCiclo: "Construir base comportamental",
-      metaPrincipal: firstFilled(pre.meta_6_meses, cliente.objetivo),
-      perimetria: {
-        peito: base.peito || pre.peito,
-        cintura: base.cintura || pre.cintura,
-        abdome: base.abdome || pre.abdome,
-        quadril: base.quadril || pre.quadril,
-        braco: base.braco || pre.braco,
-        coxa: base.coxa || pre.coxa,
-        panturrilha: base.panturrilha || pre.panturrilha
-      }
-    }, "pre_diagnostico");
-
-    const avaliacaoAtual = normalizeAvaliacao({
-      id: "legacy-atual",
-      tipo: "reavaliacao",
-      data: firstFilled(cliente.updatedAt, new Date().toISOString()),
-      protocolo: firstFilled(
-        planejamento.protocoloFisico,
-        diagnostico.protocolo_fisico,
-        relatorioCompleto.protocoloFisico
-      ),
-      objetivo: firstFilled(estrategia.objetivo30d, base.objetivo, pre.objetivo, cliente.objetivo),
-      fase: firstFilled(estrategia.fase, cliente.fase_nome, cliente.fase_atual, cliente.fase),
-      radar: {
-        movimento: radar.movimento || radar.treino,
-        alimentacao: radar.alimentacao || radar.dieta,
-        sono: radar.sono,
-        proposito: radar.proposito || radar.disciplina,
-        social: radar.social,
-        estresse: radar.estresse || radar.mental
-      },
-      metricas: {
-        peso: metricas.peso || base.peso || pre.peso || cliente.peso,
-        bf: metricas.bf || base.bf || pre.bf || pre.percentual_gordura || cliente.bf,
-        massa_magra: metricas.massa || base.massaMagra || pre.massaMagra || cliente.massaMagra,
-        cintura: metricas.cintura || base.cintura || pre.cintura || cliente.cintura,
-        rcq: metricas.rcq || base.rcq || pre.rcq || cliente.rcq,
-        rce: metricas.rce || base.rce || pre.rce || cliente.rce,
-        altura: base.altura || pre.altura || cliente.altura
-      },
-      leituraTecnica: firstFilled(relatorioCompleto.leituraTecnica, diagnostico.leitura, planejamento.leituraTecnica),
-      sinteseDiagnostica: firstFilled(relatorioCompleto.sinteseDiagnostica, diagnostico.sintese, planejamento.sinteseDiagnostica),
-      aderencia: firstFilled(relatorioCompleto.aderencia, planejamento.aderencia, habitos.regraMinima),
-      ambiente: firstFilled(relatorioCompleto.ambiente, habitos.ajusteAmbiente, planejamento.ambiente),
-      sabotadores: firstFilled(relatorioCompleto.sabotadores, planejamento.sabotadores, pre.sabotadores),
-      leituraComportamental: firstFilled(relatorioCompleto.leituraComportamental, planejamento.leituraComportamental),
-      avancoPrincipal: firstFilled(relatorioCompleto.avancoPrincipal, estrategia.avancoPrincipal, diagnostico.avancoPrincipal),
-      gargaloPrincipal: firstFilled(relatorioCompleto.gargaloPrincipal, estrategia.gargaloPrincipal, diagnostico.gargaloPrincipal),
-      prioridade: firstFilled(relatorioCompleto.prioridade, estrategia.focoCentral, diagnostico.foco),
-      manter: firstFilled(relatorioCompleto.manter, planejamento.manter, treino.frequencia),
-      ajustar: firstFilled(relatorioCompleto.ajustar, planejamento.ajustar, cardio.frequencia, nutricional.regraMinima),
-      focoProximoCiclo: firstFilled(relatorioCompleto.focoProximoCiclo, planejamento.focoProximoCiclo, estrategia.focoCentral),
-      metaPrincipal: firstFilled(relatorioCompleto.metaPrincipal, planejamento.metaPrincipal, estrategia.objetivo30d, cliente.objetivo),
-      perimetria: perimetriaPlanejamento,
-      exames: planejamento.exames || relatorioCompleto.exames || cliente.exames || {},
-      testes: Array.isArray(planejamento.testes) ? planejamento.testes : []
-    }, "reavaliacao");
-
-    const legacyReavaliacoes = Array.isArray(cliente.reavaliacoes)
-      ? cliente.reavaliacoes.map((item) =>
-          normalizeAvaliacao(
-            {
-              ...item,
-              tipo: item.tipo || "reavaliacao",
-              data: item.data,
-              titulo: item.titulo,
-              resumo: item.resumo || item.descricao
-            },
-            "reavaliacao"
-          )
-        )
-      : [];
-
-    return [avaliacaoBase, ...legacyReavaliacoes, avaliacaoAtual]
-      .filter(Boolean)
-      .sort((a, b) => new Date(a.data || 0) - new Date(b.data || 0));
-  }
-
-  const avaliacoes = Array.isArray(cliente.avaliacoes) && cliente.avaliacoes.length
-    ? cliente.avaliacoes
-        .map((item) => normalizeAvaliacao(item, item?.tipo || "reavaliacao"))
-        .sort((a, b) => new Date(a.data || 0) - new Date(b.data || 0))
-    : buildAvaliacoesFromLegacy();
-
-  const avaliacaoAtual = avaliacoes[avaliacoes.length - 1] || normalizeAvaliacao({}, "reavaliacao");
-  const avaliacaoAnterior = avaliacoes.length > 1
-    ? avaliacoes[avaliacoes.length - 2]
-    : null;
-
-  const acompanhamentos = Array.isArray(cliente.acompanhamentos) ? cliente.acompanhamentos : [];
-  const timelineCliente = Array.isArray(cliente.timeline) ? cliente.timeline : [];
-
   const nomeCliente = firstFilled(cliente.nome, pre.nome, "Cliente");
   const emailCliente = firstFilled(cliente.email, pre.email, "");
-  const objetivoCliente = firstFilled(
-    avaliacaoAtual.objetivo,
-    cliente.objetivo,
-    pre.objetivo,
-    pre.objetivo_principal,
-    pre.objetivo_fisico
-  );
-  const faseCliente = firstFilled(
-    avaliacaoAtual.fase,
-    cliente.fase_nome,
-    cliente.fase_atual,
-    cliente.fase,
-    "Fase não definida"
-  );
-
+  const objetivoCliente = getObjetivo();
+  const faseCliente = getFase();
   const profAtivo = getProfissionalAtual();
-  const nomeProfissional = firstFilled(
-    cliente.profissional?.nome,
-    cliente.planejamento?.profissional?.nome,
-    profAtivo.nome
-  );
-  const crefProfissional = firstFilled(
-    cliente.profissional?.cref,
-    cliente.planejamento?.profissional?.cref,
-    profAtivo.cref
-  );
+  const nomeProfissional = firstFilled(profissional.nome, profAtivo.nome);
+  const crefProfissional = firstFilled(profissional.cref, profAtivo.cref);
 
   text("report-profissional-nome", nomeProfissional);
   text("report-profissional-cref", crefProfissional);
@@ -478,7 +229,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   text("report-email", emailCliente === "—" ? "" : emailCliente);
 
   const reportMeta = firstFilled(
-    cliente.dadosBaseEditados?.observacaoInicial,
+    base.observacaoInicial,
     pre.rotina,
     pre.queixa_principal,
     pre.queixa,
@@ -507,45 +258,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   text(
     "summary-avanco",
     firstFilled(
-      avaliacaoAtual.analise.avanco_principal,
-      "Leitura do avanço ainda não registrada."
+      relatorioCompleto.avancoPrincipal,
+      estrategia.avancoPrincipal,
+      diagnostico.avancoPrincipal,
+      "Leitura inicial construída a partir do cadastro e do pré-diagnóstico."
     )
   );
   text(
     "summary-gargalo",
     firstFilled(
-      avaliacaoAtual.analise.gargalo_principal,
-      "Gargalo principal ainda não registrado."
+      relatorioCompleto.gargaloPrincipal,
+      estrategia.gargaloPrincipal,
+      diagnostico.gargaloPrincipal,
+      pre.dificuldade_principal,
+      pre.maior_dificuldade,
+      pre.queixa_principal,
+      "Gargalo ainda em observação."
     )
   );
   text(
     "summary-prioridade",
     firstFilled(
-      avaliacaoAtual.analise.prioridade,
-      avaliacaoAtual.direcionamento.foco,
-      "Prioridade do próximo ciclo ainda não definida."
+      relatorioCompleto.prioridade,
+      estrategia.focoCentral,
+      diagnostico.foco,
+      "Consolidar base comportamental e aderência."
     )
   );
 
-  const protocoloFisico = String(firstFilled(avaliacaoAtual.protocolo, "")).toLowerCase();
+  const protocoloFisico = String(
+    firstFilled(
+      planejamento.protocoloFisico,
+      diagnostico.protocolo_fisico,
+      relatorioCompleto.protocoloFisico,
+      ""
+    )
+  ).toLowerCase();
 
-  const pesoAnterior = firstFilled(avaliacaoAnterior?.metricas?.peso, 0);
-  const pesoAtual = firstFilled(avaliacaoAtual.metricas.peso, 0);
+  const pesoInicial = getInitialMetric("peso");
+  const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, cliente.peso, 0);
 
-  const bfAnterior = firstFilled(avaliacaoAnterior?.metricas?.bf, 0);
-  const bfAtual = firstFilled(avaliacaoAtual.metricas.bf, 0);
+  const bfInicial = getInitialMetric("bf", "percentual_gordura");
+  const bfAtual = firstFilled(metricas.bf, base.bf, pre.bf, pre.percentual_gordura, cliente.bf, 0);
 
-  const massaAnterior = firstFilled(avaliacaoAnterior?.metricas?.massa_magra, 0);
-  const massaAtual = firstFilled(avaliacaoAtual.metricas.massa_magra, 0);
+  const massaInicial = getInitialMetric("massaMagra", "massa");
+  const massaAtual = firstFilled(metricas.massa, base.massaMagra, pre.massaMagra, cliente.massaMagra, 0);
 
-  const cinturaAnterior = firstFilled(avaliacaoAnterior?.metricas?.cintura, 0);
-  const cinturaAtual = firstFilled(avaliacaoAtual.metricas.cintura, 0);
+  const cinturaInicial = getInitialMetric("cintura");
+  const cinturaAtual = firstFilled(metricas.cintura, base.cintura, pre.cintura, cliente.cintura, 0);
 
-  const rcqAnterior = firstFilled(avaliacaoAnterior?.metricas?.rcq, 0);
-  const rcqAtual = firstFilled(avaliacaoAtual.metricas.rcq, 0);
+  const rcqInicial = getInitialMetric("rcq");
+  const rcqAtual = firstFilled(metricas.rcq, base.rcq, pre.rcq, cliente.rcq, 0);
 
-  const rceAnterior = firstFilled(avaliacaoAnterior?.metricas?.rce, 0);
-  const rceAtual = firstFilled(avaliacaoAtual.metricas.rce, 0);
+  const rceInicial = getInitialMetric("rce");
+  const rceAtual = firstFilled(metricas.rce, base.rce, pre.rce, cliente.rce, 0);
 
   const mostrarMassaMagra =
     hasContent(massaAtual) &&
@@ -555,40 +321,76 @@ document.addEventListener("DOMContentLoaded", async () => {
   const metricCards = [];
 
   if (hasContent(pesoAtual) && asNumber(pesoAtual, 0) > 0) {
-    metricCards.push(metricCard("Peso", pesoAtual, pesoAnterior, " kg"));
+    metricCards.push(metricCard("Peso", pesoAtual, pesoInicial, " kg"));
   }
 
   if (hasContent(bfAtual) && asNumber(bfAtual, 0) > 0) {
-    metricCards.push(metricCard("BF", bfAtual, bfAnterior, "%"));
+    metricCards.push(metricCard("BF", bfAtual, bfInicial, "%"));
   }
 
   if (mostrarMassaMagra) {
-    metricCards.push(metricCard("Massa magra", massaAtual, massaAnterior, " kg"));
+    metricCards.push(metricCard("Massa magra", massaAtual, massaInicial, " kg"));
   }
 
   if (hasContent(cinturaAtual) && asNumber(cinturaAtual, 0) > 0) {
-    metricCards.push(metricCard("Cintura", cinturaAtual, cinturaAnterior, " cm"));
+    metricCards.push(metricCard("Cintura", cinturaAtual, cinturaInicial, " cm"));
   }
 
   if (hasContent(rcqAtual) && asNumber(rcqAtual, 0) > 0) {
-    metricCards.push(metricCard("RCQ", rcqAtual, rcqAnterior, ""));
+    metricCards.push(metricCard("RCQ", rcqAtual, rcqInicial, ""));
   }
 
   if (hasContent(rceAtual) && asNumber(rceAtual, 0) > 0) {
-    metricCards.push(metricCard("RCE", rceAtual, rceAnterior, ""));
+    metricCards.push(metricCard("RCE", rceAtual, rceInicial, ""));
   }
 
   const metricsGrid = document.getElementById("metrics-grid");
+  const hasMetricasComparativas = metricCards.length > 0;
+
   if (metricsGrid) {
-    metricsGrid.innerHTML = metricCards.length
-      ? metricCards.join("")
-      : createEmptyBox();
+    if (!hasMetricasComparativas) {
+      metricsGrid.innerHTML = createEmptyBox("Nenhuma métrica comparativa registrada até o momento.");
+    } else {
+      metricsGrid.innerHTML = metricCards.join("");
+    }
+  }
+
+  function getRadarSourceFromRegistro(source = {}) {
+    return {
+      movimento: asNumber(firstFilled(source.score_movimento, source.movimento, source.radar?.movimento, source.radar?.treino, 0), 0),
+      alimentacao: asNumber(firstFilled(source.score_alimentacao, source.alimentacao, source.radar?.alimentacao, source.radar?.dieta, 0), 0),
+      sono: asNumber(firstFilled(source.score_sono, source.sono, source.radar?.sono, 0), 0),
+      proposito: asNumber(firstFilled(source.score_proposito, source.proposito, source.radar?.proposito, source.radar?.disciplina, 0), 0),
+      social: asNumber(firstFilled(source.score_social, source.social, source.radar?.social, 0), 0),
+      estresse: asNumber(firstFilled(source.score_estresse, source.estresse, source.radar?.estresse, source.radar?.mental, 0), 0)
+    };
+  }
+
+  const radarAtual = {
+    movimento: asNumber(firstFilled(radar.movimento, radar.treino, pre.score_movimento, 5), 5),
+    alimentacao: asNumber(firstFilled(radar.alimentacao, radar.dieta, pre.score_alimentacao, 5), 5),
+    sono: asNumber(firstFilled(radar.sono, pre.score_sono, 5), 5),
+    proposito: asNumber(firstFilled(radar.proposito, radar.disciplina, pre.score_proposito, 5), 5),
+    social: asNumber(firstFilled(radar.social, pre.score_social, 5), 5),
+    estresse: asNumber(firstFilled(radar.estresse, radar.mental, pre.score_estresse, 5), 5)
+  };
+
+  let radarAnterior = null;
+  let radarLabelAnterior = "Base inicial";
+
+  if (reavaliacoes.length) {
+    const reavaliacaoAnterior = reavaliacoes
+      .slice()
+      .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0))[0];
+
+    radarAnterior = getRadarSourceFromRegistro(reavaliacaoAnterior);
+    radarLabelAnterior = "Última avaliação";
+  } else if (hasContent(pre)) {
+    radarAnterior = getRadarSourceFromRegistro(pre);
+    radarLabelAnterior = "Base inicial";
   }
 
   const radarCanvas = document.getElementById("radar-chart");
-  const radarAtual = avaliacaoAtual.pilares || {};
-  const radarAnterior = avaliacaoAnterior?.pilares || null;
-
   const hasRadarAtual = Object.values(radarAtual).some((v) => Number.isFinite(v) && v > 0);
 
   if (radarCanvas && typeof Chart !== "undefined" && hasRadarAtual) {
@@ -596,7 +398,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (radarAnterior && Object.values(radarAnterior).some((v) => Number.isFinite(v) && v > 0)) {
       datasets.push({
-        label: "Última avaliação",
+        label: radarLabelAnterior,
         data: Object.values(radarAnterior),
         borderColor: "rgba(140, 156, 181, 0.95)",
         backgroundColor: "rgba(140, 156, 181, 0.14)",
@@ -641,23 +443,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
     });
-  } else if (radarCanvas?.parentElement) {
-    radarCanvas.parentElement.innerHTML = createEmptyBox();
   }
 
   const evolucaoCanvas = document.getElementById("evolucao-chart");
-  const evolucao = avaliacoes
-    .filter((av) => hasContent(av.metricas?.peso) && asNumber(av.metricas?.peso, 0) > 0)
-    .map((av) => ({
-      data: av.data,
-      peso: asNumber(av.metricas?.peso, 0)
-    }));
+  let evolucao = [...evolucaoPlanejamento];
+
+  if (!evolucao.length && hasContent(pesoInicial) && hasContent(pesoAtual)) {
+    evolucao = [
+      { data: "Inicial", peso: asNumber(pesoInicial, 0) },
+      { data: "Atual", peso: asNumber(pesoAtual, 0) }
+    ];
+  }
 
   if (evolucaoCanvas && typeof Chart !== "undefined" && evolucao.length) {
     new Chart(evolucaoCanvas, {
       type: "line",
       data: {
-        labels: evolucao.map((e) => formatDateBR(e.data)),
+        labels: evolucao.map((e) => firstFilled(e.data, "Registro")),
         datasets: [{
           label: "Peso",
           data: evolucao.map((e) => asNumber(e.peso, 0)),
@@ -684,17 +486,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
     });
-  } else if (evolucaoCanvas?.parentElement) {
-    evolucaoCanvas.parentElement.innerHTML = createEmptyBox();
   }
 
   const perimetriaGrid = document.getElementById("perimetria-grid");
   if (perimetriaGrid) {
-    const perimetriaAtual = avaliacaoAtual.perimetria || {};
-    const items = Object.entries(perimetriaAtual).filter(([, value]) => value !== "—" && hasContent(value));
+    const perimetriaBase = {
+      cintura: firstFilled(perimetriaPlanejamento.cintura, base.cintura, pre.cintura, cliente.cintura),
+      quadril: firstFilled(perimetriaPlanejamento.quadril, base.quadril, pre.quadril, cliente.quadril),
+      peito: firstFilled(perimetriaPlanejamento.peito, base.peito, pre.peito, cliente.peito),
+      coxa: firstFilled(perimetriaPlanejamento.coxa, base.coxa, pre.coxa, cliente.coxa),
+      braco: firstFilled(perimetriaPlanejamento.braco, base.braco, pre.braco, cliente.braco),
+      abdome: firstFilled(perimetriaPlanejamento.abdome, base.abdome, pre.abdome, cliente.abdome)
+    };
+
+    const items = Object.entries(perimetriaBase).filter(([, value]) => value !== "—");
 
     if (!items.length) {
-      perimetriaGrid.innerHTML = createEmptyBox();
+      perimetriaGrid.innerHTML = createEmptyBox("Nenhuma medida registrada até o momento.");
     } else {
       perimetriaGrid.innerHTML = items
         .map(([key, value]) => perimetriaCard(toTitle(key), value))
@@ -705,86 +513,209 @@ document.addEventListener("DOMContentLoaded", async () => {
   text(
     "diagnostico-leitura",
     firstFilled(
-      avaliacaoAtual.analise.leitura,
-      "Ainda não há leitura técnica registrada."
+      relatorioCompleto.leituraTecnica,
+      diagnostico.leitura,
+      planejamento.leituraTecnica,
+      pre.leituraTecnica,
+      "O caso apresenta leitura técnica estruturada a partir dos dados de entrada e do acompanhamento do cliente."
     )
   );
 
   text(
     "diagnostico-sintese",
     firstFilled(
-      avaliacaoAtual.analise.sintese,
-      "Ainda não há síntese diagnóstica."
+      relatorioCompleto.sinteseDiagnostica,
+      diagnostico.sintese,
+      planejamento.sinteseDiagnostica,
+      pre.sinteseDiagnostica,
+      "Ainda sem síntese diagnóstica posterior consolidada."
     )
   );
 
   text(
     "behavior-aderencia",
     firstFilled(
-      avaliacaoAtual.analise.aderencia,
-      "—"
+      relatorioCompleto.aderencia,
+      planejamento.aderencia,
+      habitos.regraMinima,
+      pre.aderencia,
+      "Aderência inicial em observação"
     )
   );
 
   text(
     "behavior-ambiente",
     firstFilled(
-      avaliacaoAtual.analise.ambiente,
-      "—"
+      relatorioCompleto.ambiente,
+      habitos.ajusteAmbiente,
+      planejamento.ambiente,
+      pre.ambiente,
+      "Ambiente ainda sem leitura consolidada"
     )
   );
 
   text(
     "behavior-sabotadores",
     firstFilled(
-      avaliacaoAtual.analise.sabotadores,
-      "—"
+      relatorioCompleto.sabotadores,
+      planejamento.sabotadores,
+      pre.sabotadores,
+      pre.maior_dificuldade,
+      "Sabotadores ainda não mapeados"
     )
   );
 
   text(
     "behavior-leitura",
     firstFilled(
-      avaliacaoAtual.analise.leitura_comportamental,
-      "Ainda não há leitura comportamental registrada."
+      relatorioCompleto.leituraComportamental,
+      planejamento.leituraComportamental,
+      pre.leituraComportamental,
+      "Leitura comportamental inicial em construção."
     )
   );
 
   text(
     "next-manter",
     firstFilled(
-      avaliacaoAtual.direcionamento.manter,
-      "Ainda não definido"
+      relatorioCompleto.manter,
+      planejamento.manter,
+      treino.frequencia,
+      "Manter execução do básico com consistência."
     )
   );
 
   text(
     "next-ajustar",
     firstFilled(
-      avaliacaoAtual.direcionamento.ajustar,
-      "Ainda não definido"
+      relatorioCompleto.ajustar,
+      planejamento.ajustar,
+      cardio.frequencia,
+      nutricional.regraMinima,
+      "Ajustar rotina, previsibilidade e aderência."
     )
   );
 
   text(
     "next-foco",
     firstFilled(
-      avaliacaoAtual.direcionamento.foco,
-      "Ainda não definido"
+      relatorioCompleto.focoProximoCiclo,
+      planejamento.focoProximoCiclo,
+      estrategia.focoCentral,
+      "Consolidar base comportamental e organização do processo."
     )
   );
 
   text(
     "next-meta",
     firstFilled(
-      avaliacaoAtual.direcionamento.meta,
-      "Ainda não definida"
+      relatorioCompleto.metaPrincipal,
+      planejamento.metaPrincipal,
+      estrategia.objetivo30d,
+      cliente.objetivo,
+      "Meta principal ainda não definida."
     )
   );
 
+  const timelineList = document.getElementById("timeline-list");
+  if (timelineList) {
+    const timelineAcompanhamentos = acompanhamentos.map((item) => ({
+      titulo: item.titulo,
+      data: item.data,
+      descricao: item.descricao
+    }));
+
+    const timelineBase = timelineCliente.map((item) => ({
+      titulo: firstFilled(item.tipo, "Registro"),
+      data: item.data,
+      descricao: item.descricao
+    }));
+
+    const timelineReavaliacoes = reavaliacoes.map((item) => ({
+      titulo: firstFilled(item.titulo, "Reavaliação"),
+      data: item.data,
+      descricao: firstFilled(item.descricao, item.resumo, "Reavaliação registrada no sistema.")
+    }));
+
+    const linhaInicial = {
+      titulo: "Entrada inicial do caso",
+      data: firstFilled(
+        cliente.data_inicio,
+        cliente.updatedAt,
+        cliente.createdAt,
+        pre.created_at,
+        new Date().toISOString()
+      ),
+      descricao: firstFilled(
+        pre.queixa_principal,
+        pre.objetivo,
+        cliente.objetivo,
+        "Cadastro inicial registrado no sistema."
+      )
+    };
+
+    const timelineFinal = [...timelineAcompanhamentos, ...timelineBase, ...timelineReavaliacoes];
+    if (!timelineFinal.length) timelineFinal.push(linhaInicial);
+
+    timelineFinal.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+    timelineList.innerHTML = timelineFinal.map((item) => `
+      <div class="timeline-item">
+        <div class="timeline-item-top">
+          <strong>${firstFilled(item.titulo, "Acompanhamento")}</strong>
+          <span>${formatDateBR(item.data)}</span>
+        </div>
+        <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
+      </div>
+    `).join("");
+  }
+
+  const hasLeituraTecnica =
+    hasContent(firstFilled(
+      relatorioCompleto.leituraTecnica,
+      diagnostico.leitura,
+      planejamento.leituraTecnica,
+      pre.leituraTecnica
+    )) ||
+    hasContent(firstFilled(
+      relatorioCompleto.sinteseDiagnostica,
+      diagnostico.sintese,
+      planejamento.sinteseDiagnostica,
+      pre.sinteseDiagnostica
+    ));
+
+  const hasComportamento = [
+    relatorioCompleto.aderencia,
+    planejamento.aderencia,
+    habitos.regraMinima,
+    relatorioCompleto.ambiente,
+    habitos.ajusteAmbiente,
+    planejamento.ambiente,
+    relatorioCompleto.sabotadores,
+    planejamento.sabotadores,
+    pre.sabotadores,
+    relatorioCompleto.leituraComportamental,
+    planejamento.leituraComportamental
+  ].some(hasContent);
+
+  const hasDirecionamento = [
+    relatorioCompleto.manter,
+    planejamento.manter,
+    treino.frequencia,
+    relatorioCompleto.ajustar,
+    planejamento.ajustar,
+    cardio.frequencia,
+    nutricional.regraMinima,
+    relatorioCompleto.focoProximoCiclo,
+    planejamento.focoProximoCiclo,
+    estrategia.focoCentral,
+    relatorioCompleto.metaPrincipal,
+    planejamento.metaPrincipal
+  ].some(hasContent);
+
+  const examesEntries = Object.entries(exames).filter(([, value]) => hasContent(value));
   const examesSection = document.getElementById("exames-section");
   const examesGrid = document.getElementById("exames-grid");
-  const examesEntries = Object.entries(avaliacaoAtual.exames || {}).filter(([, value]) => hasContent(value));
 
   if (examesSection && examesGrid && examesEntries.length) {
     examesGrid.innerHTML = examesEntries.map(([key, value]) => {
@@ -800,86 +731,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     }).join("");
   }
 
-  const timelineList = document.getElementById("timeline-list");
-  if (timelineList) {
-    const timelineAvaliacoes = avaliacoes.map((av) => ({
-      titulo: firstFilled(av.titulo, toTitle(av.tipo), "Avaliação"),
-      data: av.data,
-      descricao: firstFilled(
-        av.resumo,
-        av.analise?.sintese,
-        av.analise?.leitura,
-        "Avaliação registrada no sistema."
-      )
-    }));
-
-    const timelineAcompanhamentos = acompanhamentos.map((item) => ({
-      titulo: item.titulo,
-      data: item.data,
-      descricao: item.descricao
-    }));
-
-    const timelineBase = timelineCliente.map((item) => ({
-      titulo: firstFilled(item.tipo, "Registro"),
-      data: item.data,
-      descricao: item.descricao
-    }));
-
-    const timelineFinal = [...timelineAvaliacoes, ...timelineAcompanhamentos, ...timelineBase];
-
-    if (!timelineFinal.length) {
-      timelineFinal.push({
-        titulo: "Entrada inicial do caso",
-        data: firstFilled(cliente.data_inicio, cliente.updatedAt, cliente.createdAt, new Date().toISOString()),
-        descricao: firstFilled(cliente.objetivo, "Cadastro inicial registrado no sistema.")
-      });
-    }
-
-    timelineFinal.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
-
-    timelineList.innerHTML = timelineFinal.map((item) => `
-      <div class="timeline-item">
-        <div class="timeline-item-top">
-          <strong>${firstFilled(item.titulo, "Acompanhamento")}</strong>
-          <span>${formatDateBR(item.data)}</span>
-        </div>
-        <p>${firstFilled(item.descricao, "Sem descrição registrada.")}</p>
-      </div>
-    `).join("");
-  }
-
   const radarSection = document.getElementById("radar-section");
   if (radarSection) {
-    radarSection.classList.toggle("hidden", false);
+    radarSection.classList.toggle("hidden", !hasRadarAtual);
   }
 
   const evolucaoSection = document.getElementById("evolucao-section");
   if (evolucaoSection) {
-    evolucaoSection.classList.toggle("hidden", false);
+    evolucaoSection.classList.toggle("hidden", !(evolucao.length > 0));
   }
 
   const perimetriaSection = document.getElementById("perimetria-section");
   if (perimetriaSection) {
-    const shouldShowPerimetria =
-      !protocoloFisico.includes("marinha") &&
-      Object.values(avaliacaoAtual.perimetria || {}).some(hasContent);
-
-    perimetriaSection.classList.toggle("hidden", !shouldShowPerimetria);
+    const temPerimetria =
+      Object.keys(perimetriaPlanejamento).length > 0 ||
+      ["cintura", "quadril", "peito", "coxa", "braco", "abdome"].some((key) =>
+        hasContent(firstFilled(base[key], pre[key], cliente[key]))
+      );
+    perimetriaSection.classList.toggle("hidden", !temPerimetria);
   }
 
   const leituraSection = document.getElementById("leitura-section");
   if (leituraSection) {
-    leituraSection.classList.toggle("hidden", false);
+    leituraSection.classList.toggle("hidden", !hasLeituraTecnica);
   }
 
   const behaviorSection = document.getElementById("behavior-section");
   if (behaviorSection) {
-    behaviorSection.classList.toggle("hidden", false);
+    behaviorSection.classList.toggle("hidden", !hasComportamento);
   }
 
   const nextSection = document.getElementById("next-section");
   if (nextSection) {
-    nextSection.classList.toggle("hidden", false);
+    nextSection.classList.toggle("hidden", !hasDirecionamento);
   }
 
   if (examesSection) {
@@ -888,6 +772,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const metricsSection = document.getElementById("metrics-section");
   if (metricsSection) {
-    metricsSection.classList.toggle("hidden", false);
+    metricsSection.classList.toggle("hidden", !hasMetricasComparativas);
   }
 });
