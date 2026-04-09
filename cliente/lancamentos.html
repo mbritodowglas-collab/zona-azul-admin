@@ -1,230 +1,1079 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova Avaliação | Trackion</title>
+<!DOCTYPE html>  <html lang="pt-BR">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+  <title>Relatório do Cliente | Trackion System</title>    <link rel="stylesheet" href="../assets/css/global.css?v=60" />    <style>  
+    * {  
+      box-sizing: border-box;  
+    }  
+  
+    :root {  
+      --bg-0: #020816;  
+      --bg-1: #061126;  
+      --bg-2: #0a1830;  
+      --panel: rgba(10, 24, 48, 0.82);  
+      --line: rgba(255,255,255,0.08);  
+      --line-soft: rgba(16,24,40,0.06);  
+      --text: #f3f8ff;  
+      --muted: #9cb0cb;  
+      --muted-2: #7f92ad;  
+      --blue-1: #47b8ff;  
+      --blue-2: #1f7cff;  
+      --green-1: #7cff5a;  
+      --success: #059669;  
+      --warning: #b45309;  
+      --danger: #dc2626;  
+      --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);  
+      --shadow-lg: 0 18px 42px rgba(0,0,0,0.18);  
+      --radius-xl: 28px;  
+      --radius-lg: 22px;  
+    }  
+  
+    body {  
+      margin: 0;  
+      min-height: 100vh;  
+      color: var(--text);  
+      background:  
+        radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),  
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),  
+        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),  
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);  
+      overflow-x: hidden;  
+    }  
+  
+    .main {  
+      padding: 24px;  
+    }  
+  
+    .report-wrap {  
+      display: grid;  
+      gap: 22px;  
+      max-width: 1480px;  
+      margin: 0 auto;  
+    }  
+  
+    .topbar {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: flex-start;  
+      gap: 16px;  
+      flex-wrap: wrap;  
+    }  
+  
+    .topbar-left h2 {  
+      margin: 0;  
+      font-size: 38px;  
+      line-height: 1.02;  
+      letter-spacing: -0.04em;  
+      color: #ffffff;  
+    }  
+  
+    .topbar-left p {  
+      margin: 8px 0 0;  
+      color: var(--muted);  
+      font-size: 15px;  
+      line-height: 1.65;  
+      max-width: 760px;  
+    }  
+  
+    .topbar-actions {  
+      display: flex;  
+      gap: 10px;  
+      align-items: center;  
+      flex-wrap: wrap;  
+    }  
+  
+    .btn,  
+    .btn-link {  
+      min-height: 44px;  
+      padding: 0 16px;  
+      border: none;  
+      border-radius: 14px;  
+      cursor: pointer;  
+      font-weight: 800;  
+      font-size: 14px;  
+      text-decoration: none;  
+      display: inline-flex;  
+      align-items: center;  
+      justify-content: center;  
+      transition: transform 0.18s ease, opacity 0.18s ease;  
+    }  
+  
+    .btn:hover,  
+    .btn-link:hover {  
+      transform: translateY(-1px);  
+      opacity: 0.97;  
+    }  
+  
+    .btn.secondary,  
+    .btn-link.secondary {  
+      background: rgba(255,255,255,0.06);  
+      color: #ffffff;  
+      border: 1px solid var(--line);  
+    }  
+  
+    .btn.primary,  
+    .btn-link.primary {  
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));  
+      color: #ffffff;  
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);  
+    }  
+  
+    .hero {  
+      position: relative;  
+      overflow: hidden;  
+      padding: 28px;  
+      border-radius: var(--radius-xl);  
+      background:  
+        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),  
+        linear-gradient(135deg, rgba(71,184,255,0.16), rgba(124,255,90,0.08)),  
+        rgba(10, 24, 48, 0.84);  
+      border: 1px solid var(--line);  
+      box-shadow: var(--shadow-xl);  
+      display: grid;  
+      gap: 22px;  
+    }  
+  
+    .hero-top {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 16px;  
+      align-items: flex-start;  
+      flex-wrap: wrap;  
+    }  
+  
+    .brand {  
+      display: flex;  
+      align-items: center;  
+      gap: 14px;  
+    }  
+  
+    .brand-logo {  
+      width: 64px;  
+      height: 64px;  
+      border-radius: 18px;  
+      background: rgba(255,255,255,0.03);  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+      padding: 3px;  
+      border: 1px solid rgba(255,255,255,0.06);  
+      flex-shrink: 0;  
+    }  
+  
+    .brand-logo img {  
+      width: 100%;  
+      height: 100%;  
+      object-fit: contain;  
+    }  
+  
+    .brand h1 {  
+      margin: 0;  
+      font-size: 20px;  
+      line-height: 1.08;  
+      color: #ffffff;  
+    }  
+  
+    .brand-highlight {  
+      display: block;  
+      margin-top: 6px;  
+      font-size: 11px;  
+      font-weight: 900;  
+      letter-spacing: 0.14em;  
+      text-transform: uppercase;  
+      background: linear-gradient(90deg, var(--blue-1), var(--green-1));  
+      -webkit-background-clip: text;  
+      -webkit-text-fill-color: transparent;  
+      background-clip: text;  
+      color: transparent;  
+    }  
+  
+    .document-meta {  
+      display: grid;  
+      gap: 6px;  
+      text-align: right;  
+    }  
+  
+    .document-meta-label {  
+      color: var(--muted-2);  
+      font-size: 11px;  
+      font-weight: 900;  
+      text-transform: uppercase;  
+      letter-spacing: 0.10em;  
+    }  
+  
+    .document-meta-value {  
+      color: #ffffff;  
+      font-size: 14px;  
+      font-weight: 800;  
+      line-height: 1.5;  
+    }  
+  
+    .hero-bottom {  
+      display: grid;  
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);  
+      gap: 18px;  
+    }  
+  
+    .client-spotlight {  
+      display: flex;  
+      gap: 16px;  
+      align-items: center;  
+      min-width: 0;  
+    }  
+  
+    .client-avatar {  
+      width: 78px;  
+      height: 78px;  
+      border-radius: 22px;  
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));  
+      box-shadow: 0 16px 32px rgba(31,124,255,0.24);  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+      font-size: 26px;  
+      font-weight: 900;  
+      color: #ffffff;  
+      flex-shrink: 0;  
+    }  
+  
+    .client-title {  
+      margin: 0;  
+      font-size: 32px;  
+      line-height: 1.02;  
+      letter-spacing: -0.04em;  
+      color: #ffffff;  
+    }  
+  
+    .client-subtext {  
+      margin-top: 8px;  
+      color: #d8e6f8;  
+      font-size: 14px;  
+      line-height: 1.7;  
+      white-space: pre-wrap;  
+    }  
+  
+    .hero-chips {  
+      display: flex;  
+      flex-wrap: wrap;  
+      gap: 10px;  
+      margin-top: 14px;  
+    }  
+  
+    .chip {  
+      min-height: 40px;  
+      padding: 0 14px;  
+      border-radius: 999px;  
+      display: inline-flex;  
+      align-items: center;  
+      justify-content: center;  
+      text-align: center;  
+      font-size: 13px;  
+      font-weight: 800;  
+      color: #edf5ff;  
+      background: rgba(255,255,255,0.08);  
+      border: 1px solid rgba(255,255,255,0.08);  
+    }  
+  
+    .chip.success {  
+      color: #d1fae5;  
+      background: rgba(52, 211, 153, 0.12);  
+      border-color: rgba(52, 211, 153, 0.18);  
+    }  
+  
+    .hero-side {  
+      display: grid;  
+      gap: 12px;  
+    }  
+  
+    .meta-card {  
+      padding: 16px;  
+      border-radius: 20px;  
+      background: rgba(255,255,255,0.04);  
+      border: 1px solid var(--line);  
+    }  
+  
+    .meta-card h3 {  
+      margin: 0 0 12px;  
+      font-size: 14px;  
+      color: #ffffff;  
+    }  
+  
+    .meta-list {  
+      display: grid;  
+      gap: 10px;  
+    }  
+  
+    .meta-row {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: flex-start;  
+      gap: 12px;  
+      padding-bottom: 10px;  
+      border-bottom: 1px solid rgba(255,255,255,0.05);  
+    }  
+  
+    .meta-row:last-child {  
+      border-bottom: 0;  
+      padding-bottom: 0;  
+    }  
+  
+    .meta-row span {  
+      color: var(--muted);  
+      font-size: 13px;  
+      line-height: 1.5;  
+    }  
+  
+    .meta-row strong {  
+      color: #ffffff;  
+      font-size: 14px;  
+      line-height: 1.5;  
+      text-align: right;  
+    }  
+  
+    .report-section {  
+      padding: 20px;  
+      border-radius: 22px;  
+      background: #fffaf2;  
+      border: 1px solid rgba(16,24,40,0.06);  
+      box-shadow: 0 8px 24px rgba(16,24,40,0.06);  
+      color: #10243d;  
+    }  
+  
+    .report-section h2 {  
+      margin: 0 0 8px;  
+      font-size: 22px;  
+      line-height: 1.2;  
+      color: #10243d;  
+    }  
+  
+    .report-section h3 {  
+      margin: 0 0 10px;  
+      font-size: 14px;  
+      color: #10243d;  
+    }  
+  
+    .section-subtitle {  
+      color: #64748b;  
+      font-size: 14px;  
+      line-height: 1.65;  
+      margin-bottom: 16px;  
+    }  
+  
+    .report-grid {  
+      display: grid;  
+      gap: 14px;  
+    }  
+  
+    .cols-2 {  
+      grid-template-columns: repeat(2, minmax(0, 1fr));  
+    }  
+  
+    .cols-3 {  
+      grid-template-columns: repeat(3, minmax(0, 1fr));  
+    }  
+  
+    .summary-grid {  
+      display: grid;  
+      grid-template-columns: repeat(4, minmax(0, 1fr));  
+      gap: 14px;  
+    }  
+  
+    .summary-item,  
+    .metric-card,  
+    .perimetria-item,  
+    .report-info-card {  
+      padding: 16px;  
+      border-radius: 18px;  
+      background: #f5f5f5;  
+      border: 1px solid rgba(16,24,40,0.06);  
+    }  
+  
+    .summary-label,  
+    .metric-label,  
+    .perimetria-item span,  
+    .report-info-card span {  
+      display: block;  
+      margin-bottom: 10px;  
+      color: #7f92ad;  
+      font-size: 11px;  
+      font-weight: 900;  
+      text-transform: uppercase;  
+      letter-spacing: 0.09em;  
+    }  
+  
+    .summary-value,  
+    .perimetria-item strong,  
+    .report-info-card strong {  
+      color: #10243d;  
+      font-size: 15px;  
+      font-weight: 800;  
+      line-height: 1.7;  
+      white-space: pre-wrap;  
+    }  
+  
+    .metrics-grid {  
+      display: grid;  
+      grid-template-columns: repeat(3, minmax(0, 1fr));  
+      gap: 14px;  
+    }  
+  
+    .metric-values {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 12px;  
+    }  
+  
+    .metric-values small {  
+      display: block;  
+      color: #64748b;  
+      font-size: 12px;  
+      margin-bottom: 4px;  
+    }  
+  
+    .metric-values strong {  
+      color: #10243d;  
+      font-size: 18px;  
+      line-height: 1.2;  
+    }  
+  
+    .metric-delta {  
+      margin-top: 10px;  
+      font-size: 13px;  
+      font-weight: 800;  
+    }  
+  
+    .delta-positive { color: var(--success); }  
+    .delta-negative { color: var(--danger); }  
+    .delta-neutral  { color: var(--warning); }  
+  
+    .metric-card.is-empty {  
+      opacity: 0.92;  
+    }  
+  
+    .metric-card.is-na {  
+      background: #f2f4f7;  
+      border: 1px dashed rgba(16,24,40,0.12);  
+    }  
+  
+    .metric-values.is-single {  
+      display: block;  
+    }  
+  
+    .metric-empty-text {  
+      color: #64748b;  
+      font-size: 14px;  
+      line-height: 1.6;  
+      font-weight: 600;  
+    }  
+  
+    .metric-helper {  
+      margin-top: 10px;  
+      color: #64748b;  
+      font-size: 12px;  
+      line-height: 1.6;  
+    }  
+  
+    .report-text-block,  
+    .text-box {  
+      padding: 16px;  
+      border-radius: 18px;  
+      background: #f8f8f8;  
+      border: 1px solid rgba(16,24,40,0.05);  
+      color: #334155;  
+      white-space: pre-wrap;  
+      line-height: 1.8;  
+    }  
+  
+    .two-col {  
+      display: grid;  
+      grid-template-columns: repeat(2, minmax(0, 1fr));  
+      gap: 14px;  
+    }  
+  
+    .chart-wrap {  
+      height: 360px;  
+      position: relative;  
+      background: #fff;  
+      border-radius: 12px;  
+      padding: 10px;  
+      border: 1px solid rgba(16,24,40,0.06);  
+    }  
+  
+    .perimetria-grid {  
+      display: grid;  
+      grid-template-columns: repeat(4, minmax(0, 1fr));  
+      gap: 14px;  
+    }  
+  
+    .perimetria-item strong {  
+      font-size: 20px;  
+      font-weight: 900;  
+      line-height: 1.1;  
+    }  
+  
+    .insight-list {  
+      display: grid;  
+      gap: 12px;  
+    }  
+  
+    .insight-row {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: flex-start;  
+      gap: 12px;  
+      padding: 12px 0;  
+      border-bottom: 1px solid rgba(16,24,40,0.06);  
+    }  
+  
+    .insight-row:last-child {  
+      border-bottom: 0;  
+      padding-bottom: 0;  
+    }  
+  
+    .insight-row span {  
+      color: #64748b;  
+      font-size: 14px;  
+      line-height: 1.6;  
+    }  
+  
+    .insight-row strong {  
+      color: #10243d;  
+      font-size: 14px;  
+      line-height: 1.6;  
+      text-align: right;  
+    }  
+  
+    .timeline {  
+      display: grid;  
+      gap: 12px;  
+    }  
+  
+    .timeline-item {  
+      padding: 14px 16px;  
+      border-radius: 16px;  
+      background: #f8f8f8;  
+      border: 1px solid rgba(16,24,40,0.05);  
+    }  
+  
+    .timeline-item-top {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 12px;  
+      align-items: flex-start;  
+      flex-wrap: wrap;  
+      margin-bottom: 8px;  
+    }  
+  
+    .timeline-item-top strong {  
+      color: #10243d;  
+      font-size: 14px;  
+      line-height: 1.4;  
+    }  
+  
+    .timeline-item-top span {  
+      color: #64748b;  
+      font-size: 12px;  
+      line-height: 1.4;  
+    }  
+  
+    .timeline-item p {  
+      margin: 0;  
+      color: #334155;  
+      font-size: 14px;  
+      line-height: 1.75;  
+      white-space: pre-wrap;  
+    }  
+  
+    .empty-box {  
+      padding: 16px;  
+      border-radius: 16px;  
+      background: #f8f8f8;  
+      border: 1px dashed rgba(16,24,40,0.12);  
+      color: #64748b;  
+      font-size: 14px;  
+      line-height: 1.7;  
+    }  
+  
+    .status-list {  
+      display: grid;  
+      gap: 10px;  
+    }  
+  
+    .status-row {  
+      display: flex;  
+      justify-content: space-between;  
+      gap: 12px;  
+      padding: 10px 0;  
+      border-bottom: 1px solid rgba(16,24,40,0.06);  
+    }  
+  
+    .status-row:last-child {  
+      border-bottom: 0;  
+      padding-bottom: 0;  
+    }  
+  
+    .status-row span {  
+      color: #64748b;  
+      font-size: 14px;  
+      line-height: 1.5;  
+    }  
+  
+    .status-row strong {  
+      color: #10243d;  
+      font-size: 14px;  
+      line-height: 1.5;  
+      text-align: right;  
+    }  
+  
+    .auto-reading-text {  
+      color: #334155;  
+      font-size: 14px;  
+      line-height: 1.8;  
+      white-space: pre-wrap;  
+    }  
+  
+    .hidden {  
+      display: none !important;  
+    }  
+  
+    @media (max-width: 1180px) {  
+      .hero-bottom,  
+      .summary-grid,  
+      .metrics-grid,  
+      .perimetria-grid {  
+        grid-template-columns: repeat(2, minmax(0, 1fr));  
+      }  
+    }  
+  
+    @media (max-width: 760px) {  
+      .main {  
+        padding: 16px;  
+      }  
+  
+      .topbar-left h2 {  
+        font-size: 30px;  
+      }  
+  
+      .topbar-actions {  
+        width: 100%;  
+      }  
+  
+      .topbar-actions > * {  
+        width: 100%;  
+      }  
+  
+      .hero {  
+        padding: 22px 18px;  
+      }  
+  
+      .client-title {  
+        font-size: 26px;  
+      }  
+  
+      .summary-grid,  
+      .two-col,  
+      .metrics-grid,  
+      .perimetria-grid,  
+      .cols-2,  
+      .cols-3,  
+      .hero-bottom {  
+        grid-template-columns: 1fr;  
+      }  
+  
+      .document-meta {  
+        text-align: left;  
+      }  
+  
+      .client-spotlight {  
+        align-items: flex-start;  
+      }  
+    }  
+  
+    @media print {  
+      @page {  
+        size: A4;  
+        margin: 12mm;  
+      }  
+  
+      body {  
+        background: #ffffff !important;  
+        color: #111827 !important;  
+      }  
+  
+      .no-print {  
+        display: none !important;  
+      }  
+  
+      .main {  
+        padding: 0 !important;  
+      }  
+  
+      .report-wrap {  
+        gap: 14px;  
+        max-width: 100%;  
+      }  
+  
+      .hero,  
+      .report-section,  
+      .meta-card,  
+      .summary-item,  
+      .text-box,  
+      .metric-card,  
+      .perimetria-item,  
+      .timeline-item,  
+      .report-text-block,  
+      .report-info-card {  
+        background: #ffffff !important;  
+        color: #111827 !important;  
+        border-color: #d1d5db !important;  
+        box-shadow: none !important;  
+      }  
+  
+      .topbar-left h2,  
+      .brand h1,  
+      .client-title,  
+      .report-section h2,  
+      .text-box h4,  
+      .meta-card h3,  
+      .summary-value,  
+      .metric-values strong,  
+      .perimetria-item strong,  
+      .timeline-item-top strong,  
+      .meta-row strong,  
+      .insight-row strong,  
+      .document-meta-value,  
+      .report-info-card strong {  
+        color: #111827 !important;  
+      }  
+  
+      .topbar-left p,  
+      .section-subtitle,  
+      .client-subtext,  
+      .timeline-item p,  
+      .meta-row span,  
+      .insight-row span,  
+      .document-meta-label,  
+      .summary-label,  
+      .metric-label,  
+      .metric-values small,  
+      .perimetria-item span,  
+      .report-info-card span {  
+        color: #4b5563 !important;  
+      }  
+  
+      .hero-chips .chip {  
+        color: #111827 !important;  
+        border-color: #d1d5db !important;  
+        background: #f3f4f6 !important;  
+      }  
+    }  
+  </style>  </head>  
+<body>  
+  <main class="main">  
+    <div class="report-wrap" id="relatorio-page">  
+      <div class="topbar no-print">  
+        <div class="topbar-left">  
+          <h2>Relatório Técnico</h2>  
+          <p>Documento executivo de acompanhamento, evolução e direcionamento técnico do processo.</p>  
+        </div>  <div class="topbar-actions">  
+      <a id="voltar-cliente-link" href="../cliente/index.html" class="btn-link secondary">Voltar ao cliente</a>  
+      <button id="logout-btn" class="btn secondary" type="button">Sair</button>  
+      <button id="print-report-btn" class="btn primary" type="button">Imprimir / Salvar PDF</button>  
+    </div>  
+  </div>  
 
-<link rel="stylesheet" href="../assets/css/global.css">
+  <div id="relatorio-not-found" class="empty-box hidden">  
+    Cliente não encontrado para este relatório.  
+  </div>  
 
-<style>
-body {
-  background: #061126;
-  color: #fff;
-  font-family: system-ui;
-  margin: 0;
-}
+  <section class="hero">  
+    <div class="hero-top">  
+      <div class="brand">  
+        <div class="brand-logo">  
+          <img src="../assets/img/trackion-logo.png" alt="Trackion System" />  
+        </div>  
+        <div>  
+          <h1>Trackion System</h1>  
+          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>  
+        </div>  
+      </div>  
 
-.wrap {
-  max-width: 900px;
-  margin: auto;
-  padding: 24px;
-}
+      <div class="document-meta">  
+        <span class="document-meta-label">Documento executivo de acompanhamento</span>  
+        <strong class="document-meta-value" id="report-data-geracao">—</strong>  
+      </div>  
+    </div>  
 
-.card {
-  background: rgba(10,24,48,0.9);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 18px;
-}
+    <div class="hero-bottom">  
+      <div>  
+        <div class="client-spotlight">  
+          <div class="client-avatar" id="report-avatar">C</div>  
+          <div>  
+            <h3 class="client-title" id="report-nome">Cliente</h3>  
+            <div class="client-subtext" id="report-email"></div>  
+            <div class="client-subtext" id="report-meta"></div>  
+          </div>  
+        </div>  
 
-h2 {
-  margin-bottom: 10px;
-}
+        <div class="hero-chips">  
+          <span class="chip" id="report-fase-chip">Fase atual: —</span>  
+          <span class="chip success" id="report-objetivo-chip">Objetivo: —</span>  
+        </div>  
+      </div>  
 
-.grid {
-  display: grid;
-  gap: 12px;
-}
+      <div class="hero-side">  
+        <div class="meta-card">  
+          <h3>Profissional responsável</h3>  
+          <div class="meta-list">  
+            <div class="meta-row">  
+              <span>Responsável técnico</span>  
+              <strong id="report-profissional-nome">—</strong>  
+            </div>  
+            <div class="meta-row">  
+              <span>CREF</span>  
+              <strong id="report-profissional-cref">—</strong>  
+            </div>  
+          </div>  
+        </div>  
 
-.grid-2 {
-  grid-template-columns: repeat(2,1fr);
-}
+        <div class="meta-card">  
+          <h3>Dados do relatório</h3>  
+          <div class="meta-list">  
+            <div class="meta-row">  
+              <span>Cliente</span>  
+              <strong id="report-cliente-meta-nome">—</strong>  
+            </div>  
+            <div class="meta-row">  
+              <span>Objetivo principal</span>  
+              <strong id="report-cliente-meta-objetivo">—</strong>  
+            </div>  
+            <div class="meta-row">  
+              <span>Fase atual</span>  
+              <strong id="report-cliente-meta-fase">—</strong>  
+            </div>  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+  </section>  
 
-input, textarea, select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-}
+  <section class="report-section">  
+    <h2>Resumo Executivo</h2>  
+    <p class="section-subtitle">  
+      Leitura direta do momento atual do cliente, com foco no avanço principal, gargalo dominante e prioridade do próximo ciclo.  
+    </p>  
 
-button {
-  background: linear-gradient(135deg,#47b8ff,#1f7cff);
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  width: 100%;
-}
-</style>
-</head>
+    <div class="summary-grid">  
+      <div class="summary-item">  
+        <span class="summary-label">Objetivo</span>  
+        <div class="summary-value" id="summary-objetivo">—</div>  
+      </div>  
 
-<body>
-<div class="wrap">
+      <div class="summary-item">  
+        <span class="summary-label">Principal avanço</span>  
+        <div class="summary-value" id="summary-avanco">—</div>  
+      </div>  
 
-<h1>Nova Avaliação</h1>
+      <div class="summary-item">  
+        <span class="summary-label">Principal gargalo</span>  
+        <div class="summary-value" id="summary-gargalo">—</div>  
+      </div>  
 
-<!-- CABEÇALHO -->
-<div class="card">
-<h2>Informações gerais</h2>
+      <div class="summary-item">  
+        <span class="summary-label">Próxima prioridade</span>  
+        <div class="summary-value" id="summary-prioridade">—</div>  
+      </div>  
+    </div>  
+  </section>  
 
-<div class="grid">
-<input id="titulo" placeholder="Título da avaliação">
-<textarea id="resumo" placeholder="Resumo"></textarea>
+  <section class="report-section" id="metrics-section">  
+    <h2>Evolução Física e Indicadores</h2>  
+    <p class="section-subtitle">  
+      Comparativo dos indicadores centrais do processo para leitura objetiva da evolução.  
+    </p>  
 
-<select id="fase">
-<option value="">Fase</option>
-<option>Base</option>
-<option>Construção</option>
-<option>Ajuste</option>
-</select>
+    <div id="metrics-grid" class="metrics-grid"></div>  
 
-<input id="objetivo" placeholder="Objetivo atual">
+    <div class="report-grid cols-2" style="margin-top: 14px;">  
+      <div class="report-text-block">  
+        <h3>Status da coleta física</h3>  
+        <div id="coleta-status-content"></div>  
+      </div>  
+
+      <div class="report-text-block">  
+        <h3>Leitura física automática</h3>  
+        <div id="leitura-fisica-content"></div>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section" id="radar-section">  
+    <h2>Radar Comparativo</h2>  
+    <p class="section-subtitle">  
+      Visão comparativa dos pilares centrais do processo entre a leitura anterior e a avaliação atual.  
+    </p>  
+    <div class="chart-wrap">  
+      <canvas id="radar-chart"></canvas>  
+    </div>  
+  </section>  
+
+  <section class="report-section" id="evolucao-section">  
+    <h2>Evolução Temporal</h2>  
+    <p class="section-subtitle">  
+      Tendência dos principais marcadores ao longo do acompanhamento.  
+    </p>  
+    <div class="chart-wrap">  
+      <canvas id="evolucao-chart"></canvas>  
+    </div>  
+  </section>  
+
+  <section class="report-section hidden" id="perimetria-section">  
+    <h2>Perimetria</h2>  
+    <p class="section-subtitle">  
+      Registro de medidas corporais relevantes para leitura complementar do processo.  
+    </p>  
+    <div id="perimetria-grid" class="perimetria-grid"></div>  
+  </section>  
+
+  <section class="report-section hidden" id="dobras-section">  
+    <h2>Dobras Cutâneas</h2>  
+    <p class="section-subtitle">  
+      Leitura complementar da composição corporal com base nas dobras lançadas.  
+    </p>  
+
+    <div id="dobras-grid" class="metrics-grid"></div>  
+
+    <div class="report-grid cols-2" style="margin-top: 14px;">  
+      <div class="report-text-block">  
+        <h3>Status da coleta de dobras</h3>  
+        <div id="dobras-status-content"></div>  
+      </div>  
+
+      <div class="report-text-block">  
+        <h3>Leitura automática das dobras</h3>  
+        <div id="dobras-reading-content"></div>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section hidden" id="testes-section">  
+    <h2>Testes Físicos</h2>  
+    <p class="section-subtitle">  
+      Registro funcional e físico complementar para leitura de desempenho e movimento.  
+    </p>  
+
+    <div id="testes-grid" class="metrics-grid"></div>  
+
+    <div class="report-grid cols-2" style="margin-top: 14px;">  
+      <div class="report-text-block">  
+        <h3>Status dos testes</h3>  
+        <div id="testes-status-content"></div>  
+      </div>  
+
+      <div class="report-text-block">  
+        <h3>Leitura funcional automática</h3>  
+        <div id="testes-reading-content"></div>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section" id="leitura-section">  
+    <h2>Leitura Técnica do Caso</h2>  
+    <p class="section-subtitle">  
+      Interpretação técnica do momento atual, resposta ao processo e direcionamento clínico-operacional.  
+    </p>  
+
+    <div class="two-col">  
+      <div class="text-box">  
+        <h3>Leitura técnica</h3>  
+        <p id="diagnostico-leitura">—</p>  
+      </div>  
+
+      <div class="text-box">  
+        <h3>Síntese diagnóstica</h3>  
+        <p id="diagnostico-sintese">—</p>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section" id="behavior-section">  
+    <h2>Análise Comportamental e Aderência</h2>  
+    <p class="section-subtitle">  
+      Interpretação dos padrões de execução, sabotadores, rotina, ambiente e consistência do cliente.  
+    </p>  
+
+    <div class="insight-list">  
+      <div class="insight-row">  
+        <span>Aderência global</span>  
+        <strong id="behavior-aderencia">—</strong>  
+      </div>  
+
+      <div class="insight-row">  
+        <span>Ambiente e rotina</span>  
+        <strong id="behavior-ambiente">—</strong>  
+      </div>  
+
+      <div class="insight-row">  
+        <span>Sabotadores predominantes</span>  
+        <strong id="behavior-sabotadores">—</strong>  
+      </div>  
+
+      <div class="insight-row">  
+        <span>Leitura comportamental</span>  
+        <strong id="behavior-leitura">—</strong>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section" id="next-section">  
+    <h2>Próximo Direcionamento</h2>  
+    <p class="section-subtitle">  
+      O que será mantido, o que será ajustado e qual deve ser o foco operacional do próximo ciclo.  
+    </p>  
+
+    <div class="two-col">  
+      <div class="text-box">  
+        <h3>Manter</h3>  
+        <p id="next-manter">—</p>  
+      </div>  
+
+      <div class="text-box">  
+        <h3>Ajustar</h3>  
+        <p id="next-ajustar">—</p>  
+      </div>  
+
+      <div class="text-box">  
+        <h3>Foco do próximo ciclo</h3>  
+        <p id="next-foco">—</p>  
+      </div>  
+
+      <div class="text-box">  
+        <h3>Meta principal</h3>  
+        <p id="next-meta">—</p>  
+      </div>  
+    </div>  
+  </section>  
+
+  <section class="report-section hidden" id="exames-section">  
+    <h2>Exames Laboratoriais</h2>  
+    <p class="section-subtitle">  
+      Marcadores laboratoriais relevantes para o acompanhamento do caso.  
+    </p>  
+    <div id="exames-grid" class="summary-grid"></div>  
+  </section>  
+
+  <section class="report-section">  
+    <h2>Linha do Acompanhamento</h2>  
+    <p class="section-subtitle">  
+      Histórico das observações e registros de evolução do processo.  
+    </p>  
+
+    <div id="timeline-list" class="timeline">  
+      <div class="empty-box">Nenhum acompanhamento registrado até o momento.</div>  
+    </div>  
+  </section>  
 </div>
-</div>
 
-<!-- PILARES -->
-<div class="card">
-<h2>Pilares (0-10)</h2>
-
-<div class="grid grid-2">
-<input id="movimento" type="number" placeholder="Movimento">
-<input id="alimentacao" type="number" placeholder="Alimentação">
-<input id="sono" type="number" placeholder="Sono">
-<input id="proposito" type="number" placeholder="Propósito">
-<input id="social" type="number" placeholder="Social">
-<input id="estresse" type="number" placeholder="Estresse">
-</div>
-</div>
-
-<!-- MÉTRICAS -->
-<div class="card">
-<h2>Métricas</h2>
-
-<div class="grid grid-2">
-<input id="peso" placeholder="Peso">
-<input id="bf" placeholder="BF%">
-<input id="cintura" placeholder="Cintura">
-<input id="rcq" placeholder="RCQ">
-<input id="rce" placeholder="RCE">
-<input id="massa_magra" placeholder="Massa magra">
-</div>
-</div>
-
-<!-- ANÁLISE -->
-<div class="card">
-<h2>Análise técnica</h2>
-
-<div class="grid">
-<textarea id="leitura" placeholder="Leitura técnica"></textarea>
-<textarea id="sintese" placeholder="Síntese"></textarea>
-
-<input id="avanco" placeholder="Principal avanço">
-<input id="gargalo" placeholder="Principal gargalo">
-<input id="prioridade" placeholder="Prioridade">
-</div>
-</div>
-
-<!-- COMPORTAMENTO -->
-<div class="card">
-<h2>Comportamento</h2>
-
-<div class="grid">
-<input id="aderencia" placeholder="Aderência">
-<input id="ambiente" placeholder="Ambiente">
-<input id="sabotadores" placeholder="Sabotadores">
-<textarea id="leitura_comportamental" placeholder="Leitura comportamental"></textarea>
-</div>
-</div>
-
-<!-- DIRECIONAMENTO -->
-<div class="card">
-<h2>Direcionamento</h2>
-
-<div class="grid">
-<input id="manter" placeholder="Manter">
-<input id="ajustar" placeholder="Ajustar">
-<input id="foco" placeholder="Foco">
-<input id="meta" placeholder="Meta">
-</div>
-</div>
-
-<button id="salvar-avaliacao-btn">Salvar Avaliação</button>
-
-</div>
-
-<script>
-document.getElementById("salvar-avaliacao-btn").addEventListener("click", () => {
-
-  const clienteId = new URLSearchParams(window.location.search).get("id");
-
-  const clientes = JSON.parse(localStorage.getItem("za_clientes") || "[]");
-  const cliente = clientes.find(c => String(c.id) === String(clienteId));
-
-  if (!cliente) {
-    alert("Cliente não encontrado");
-    return;
-  }
-
-  const nova = {
-    id: Date.now(),
-    data: new Date().toISOString(),
-
-    titulo: document.getElementById("titulo").value,
-    resumo: document.getElementById("resumo").value,
-    objetivo: document.getElementById("objetivo").value,
-    fase: document.getElementById("fase").value,
-
-    pilares: {
-      movimento: Number(document.getElementById("movimento").value),
-      alimentacao: Number(document.getElementById("alimentacao").value),
-      sono: Number(document.getElementById("sono").value),
-      proposito: Number(document.getElementById("proposito").value),
-      social: Number(document.getElementById("social").value),
-      estresse: Number(document.getElementById("estresse").value)
-    },
-
-    metricas: {
-      peso: document.getElementById("peso").value,
-      bf: document.getElementById("bf").value,
-      cintura: document.getElementById("cintura").value,
-      rcq: document.getElementById("rcq").value,
-      rce: document.getElementById("rce").value,
-      massa_magra: document.getElementById("massa_magra").value
-    },
-
-    analise: {
-      leitura: document.getElementById("leitura").value,
-      sintese: document.getElementById("sintese").value,
-      avanco_principal: document.getElementById("avanco").value,
-      gargalo_principal: document.getElementById("gargalo").value,
-      prioridade: document.getElementById("prioridade").value,
-      aderencia: document.getElementById("aderencia").value,
-      ambiente: document.getElementById("ambiente").value,
-      sabotadores: document.getElementById("sabotadores").value,
-      leitura_comportamental: document.getElementById("leitura_comportamental").value
-    },
-
-    direcionamento: {
-      manter: document.getElementById("manter").value,
-      ajustar: document.getElementById("ajustar").value,
-      foco: document.getElementById("foco").value,
-      meta: document.getElementById("meta").value
-    }
-  };
-
-  cliente.avaliacoes = cliente.avaliacoes || [];
-  cliente.avaliacoes.push(nova);
-
-  localStorage.setItem("za_clientes", JSON.stringify(clientes));
-
-  alert("Avaliação salva com sucesso");
-
-  window.location.href = `../relatorio/index.html?id=${clienteId}`;
-});
-</script>
-
-</body>
+  </main>    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    <script src="../assets/js/supabase.js?v=3"></script>    <script src="../assets/js/guard.js?v=3"></script>    <script src="../assets/js/storage.js?v=2"></script>    <script src="../assets/js/logout.js?v=3"></script>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    <script src="../assets/js/relatorio-cliente.js?v=120"></script>  </body>  
 </html>
