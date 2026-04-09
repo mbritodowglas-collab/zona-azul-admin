@@ -24,13 +24,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const clientes = window.ZAStorage?.getClientes?.() || JSON.parse(localStorage.getItem("za_clientes") || "[]");
-  const leads = window.ZAStorage?.getLeads?.() || JSON.parse(localStorage.getItem("za_leads") || "[]");
+  const clientes =
+    window.ZAStorage?.getClientes?.() ||
+    JSON.parse(localStorage.getItem("za_clientes") || "[]");
 
-  const cliente = clientes.find(c => String(c.id) === String(clienteId));
+  const leads =
+    window.ZAStorage?.getLeads?.() ||
+    JSON.parse(localStorage.getItem("za_leads") || "[]");
+
+  const cliente = clientes.find((c) => String(c.id) === String(clienteId));
   const leadRelacionado =
-    leads.find(l => String(l.clienteId) === String(clienteId)) ||
-    leads.find(l => String(l.id) === String(clienteId)) ||
+    leads.find((l) => String(l.clienteId) === String(clienteId)) ||
+    leads.find((l) => String(l.id) === String(clienteId)) ||
     null;
 
   if (!cliente) {
@@ -281,6 +286,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     )
   );
 
+  const protocoloFisico = String(
+    firstFilled(
+      planejamento.protocoloFisico,
+      diagnostico.protocolo_fisico,
+      relatorioCompleto.protocoloFisico,
+      ""
+    )
+  ).toLowerCase();
+
   const pesoInicial = getInitialMetric("peso");
   const pesoAtual = firstFilled(metricas.peso, base.peso, pre.peso, cliente.peso, 0);
 
@@ -293,19 +307,51 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cinturaInicial = getInitialMetric("cintura");
   const cinturaAtual = firstFilled(metricas.cintura, base.cintura, pre.cintura, cliente.cintura, 0);
 
+  const rcqInicial = getInitialMetric("rcq");
+  const rcqAtual = firstFilled(metricas.rcq, base.rcq, pre.rcq, cliente.rcq, 0);
+
+  const rceInicial = getInitialMetric("rce");
+  const rceAtual = firstFilled(metricas.rce, base.rce, pre.rce, cliente.rce, 0);
+
+  const mostrarMassaMagra =
+    hasContent(massaAtual) &&
+    asNumber(massaAtual, 0) > 0 &&
+    !protocoloFisico.includes("marinha");
+
+  const metricCards = [];
+
+  if (hasContent(pesoAtual) && asNumber(pesoAtual, 0) > 0) {
+    metricCards.push(metricCard("Peso", pesoAtual, pesoInicial, " kg"));
+  }
+
+  if (hasContent(bfAtual) && asNumber(bfAtual, 0) > 0) {
+    metricCards.push(metricCard("BF", bfAtual, bfInicial, "%"));
+  }
+
+  if (mostrarMassaMagra) {
+    metricCards.push(metricCard("Massa magra", massaAtual, massaInicial, " kg"));
+  }
+
+  if (hasContent(cinturaAtual) && asNumber(cinturaAtual, 0) > 0) {
+    metricCards.push(metricCard("Cintura", cinturaAtual, cinturaInicial, " cm"));
+  }
+
+  if (hasContent(rcqAtual) && asNumber(rcqAtual, 0) > 0) {
+    metricCards.push(metricCard("RCQ", rcqAtual, rcqInicial, ""));
+  }
+
+  if (hasContent(rceAtual) && asNumber(rceAtual, 0) > 0) {
+    metricCards.push(metricCard("RCE", rceAtual, rceInicial, ""));
+  }
+
   const metricsGrid = document.getElementById("metrics-grid");
-  const hasMetricasComparativas = [pesoAtual, bfAtual, massaAtual, cinturaAtual].some(hasContent);
+  const hasMetricasComparativas = metricCards.length > 0;
 
   if (metricsGrid) {
     if (!hasMetricasComparativas) {
       metricsGrid.innerHTML = createEmptyBox("Nenhuma métrica comparativa registrada até o momento.");
     } else {
-      metricsGrid.innerHTML = [
-        metricCard("Peso", pesoAtual, pesoInicial, " kg"),
-        metricCard("BF", bfAtual, bfInicial, "%"),
-        metricCard("Massa magra", massaAtual, massaInicial, " kg"),
-        metricCard("Cintura", cinturaAtual, cinturaInicial, " cm")
-      ].join("");
+      metricsGrid.innerHTML = metricCards.join("");
     }
   }
 
@@ -345,12 +391,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const radarCanvas = document.getElementById("radar-chart");
-  const hasRadarAtual = Object.values(radarAtual).some(v => Number.isFinite(v) && v > 0);
+  const hasRadarAtual = Object.values(radarAtual).some((v) => Number.isFinite(v) && v > 0);
 
   if (radarCanvas && typeof Chart !== "undefined" && hasRadarAtual) {
     const datasets = [];
 
-    if (radarAnterior && Object.values(radarAnterior).some(v => Number.isFinite(v) && v > 0)) {
+    if (radarAnterior && Object.values(radarAnterior).some((v) => Number.isFinite(v) && v > 0)) {
       datasets.push({
         label: radarLabelAnterior,
         data: Object.values(radarAnterior),
@@ -413,10 +459,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     new Chart(evolucaoCanvas, {
       type: "line",
       data: {
-        labels: evolucao.map(e => firstFilled(e.data, "Registro")),
+        labels: evolucao.map((e) => firstFilled(e.data, "Registro")),
         datasets: [{
           label: "Peso",
-          data: evolucao.map(e => asNumber(e.peso, 0)),
+          data: evolucao.map((e) => asNumber(e.peso, 0)),
           borderColor: "#7cff5a",
           backgroundColor: "rgba(124,255,90,0.15)",
           tension: 0.3,
@@ -573,19 +619,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const timelineList = document.getElementById("timeline-list");
   if (timelineList) {
-    const timelineAcompanhamentos = acompanhamentos.map(item => ({
+    const timelineAcompanhamentos = acompanhamentos.map((item) => ({
       titulo: item.titulo,
       data: item.data,
       descricao: item.descricao
     }));
 
-    const timelineBase = timelineCliente.map(item => ({
+    const timelineBase = timelineCliente.map((item) => ({
       titulo: firstFilled(item.tipo, "Registro"),
       data: item.data,
       descricao: item.descricao
     }));
 
-    const timelineReavaliacoes = reavaliacoes.map(item => ({
+    const timelineReavaliacoes = reavaliacoes.map((item) => ({
       titulo: firstFilled(item.titulo, "Reavaliação"),
       data: item.data,
       descricao: firstFilled(item.descricao, item.resumo, "Reavaliação registrada no sistema.")
@@ -593,7 +639,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const linhaInicial = {
       titulo: "Entrada inicial do caso",
-      data: firstFilled(cliente.data_inicio, cliente.updatedAt, cliente.createdAt, pre.created_at, new Date().toISOString()),
+      data: firstFilled(
+        cliente.data_inicio,
+        cliente.updatedAt,
+        cliente.createdAt,
+        pre.created_at,
+        new Date().toISOString()
+      ),
       descricao: firstFilled(
         pre.queixa_principal,
         pre.objetivo,
@@ -607,7 +659,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     timelineFinal.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
-    timelineList.innerHTML = timelineFinal.map(item => `
+    timelineList.innerHTML = timelineFinal.map((item) => `
       <div class="timeline-item">
         <div class="timeline-item-top">
           <strong>${firstFilled(item.titulo, "Acompanhamento")}</strong>
@@ -618,17 +670,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     `).join("");
   }
 
-  const hasLeituraTecnica = hasContent(firstFilled(
-    relatorioCompleto.leituraTecnica,
-    diagnostico.leitura,
-    planejamento.leituraTecnica,
-    pre.leituraTecnica
-  )) || hasContent(firstFilled(
-    relatorioCompleto.sinteseDiagnostica,
-    diagnostico.sintese,
-    planejamento.sinteseDiagnostica,
-    pre.sinteseDiagnostica
-  ));
+  const hasLeituraTecnica =
+    hasContent(firstFilled(
+      relatorioCompleto.leituraTecnica,
+      diagnostico.leitura,
+      planejamento.leituraTecnica,
+      pre.leituraTecnica
+    )) ||
+    hasContent(firstFilled(
+      relatorioCompleto.sinteseDiagnostica,
+      diagnostico.sintese,
+      planejamento.sinteseDiagnostica,
+      pre.sinteseDiagnostica
+    ));
 
   const hasComportamento = [
     relatorioCompleto.aderencia,
@@ -689,8 +743,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const perimetriaSection = document.getElementById("perimetria-section");
   if (perimetriaSection) {
-    const temPerimetria = Object.keys(perimetriaPlanejamento).length > 0 ||
-      ["cintura", "quadril", "peito", "coxa", "braco", "abdome"].some(key =>
+    const temPerimetria =
+      Object.keys(perimetriaPlanejamento).length > 0 ||
+      ["cintura", "quadril", "peito", "coxa", "braco", "abdome"].some((key) =>
         hasContent(firstFilled(base[key], pre[key], cliente[key]))
       );
     perimetriaSection.classList.toggle("hidden", !temPerimetria);
