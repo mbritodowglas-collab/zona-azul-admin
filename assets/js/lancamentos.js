@@ -746,7 +746,6 @@ window.ZALancamentos = (() => {
   }
 
   function renderCabecalho() {
-    setText("cliente-nome-topo", cliente?.nome || "Lançamentos");
     setText("cliente-subtitulo", "Registro técnico do caso.");
     setText("cliente-nome", cliente?.nome || "Cliente");
     setText("cliente-email", cliente?.email || "—");
@@ -754,11 +753,6 @@ window.ZALancamentos = (() => {
 
     const avatar = document.getElementById("cliente-avatar");
     if (avatar) avatar.textContent = getInitials(cliente?.nome || "Cliente");
-
-    const voltar = document.getElementById("voltar-cliente-link");
-    if (voltar) {
-      voltar.href = `../cliente/index.html?id=${encodeURIComponent(clienteId)}`;
-    }
   }
 
   function renderPre() {
@@ -1297,11 +1291,9 @@ window.ZALancamentos = (() => {
       .slice()
       .reverse()
       .map((item) => `
-        <div class="acomp-item">
-          <div class="acomp-item-top">
-            <strong>${item.data ? formatDate(item.data) : "Sem data"}</strong>
-            <span>${item.aderencia || "Sem aderência informada"}</span>
-          </div>
+        <div class="acompanhamento-item">
+          <p><strong>${item.data ? formatDate(item.data) : "Sem data"}</strong></p>
+          <p><strong>Aderência:</strong> ${item.aderencia || "Sem aderência informada"}</p>
           <p><strong>Evolução:</strong> ${item.evolucao || "—"}</p>
           <p><strong>Dificuldades:</strong> ${item.dificuldades || "—"}</p>
           <p><strong>Ajustes:</strong> ${item.ajustes || "—"}</p>
