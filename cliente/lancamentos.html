@@ -448,25 +448,8 @@
       line-height: 1.7;
     }
 
-    .exame-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: rgba(157,255,214,0.10);
-      color: var(--success);
-      border: 1px solid rgba(157,255,214,0.18);
-      margin-bottom: 14px;
-    }
-
     .hidden { display: none !important; }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 1280px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -485,9 +468,7 @@
       }
 
       .nav-mini { flex-direction: row; }
-
       .lancamentos-grid { grid-template-columns: 1fr; }
-
       .grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -530,7 +511,6 @@
 
         <div id="lancamentos-page">
 
-          <!-- HERO -->
           <section class="card cliente-hero-card" style="margin-bottom: 16px;">
             <div class="card-body cliente-hero">
               <div class="cliente-hero-left">
@@ -547,7 +527,6 @@
           <section class="lancamentos-grid">
             <div class="lancamentos-col-main">
 
-              <!-- DADOS BASE -->
               <div class="card launch-accordion is-open" data-accordion="dados-base">
                 <div class="card-header">
                   <button class="accordion-toggle" type="button" aria-expanded="true" aria-controls="panel-dados-base">
@@ -612,7 +591,6 @@
                 </div>
               </div>
 
-              <!-- SESSÃO E AVALIAÇÃO -->
               <div class="card launch-accordion" data-accordion="sessao-avaliacao">
                 <div class="card-header">
                   <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-sessao-avaliacao">
@@ -814,173 +792,6 @@
                 </div>
               </div>
 
-              <!-- EXAMES DE SANGUE -->
-              <div class="card launch-accordion" data-accordion="exames-sangue">
-                <div class="card-header">
-                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-exames-sangue">
-                    <div>
-                      <h3>Exames de sangue</h3>
-                      <p class="cliente-hero-meta">Marcadores laboratoriais relevantes para o caso.</p>
-                    </div>
-                    <span class="accordion-icon">⌄</span>
-                  </button>
-                </div>
-                <div class="card-body accordion-panel" id="panel-exames-sangue">
-
-                  <div class="grid cols-2">
-                    <div class="field">
-                      <label for="exame-data">Data do exame</label>
-                      <input id="exame-data" type="date" />
-                    </div>
-                    <div class="field">
-                      <label for="exame-laboratorio">Laboratório / Origem</label>
-                      <input id="exame-laboratorio" type="text" placeholder="Ex.: Sabin, particular, UBS..." />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="exame-badge">❤️ Cardiovascular e metabólico</div>
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="ex-pressao-sistolica">Pressão sistólica (mmHg)</label>
-                      <input id="ex-pressao-sistolica" type="text" placeholder="Ex.: 120" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-pressao-diastolica">Pressão diastólica (mmHg)</label>
-                      <input id="ex-pressao-diastolica" type="text" placeholder="Ex.: 80" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-glicose">Glicose jejum (mg/dL)</label>
-                      <input id="ex-glicose" type="text" placeholder="Ex.: 92" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-hemoglobina-glicada">HbA1c (%)</label>
-                      <input id="ex-hemoglobina-glicada" type="text" placeholder="Ex.: 5,4" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-insulina">Insulina jejum (µUI/mL)</label>
-                      <input id="ex-insulina" type="text" placeholder="Ex.: 8,2" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-homa">HOMA-IR</label>
-                      <input id="ex-homa" type="text" placeholder="Ex.: 1,9" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="exame-badge">🧪 Lipidograma</div>
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="ex-colesterol-total">Colesterol total (mg/dL)</label>
-                      <input id="ex-colesterol-total" type="text" placeholder="Ex.: 185" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-ldl">LDL (mg/dL)</label>
-                      <input id="ex-ldl" type="text" placeholder="Ex.: 110" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-hdl">HDL (mg/dL)</label>
-                      <input id="ex-hdl" type="text" placeholder="Ex.: 48" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-vldl">VLDL (mg/dL)</label>
-                      <input id="ex-vldl" type="text" placeholder="Ex.: 22" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-triglicerideos">Triglicerídeos (mg/dL)</label>
-                      <input id="ex-triglicerideos" type="text" placeholder="Ex.: 140" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="exame-badge">🔬 Inflamação e função orgânica</div>
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="ex-pcr">PCR ultrassensível (mg/L)</label>
-                      <input id="ex-pcr" type="text" placeholder="Ex.: 1,2" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-tgo">TGO / AST (U/L)</label>
-                      <input id="ex-tgo" type="text" placeholder="Ex.: 28" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-tgp">TGP / ALT (U/L)</label>
-                      <input id="ex-tgp" type="text" placeholder="Ex.: 32" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-ggt">GGT (U/L)</label>
-                      <input id="ex-ggt" type="text" placeholder="Ex.: 24" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-creatinina">Creatinina (mg/dL)</label>
-                      <input id="ex-creatinina" type="text" placeholder="Ex.: 0,9" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-ureia">Ureia (mg/dL)</label>
-                      <input id="ex-ureia" type="text" placeholder="Ex.: 30" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="exame-badge">⚡ Hormônios e micronutrientes</div>
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="ex-testosterona">Testosterona total (ng/dL)</label>
-                      <input id="ex-testosterona" type="text" placeholder="Ex.: 520" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-tsh">TSH (mUI/L)</label>
-                      <input id="ex-tsh" type="text" placeholder="Ex.: 2,1" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-t4-livre">T4 livre (ng/dL)</label>
-                      <input id="ex-t4-livre" type="text" placeholder="Ex.: 1,2" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-vitamina-d">Vitamina D 25(OH)D (ng/mL)</label>
-                      <input id="ex-vitamina-d" type="text" placeholder="Ex.: 38" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-vitamina-b12">Vitamina B12 (pg/mL)</label>
-                      <input id="ex-vitamina-b12" type="text" placeholder="Ex.: 420" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-ferritina">Ferritina (ng/mL)</label>
-                      <input id="ex-ferritina" type="text" placeholder="Ex.: 85" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="exame-badge">🩸 Hemograma resumido</div>
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="ex-hemoglobina">Hemoglobina (g/dL)</label>
-                      <input id="ex-hemoglobina" type="text" placeholder="Ex.: 14,5" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-hematocrito">Hematócrito (%)</label>
-                      <input id="ex-hematocrito" type="text" placeholder="Ex.: 43" />
-                    </div>
-                    <div class="field">
-                      <label for="ex-leucocitos">Leucócitos (mil/µL)</label>
-                      <input id="ex-leucocitos" type="text" placeholder="Ex.: 6,8" />
-                    </div>
-                  </div>
-
-                  <div class="cliente-expand-divider"></div>
-                  <div class="field">
-                    <label for="ex-observacoes">Observações e interpretação</label>
-                    <textarea id="ex-observacoes" placeholder="Registre alertas, padrões identificados, correlações com o caso..."></textarea>
-                  </div>
-
-                  <div class="cliente-section-actions">
-                    <span class="cliente-hub-updated" id="exames-updated">Última atualização: —</span>
-                    <button class="cliente-btn" id="salvar-exames-btn">Salvar exames</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ANÁLISE DO CASO -->
               <div class="card launch-accordion" data-accordion="analise-caso">
                 <div class="card-header">
                   <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-analise-caso">
@@ -1214,7 +1025,6 @@
 
             </div>
 
-            <!-- COLUNA LATERAL -->
             <div class="lancamentos-col-side">
               <div class="card launch-accordion" data-accordion="acompanhamento">
                 <div class="card-header">
@@ -1275,4 +1085,3 @@
   <script src="../assets/js/lancamentos.js?v=2"></script>
 </body>
 </html>
-No lancamentos.js, para salvar/carregar os exames basta adicionar um bloco seguindo o mesmo padrão dos outros — manda o trecho do save de qualquer outra seção que eu gero o equivalente para os exames.
