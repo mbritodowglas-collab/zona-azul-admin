@@ -15,25 +15,22 @@
       --bg-0: #020816;
       --bg-1: #061126;
       --bg-2: #0a1830;
-
       --panel: rgba(10, 24, 48, 0.78);
-      --panel-2: rgba(12, 26, 52, 0.9);
-      --panel-soft: rgba(255,255,255,0.04);
-
+      --panel-2: rgba(8, 20, 40, 0.92);
       --line: rgba(255,255,255,0.08);
       --line-soft: rgba(255,255,255,0.05);
-
       --text: #f3f8ff;
       --muted: #9cb0cb;
       --muted-2: #7f92ad;
-
       --blue-1: #47b8ff;
       --blue-2: #1f7cff;
       --green-1: #7cff5a;
-
+      --green-2: #41d13f;
+      --success: #9dffd6;
+      --warning: #ffe08a;
+      --danger: #ffb0b0;
       --shadow-xl: 0 24px 60px rgba(0,0,0,0.35);
       --shadow-lg: 0 18px 42px rgba(0,0,0,0.28);
-
       --radius-xl: 28px;
       --radius-lg: 22px;
       --radius-md: 16px;
@@ -45,310 +42,339 @@
       color: var(--text);
       background:
         radial-gradient(circle at top left, rgba(71,184,255,0.16), transparent 22%),
-        radial-gradient(circle at top right, rgba(124,255,90,0.10), transparent 18%),
-        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(124,255,90,0.12), transparent 18%),
+        radial-gradient(circle at 50% 0%, rgba(31,124,255,0.14), transparent 28%),
         linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
       overflow-x: hidden;
     }
 
-    .main {
-      width: 100%;
-      padding: 22px;
-    }
-
-    .page-wrap {
-      max-width: 1180px;
-      margin: 0 auto;
+    .app-shell {
       display: grid;
-      gap: 18px;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
     }
 
-    .minimal-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 4px 0 2px;
-    }
-
-    .minimal-topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .sidebar {
+      padding: 24px 20px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+      backdrop-filter: blur(12px);
       min-width: 0;
     }
 
-    .back-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      display: inline-flex;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 26px;
+    }
+
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
       flex-shrink: 0;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
+      letter-spacing: 0.04em;
     }
 
-    .back-btn:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.08);
-      opacity: 0.98;
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #ffffff;
     }
 
-    .minimal-kicker {
-      display: grid;
-      gap: 3px;
-      min-width: 0;
-    }
-
-    .minimal-kicker span {
+    .brand-highlight {
+      display: block;
+      margin-top: 6px;
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--muted-2);
+      background: linear-gradient(90deg, #47b8ff, #7cff5a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
     }
 
-    .minimal-kicker strong {
-      font-size: 15px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .top-actions {
+    .nav a {
+      min-height: 52px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 700;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
     }
 
-    .ghost-btn {
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
+    .nav a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.08);
+      transform: translateX(2px);
+    }
+
+    .nav a.active {
       color: #ffffff;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      background: linear-gradient(135deg, rgba(71,184,255,0.12), rgba(124,255,90,0.08));
+      border-color: rgba(71,184,255,0.16);
     }
 
-    .ghost-btn:hover {
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.08);
-    }
-
-    .hero-card {
-      border-radius: 30px;
-      background:
-        radial-gradient(circle at top right, rgba(124,255,90,0.08), transparent 18%),
-        linear-gradient(135deg, rgba(71,184,255,0.10), rgba(124,255,90,0.04)),
-        var(--panel);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-xl);
-      backdrop-filter: blur(12px);
+    .main {
       padding: 24px;
-      position: relative;
+      min-width: 0;
+    }
+
+    .page-wrap {
+      display: grid;
+      gap: 22px;
+      max-width: 1560px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 38px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 760px;
+    }
+
+    .cliente-topo-acoes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .cliente-btn,
+    .cliente-btn-secundario,
+    .cliente-btn-abrir {
+      min-height: 44px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .cliente-btn:hover,
+    .cliente-btn-secundario:hover,
+    .cliente-btn-abrir:hover {
+      transform: translateY(-1px);
+      opacity: 0.97;
+    }
+
+    .cliente-btn-secundario {
+      background: rgba(255,255,255,0.06);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .cliente-btn-abrir,
+    .cliente-btn {
+      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      color: #ffffff;
+      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
+    }
+
+    .card {
+      border-radius: 22px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
       overflow: hidden;
     }
 
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      right: -40px;
-      bottom: -60px;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(71,184,255,0.16), transparent 70%);
-      filter: blur(8px);
-      pointer-events: none;
+    .card-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .hero-inner {
-      position: relative;
-      z-index: 1;
+    .card-body {
+      padding: 22px;
+    }
+
+    .cliente-hero-card .card-body {
+      padding: 24px;
+    }
+
+    .cliente-hero {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 18px;
       flex-wrap: wrap;
     }
 
-    .hero-left {
+    .cliente-hero-left {
       display: flex;
       align-items: center;
       gap: 16px;
       min-width: 0;
     }
 
-    .avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 20px;
+    .cliente-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
       background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow: 0 16px 32px rgba(31,124,255,0.24);
-      color: #ffffff;
+      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
+      color: #fff;
       flex-shrink: 0;
     }
 
-    .hero-copy {
-      min-width: 0;
-      display: grid;
-      gap: 6px;
-    }
-
-    .hero-copy h1 {
+    .cliente-hero h3 {
       margin: 0;
-      font-size: 34px;
-      line-height: 1.02;
-      letter-spacing: -0.05em;
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
       color: #ffffff;
     }
 
-    .hero-copy p {
-      margin: 0;
+    .cliente-hero-meta {
+      margin: 6px 0 0;
       color: var(--muted);
       font-size: 14px;
-      line-height: 1.65;
-      white-space: pre-wrap;
+      line-height: 1.6;
     }
 
-    .hero-goal {
-      color: #dce9ff !important;
-      font-size: 15px !important;
+    .cliente-hero-objetivo {
+      margin: 6px 0 0;
+      color: #d9e6f8;
+      font-size: 15px;
+      line-height: 1.6;
     }
 
-    .hero-side {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .chip {
-      min-height: 40px;
-      padding: 0 14px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 800;
-      color: #edf5ff;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      white-space: nowrap;
-    }
-
-    .content-grid {
+    .lancamentos-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.78fr);
+      grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.8fr);
       gap: 16px;
       align-items: start;
     }
 
-    .col-main,
-    .col-side {
+    .lancamentos-col-main,
+    .lancamentos-col-side {
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
 
-    .accordion-card {
-      border-radius: 24px;
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(12px);
+    .launch-accordion {
       overflow: hidden;
-    }
-
-    .accordion-head {
-      padding: 20px 22px;
     }
 
     .accordion-toggle {
       width: 100%;
-      border: 0;
-      background: transparent;
-      color: inherit;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      cursor: pointer;
-      padding: 0;
       text-align: left;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: inherit;
+      padding: 0;
     }
 
-    .accordion-title-group {
-      min-width: 0;
-    }
-
-    .accordion-title-group h2 {
-      margin: 0;
+    .accordion-toggle h3 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
       color: #ffffff;
-      font-size: 24px;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
     }
 
-    .accordion-title-group p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
+    .accordion-toggle .cliente-hero-meta,
+    .accordion-toggle .muted {
+      margin: 0;
     }
 
     .accordion-icon {
-      flex-shrink: 0;
+      flex: 0 0 auto;
+      font-size: 24px;
+      line-height: 1;
       color: rgba(255,255,255,0.72);
-      font-size: 22px;
       transition: transform 0.22s ease;
     }
 
-    .accordion-card.is-open .accordion-icon {
+    .launch-accordion.is-open .accordion-icon {
       transform: rotate(180deg);
     }
 
     .accordion-panel {
       display: none;
-      padding: 0 22px 22px;
-      border-top: 1px solid var(--line-soft);
     }
 
-    .accordion-card.is-open .accordion-panel {
+    .launch-accordion.is-open .accordion-panel {
       display: block;
     }
 
-    .subsection-title {
-      margin: 18px 0 14px;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      color: #ffffff;
+    .launch-accordion:not(.is-open) .card-header {
+      border-bottom: 0;
     }
 
-    .divider {
+    .subsection-title {
+      margin: 0 0 14px;
+      font-size: 16px;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .cliente-expand-divider {
       height: 1px;
-      background: var(--line-soft);
+      background: rgba(255,255,255,0.06);
       margin: 22px 0;
     }
 
@@ -357,15 +383,15 @@
       gap: 14px;
     }
 
-    .cols-1 {
+    .grid.cols-1 {
       grid-template-columns: 1fr;
     }
 
-    .cols-2 {
+    .grid.cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .cols-3 {
+    .grid.cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
@@ -376,10 +402,10 @@
     }
 
     .field label {
-      font-size: 11px;
-      font-weight: 900;
+      font-size: 12px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.08em;
       color: var(--muted-2);
     }
 
@@ -395,7 +421,6 @@
       padding: 12px 14px;
       font: inherit;
       outline: none;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
 
     .field textarea {
@@ -413,11 +438,6 @@
     .field textarea:focus {
       border-color: rgba(71,184,255,0.35);
       box-shadow: 0 0 0 3px rgba(71,184,255,0.08);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .field input[readonly] {
-      opacity: 0.9;
     }
 
     .birth-grid {
@@ -426,7 +446,7 @@
       gap: 10px;
     }
 
-    .section-actions {
+    .cliente-section-actions {
       display: flex;
       justify-content: space-between;
       gap: 12px;
@@ -435,46 +455,10 @@
       margin-top: 18px;
     }
 
-    .updated-label {
+    .cliente-hub-updated {
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-      min-height: 44px;
-      padding: 0 16px;
-      border-radius: 14px;
-      border: 0;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 800;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
-    }
-
-    .btn-primary:hover,
-    .btn-secondary:hover {
-      transform: translateY(-1px);
-      opacity: 0.98;
-    }
-
-    .btn-primary {
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow: 0 12px 22px rgba(31,124,255,0.18);
-    }
-
-    .btn-secondary {
-      color: #ffffff;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .action-cluster {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
     }
 
     .radar-grid {
@@ -513,11 +497,11 @@
     }
 
     .radar-pre span {
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.08em;
       color: var(--muted-2);
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .radar-pre strong {
@@ -532,11 +516,11 @@
     }
 
     .radar-revisado label {
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.08em;
       color: var(--muted-2);
-      font-weight: 900;
+      font-weight: 800;
     }
 
     .checkbox-field {
@@ -567,37 +551,11 @@
       margin-top: 12px;
     }
 
-    .acomp-item {
+    .acompanhamento-item {
       padding: 14px 16px;
       border-radius: 16px;
       background: rgba(255,255,255,0.035);
       border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .acomp-item-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .acomp-item-top strong {
-      color: #ffffff;
-      font-size: 14px;
-    }
-
-    .acomp-item-top span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .acomp-item p {
-      margin: 6px 0 0;
-      color: #d6e4f8;
-      font-size: 14px;
-      line-height: 1.7;
     }
 
     .empty-state {
@@ -614,217 +572,755 @@
       display: none !important;
     }
 
-    @media (max-width: 1080px) {
-      .content-grid {
+    @media (max-width: 1280px) {
+      .app-shell {
         grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .lancamentos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
     @media (max-width: 760px) {
+      .sidebar,
       .main {
         padding: 16px;
       }
 
-      .hero-card {
-        padding: 20px;
+      .topbar h2 {
+        font-size: 30px;
       }
 
-      .hero-copy h1 {
-        font-size: 28px;
-      }
-
-      .minimal-topbar {
-        align-items: flex-start;
-      }
-
-      .top-actions {
+      .cliente-topo-acoes {
         width: 100%;
       }
 
-      .top-actions > * {
+      .cliente-topo-acoes > * {
         width: 100%;
       }
 
-      .hero-inner,
-      .hero-side {
-        align-items: flex-start;
-      }
-
-      .cols-2,
-      .cols-3,
+      .grid.cols-2,
+      .grid.cols-3,
       .birth-grid,
       .radar-grid,
       .radar-values {
         grid-template-columns: 1fr;
       }
 
-      .section-actions {
-        align-items: stretch;
-      }
-
-      .action-cluster {
-        width: 100%;
-      }
-
-      .action-cluster > * {
-        width: 100%;
+      .cliente-hero-left {
+        align-items: flex-start;
       }
     }
   </style>
 </head>
 <body>
-  <main class="main">
-    <div class="page-wrap">
-      <div class="minimal-topbar">
-        <div class="minimal-topbar-left">
-          <button id="btn-back" class="back-btn" type="button" aria-label="Voltar">←</button>
-          <div class="minimal-kicker">
-            <span>Trackion System</span>
-            <strong>Lançamentos técnicos</strong>
-          </div>
-        </div>
-
-        <div class="top-actions">
-          <button id="logout-btn" class="ghost-btn" type="button">Sair</button>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">TR</div>
+        <div>
+          <h1>Trackion System</h1>
+          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
         </div>
       </div>
 
-      <div id="cliente-not-found" class="hidden">
-        <div class="empty-state">Cliente não encontrado.</div>
-      </div>
+      <nav class="nav">
+        <a href="../index.html">Dashboard</a>
+        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
+        <a class="active" href="../clientes/">Clientes</a>
+      </nav>
+    </aside>
 
-      <div id="lancamentos-page">
-        <section class="hero-card">
-          <div class="hero-inner">
-            <div class="hero-left">
-              <div class="avatar" id="cliente-avatar">C</div>
-              <div class="hero-copy">
-                <h1 id="cliente-nome">Cliente</h1>
-                <p id="cliente-email">email@cliente.com</p>
-                <p id="cliente-objetivo" class="hero-goal">Objetivo principal</p>
-              </div>
-            </div>
-
-            <div class="hero-side">
-              <span class="chip" id="cliente-fase-chip">Fase atual</span>
-              <span class="chip" id="cliente-status-chip">Registro técnico</span>
-            </div>
+    <main class="main">
+      <div class="page-wrap">
+        <div class="topbar">
+          <div>
+            <h2 id="cliente-nome-topo">Lançamentos</h2>
+            <p id="cliente-subtitulo">Registro técnico do caso.</p>
           </div>
-        </section>
 
-        <section class="content-grid">
-          <div class="col-main">
-            <section class="accordion-card is-open launch-accordion" data-accordion="dados-base">
-              <div class="accordion-head">
-                <button class="accordion-toggle" type="button" aria-expanded="true">
-                  <div class="accordion-title-group">
-                    <h2>Base do pré-diagnóstico</h2>
-                    <p>Dados herdados e ajustes finos.</p>
-                  </div>
-                  <span class="accordion-icon">⌄</span>
-                </button>
+          <div class="cliente-topo-acoes">
+            <a id="voltar-cliente-link" class="cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
+            <button id="logout-btn" class="cliente-btn-secundario" type="button">Sair</button>
+          </div>
+        </div>
+
+        <div id="cliente-not-found" class="card hidden">
+          <div class="card-body">
+            <div class="empty-state">Cliente não encontrado.</div>
+          </div>
+        </div>
+
+        <div id="lancamentos-page">
+          <section class="card cliente-hero-card">
+            <div class="card-body cliente-hero">
+              <div class="cliente-hero-left">
+                <div class="cliente-avatar" id="cliente-avatar">C</div>
+                <div>
+                  <h3 id="cliente-nome">Cliente</h3>
+                  <p id="cliente-email" class="cliente-hero-meta">email@cliente.com</p>
+                  <p id="cliente-objetivo" class="cliente-hero-objetivo">Objetivo principal</p>
+                </div>
               </div>
+            </div>
+          </section>
 
-              <div class="accordion-panel">
-                <div class="grid cols-2" style="margin-top:18px;">
-                  <div class="field">
-                    <label for="pre-nome-edit">Nome</label>
-                    <input id="pre-nome-edit" type="text" />
-                  </div>
+          <section class="lancamentos-grid">
+            <div class="lancamentos-col-main">
 
-                  <div class="field">
-                    <label for="pre-email-edit">E-mail</label>
-                    <input id="pre-email-edit" type="email" />
-                  </div>
+              <section class="card launch-accordion is-open" data-accordion="dados-base">
+                <div class="card-header">
+                  <button class="accordion-toggle" type="button" aria-expanded="true">
+                    <div>
+                      <h3>Base do pré-diagnóstico</h3>
+                      <p class="cliente-hero-meta">Dados herdados e ajustes finos.</p>
+                    </div>
+                    <span class="accordion-icon">⌄</span>
+                  </button>
+                </div>
 
-                  <div class="field">
-                    <label for="pre-telefone-edit">Telefone</label>
-                    <input id="pre-telefone-edit" type="text" />
-                  </div>
+                <div class="card-body accordion-panel">
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="pre-nome-edit">Nome</label>
+                      <input id="pre-nome-edit" type="text" />
+                    </div>
 
-                  <div class="field">
-                    <label for="pre-sexo-ref">Sexo para cálculo / referência</label>
-                    <input id="pre-sexo-ref" type="text" placeholder="Ex.: masculino / feminino" />
-                  </div>
+                    <div class="field">
+                      <label for="pre-email-edit">E-mail</label>
+                      <input id="pre-email-edit" type="email" />
+                    </div>
 
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label>Data de nascimento</label>
-                    <div class="birth-grid">
-                      <input id="pre-nascimento-dia" type="number" min="1" max="31" placeholder="Dia" />
-                      <select id="pre-nascimento-mes">
-                        <option value="">Mês</option>
-                        <option value="1">Jan</option>
-                        <option value="2">Fev</option>
-                        <option value="3">Mar</option>
-                        <option value="4">Abr</option>
-                        <option value="5">Mai</option>
-                        <option value="6">Jun</option>
-                        <option value="7">Jul</option>
-                        <option value="8">Ago</option>
-                        <option value="9">Set</option>
-                        <option value="10">Out</option>
-                        <option value="11">Nov</option>
-                        <option value="12">Dez</option>
-                      </select>
-                      <input id="pre-nascimento-ano" type="number" min="1900" max="2100" placeholder="Ano" />
+                    <div class="field">
+                      <label for="pre-telefone-edit">Telefone</label>
+                      <input id="pre-telefone-edit" type="text" />
+                    </div>
+
+                    <div class="field">
+                      <label for="pre-sexo-ref">Sexo para cálculo / referência</label>
+                      <input id="pre-sexo-ref" type="text" placeholder="Ex.: masculino / feminino" />
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label>Data de nascimento</label>
+                      <div class="birth-grid">
+                        <input id="pre-nascimento-dia" type="number" min="1" max="31" placeholder="Dia" />
+                        <select id="pre-nascimento-mes">
+                          <option value="">Mês</option>
+                          <option value="1">Jan</option>
+                          <option value="2">Fev</option>
+                          <option value="3">Mar</option>
+                          <option value="4">Abr</option>
+                          <option value="5">Mai</option>
+                          <option value="6">Jun</option>
+                          <option value="7">Jul</option>
+                          <option value="8">Ago</option>
+                          <option value="9">Set</option>
+                          <option value="10">Out</option>
+                          <option value="11">Nov</option>
+                          <option value="12">Dez</option>
+                        </select>
+                        <input id="pre-nascimento-ano" type="number" min="1900" max="2100" placeholder="Ano" />
+                      </div>
+                    </div>
+
+                    <div class="field">
+                      <label for="pre-idade">Idade</label>
+                      <input id="pre-idade" type="text" readonly />
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="pre-objetivo">Objetivo inicial</label>
+                      <textarea id="pre-objetivo"></textarea>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="pre-resumo">Resumo do pré-diagnóstico</label>
+                      <textarea id="pre-resumo"></textarea>
                     </div>
                   </div>
 
-                  <div class="field">
-                    <label for="pre-idade">Idade</label>
-                    <input id="pre-idade" type="text" readonly />
-                  </div>
-
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label for="pre-objetivo">Objetivo inicial</label>
-                    <textarea id="pre-objetivo"></textarea>
-                  </div>
-
-                  <div class="field" style="grid-column: 1 / -1;">
-                    <label for="pre-resumo">Resumo do pré-diagnóstico</label>
-                    <textarea id="pre-resumo"></textarea>
+                  <div class="cliente-section-actions">
+                    <span class="cliente-hub-updated" id="dados-base-updated">Última atualização: —</span>
+                    <button class="cliente-btn cliente-btn-abrir" id="salvar-dados-base-btn">Salvar dados base</button>
                   </div>
                 </div>
+              </section>
 
-                <div class="section-actions">
-                  <span class="updated-label" id="dados-base-updated">Última atualização: —</span>
-                  <button class="btn-primary" id="salvar-dados-base-btn" type="button">Salvar dados base</button>
+              <section class="card launch-accordion" data-accordion="sessao-avaliacao">
+                <div class="card-header">
+                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                    <div>
+                      <h3>Sessão e avaliação</h3>
+                      <p class="cliente-hero-meta">Estrutura da sessão, protocolo e avaliação física.</p>
+                    </div>
+                    <span class="accordion-icon">⌄</span>
+                  </button>
                 </div>
-              </div>
-            </section>
 
-            <section class="accordion-card launch-accordion" data-accordion="sessao-avaliacao">
-              <div class="accordion-head">
-                <button class="accordion-toggle" type="button" aria-expanded="false">
-                  <div class="accordion-title-group">
-                    <h2>Sessão e avaliação</h2>
-                    <p>Estrutura da sessão, protocolo e avaliação física.</p>
-                  </div>
-                  <span class="accordion-icon">⌄</span>
-                </button>
-              </div>
+                <div class="card-body accordion-panel">
+                  <h4 class="subsection-title">Estrutura da sessão</h4>
 
-              <div class="accordion-panel">
-                <h3 class="subsection-title">Estrutura da sessão</h3>
+                  <div class="grid cols-3">
+                    <div class="field">
+                      <label for="sessao-data">Data da sessão</label>
+                      <input id="sessao-data" type="date" />
+                    </div>
 
-                <div class="grid cols-3">
-                  <div class="field">
-                    <label for="sessao-data">Data da sessão</label>
-                    <input id="sessao-data" type="date" />
-                  </div>
+                    <div class="field">
+                      <label for="sessao-tipo">Tipo</label>
+                      <select id="sessao-tipo">
+                        <option value="">Selecionar</option>
+                        <option value="online">Online</option>
+                        <option value="presencial">Presencial</option>
+                      </select>
+                    </div>
 
-                  <div class="field">
-                    <label for="sessao-tipo">Tipo</label>
-                    <select id="sessao-tipo">
-                      <option value="">Selecionar</option>
-                      <option value="online">Online</option>
-                      <option value="presencial">Presencial</option>
-                    </select>
+                    <div class="field">
+                      <label for="sessao-protocolo">Protocolo</label>
+                      <select id="sessao-protocolo">
+                        <option value="">Selecionar</option>
+                        <option value="A">A — Online (Marinha)</option>
+                        <option value="B">B — Presencial sem dobras</option>
+                        <option value="C">C — Presencial com dobras</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div class="field">
-                    <label for="sessao-protocolo">Protocolo</label>
-                    <select id="sessao-protocolo">
-                      <option value="">Selecionar</option>
-                      <option value="A">A — Online (Marinha)</option>
-                      <option value="B
+                  <p class="cliente-hero-meta" id="sessao-regra-texto" style="margin-top: 14px;">
+                    Se online, o sistema usa automaticamente o protocolo A. No presencial, selecione B ou C.
+                  </p>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Avaliação física</h4>
+
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="peso">Peso (kg)</label>
+                      <input id="peso" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="altura">Altura (m)</label>
+                      <input id="altura" type="number" step="0.01" />
+                    </div>
+
+                    <div class="field">
+                      <label for="cintura">Cintura (cm)</label>
+                      <input id="cintura" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="quadril">Quadril (cm)</label>
+                      <input id="quadril" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="pescoco">Pescoço (cm)</label>
+                      <input id="pescoco" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field" id="field-abdomen-marinha">
+                      <label for="abdomen-marinha">Abdômen (Marinha) (cm)</label>
+                      <input id="abdomen-marinha" type="number" step="0.1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="imc">IMC</label>
+                      <input id="imc" type="text" readonly />
+                    </div>
+
+                    <div class="field">
+                      <label for="rcq">RCQ</label>
+                      <input id="rcq" type="text" readonly />
+                    </div>
+
+                    <div class="field">
+                      <label for="rce">RCE</label>
+                      <input id="rce" type="text" readonly />
+                    </div>
+
+                    <div class="field" id="field-gordura-marinha">
+                      <label for="gordura-marinha">% Gordura (Marinha)</label>
+                      <input id="gordura-marinha" type="text" readonly />
+                    </div>
+
+                    <div class="field hidden" id="field-gordura-dobras">
+                      <label for="gordura-dobras">% Gordura (Dobras)</label>
+                      <input id="gordura-dobras" type="text" readonly />
+                    </div>
+                  </div>
+
+                  <div id="bloco-presencial" class="hidden">
+                    <div class="cliente-expand-divider"></div>
+
+                    <h4 class="subsection-title">Perimetria presencial</h4>
+                    <div class="grid cols-2">
+                      <div class="field">
+                        <label for="torax">Tórax (cm)</label>
+                        <input id="torax" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="abdomen">Abdômen (cm)</label>
+                        <input id="abdomen" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="braco-direito">Braço direito (cm)</label>
+                        <input id="braco-direito" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="braco-esquerdo">Braço esquerdo (cm)</label>
+                        <input id="braco-esquerdo" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="coxa-direita">Coxa direita (cm)</label>
+                        <input id="coxa-direita" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="coxa-esquerda">Coxa esquerda (cm)</label>
+                        <input id="coxa-esquerda" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="panturrilha">Panturrilha (cm)</label>
+                        <input id="panturrilha" type="number" step="0.1" />
+                      </div>
+                    </div>
+
+                    <div class="cliente-expand-divider"></div>
+
+                    <h4 class="subsection-title">Testes funcionais</h4>
+                    <div class="grid cols-2">
+                      <div class="field" style="grid-column: 1 / -1;">
+                        <label for="teste-overhead">Overhead Squat / Mobilidade</label>
+                        <textarea id="teste-overhead" placeholder="Registre observações do overhead squat..."></textarea>
+                      </div>
+
+                      <div class="field" style="grid-column: 1 / -1;">
+                        <label for="teste-thomas">Thomas Test</label>
+                        <textarea id="teste-thomas" placeholder="Registre observações do Thomas Test..."></textarea>
+                      </div>
+
+                      <div class="field">
+                        <label for="teste-sentar-alcancar">Sentar e alcançar</label>
+                        <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 cm ou não realiza" />
+                      </div>
+
+                      <div class="field">
+                        <label for="teste-step-fc">Step test / FC recuperação</label>
+                        <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm ou não realiza" />
+                      </div>
+
+                      <div class="field">
+                        <label for="teste-step-borg">Step test / Borg</label>
+                        <input id="teste-step-borg" type="text" placeholder="Ex.: 13 ou não realiza" />
+                      </div>
+
+                      <div class="field">
+                        <label for="teste-step-classificacao">Step test / Classificação</label>
+                        <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom ou não realiza" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="bloco-avancado" class="hidden">
+                    <div class="cliente-expand-divider"></div>
+
+                    <h4 class="subsection-title">Dobras cutâneas</h4>
+                    <div class="grid cols-2">
+                      <div class="field">
+                        <label for="dobra-peitoral">Peitoral (mm)</label>
+                        <input id="dobra-peitoral" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-axilar">Axilar média (mm)</label>
+                        <input id="dobra-axilar" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-triceps">Tríceps (mm)</label>
+                        <input id="dobra-triceps" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-subescapular">Subescapular (mm)</label>
+                        <input id="dobra-subescapular" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-abdominal">Abdominal (mm)</label>
+                        <input id="dobra-abdominal" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-suprailiaca">Suprailíaca (mm)</label>
+                        <input id="dobra-suprailiaca" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobra-coxa">Coxa (mm)</label>
+                        <input id="dobra-coxa" type="number" step="0.1" />
+                      </div>
+
+                      <div class="field">
+                        <label for="dobras-soma">Somatório de dobras</label>
+                        <input id="dobras-soma" type="text" readonly />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cliente-section-actions">
+                    <span class="cliente-hub-updated" id="sessao-avaliacao-updated">Última atualização: —</span>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                      <button class="cliente-btn-secundario" id="calcular-btn">Calcular</button>
+                      <button class="cliente-btn cliente-btn-abrir" id="salvar-sessao-avaliacao-btn">Salvar sessão e avaliação</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card launch-accordion" data-accordion="analise-caso">
+                <div class="card-header">
+                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                    <div>
+                      <h3>Análise do caso</h3>
+                      <p class="cliente-hero-meta">Radar revisado e diagnóstico completo.</p>
+                    </div>
+                    <span class="accordion-icon">⌄</span>
+                  </button>
+                </div>
+
+                <div class="card-body accordion-panel">
+                  <h4 class="subsection-title">Radar revisado</h4>
+
+                  <p class="cliente-hero-meta" style="margin-bottom: 16px;">
+                    Compare o score original do cliente com a sua leitura revisada da sessão.
+                  </p>
+
+                  <div class="radar-grid">
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Movimento</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-movimento">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-movimento">Revisado</label>
+                          <input id="radar-revisado-movimento" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Alimentação</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-alimentacao">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-alimentacao">Revisado</label>
+                          <input id="radar-revisado-alimentacao" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Sono</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-sono">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-sono">Revisado</label>
+                          <input id="radar-revisado-sono" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Propósito</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-proposito">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-proposito">Revisado</label>
+                          <input id="radar-revisado-proposito" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Social</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-social">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-social">Revisado</label>
+                          <input id="radar-revisado-social" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="radar-card">
+                      <div class="radar-card-head"><strong>Estresse</strong></div>
+                      <div class="radar-values">
+                        <div class="radar-pre"><span>Pré</span><strong id="radar-pre-estresse">—</strong></div>
+                        <div class="radar-revisado">
+                          <label for="radar-revisado-estresse">Revisado</label>
+                          <input id="radar-revisado-estresse" type="number" min="0" max="10" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Diagnóstico completo</h4>
+
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="diag-gargalo">Gargalo principal</label>
+                      <input id="diag-gargalo" type="text" placeholder="Ex.: sono, rotina, ansiedade, ambiente..." />
+                    </div>
+
+                    <div class="field">
+                      <label for="diag-prioridade">Prioridade imediata</label>
+                      <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono, treinar 3x, ajustar alimentação..." />
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="diag-leitura">Leitura do caso</label>
+                      <textarea id="diag-leitura" placeholder="Descreva sua leitura técnica do caso..."></textarea>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="diag-sintese">Síntese diagnóstica</label>
+                      <textarea id="diag-sintese" placeholder="Resuma em 3–4 frases o padrão identificado e o que você leu nas entrelinhas..."></textarea>
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Gaps prioritários identificados</h4>
+
+                  <div class="grid cols-3">
+                    <div class="field">
+                      <label for="gap1-pilar">1º GAP — Pilar</label>
+                      <input id="gap1-pilar" type="text" placeholder="Ex.: Sono" />
+                    </div>
+                    <div class="field">
+                      <label for="gap1-causa">1º GAP — Causa raiz</label>
+                      <input id="gap1-causa" type="text" placeholder="Ex.: rotina noturna desorganizada" />
+                    </div>
+                    <div class="field">
+                      <label for="gap1-acao">1º GAP — Ação</label>
+                      <input id="gap1-acao" type="text" placeholder="Ex.: higiene do sono + reduzir telas" />
+                    </div>
+
+                    <div class="field">
+                      <label for="gap2-pilar">2º GAP — Pilar</label>
+                      <input id="gap2-pilar" type="text" placeholder="Ex.: Movimento" />
+                    </div>
+                    <div class="field">
+                      <label for="gap2-causa">2º GAP — Causa raiz</label>
+                      <input id="gap2-causa" type="text" placeholder="Ex.: falta de regularidade" />
+                    </div>
+                    <div class="field">
+                      <label for="gap2-acao">2º GAP — Ação</label>
+                      <input id="gap2-acao" type="text" placeholder="Ex.: treino mínimo 3x/semana" />
+                    </div>
+
+                    <div class="field">
+                      <label for="gap3-pilar">3º GAP — Pilar</label>
+                      <input id="gap3-pilar" type="text" placeholder="Ex.: Estresse" />
+                    </div>
+                    <div class="field">
+                      <label for="gap3-causa">3º GAP — Causa raiz</label>
+                      <input id="gap3-causa" type="text" placeholder="Ex.: sobrecarga crônica" />
+                    </div>
+                    <div class="field">
+                      <label for="gap3-acao">3º GAP — Ação</label>
+                      <input id="gap3-acao" type="text" placeholder="Ex.: ritual diário de pausa" />
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Perfil de entrada e plano do mês 1</h4>
+
+                  <div class="grid cols-2">
+                    <div class="field">
+                      <label for="diag-perfil-condicionamento">Nível de condicionamento</label>
+                      <select id="diag-perfil-condicionamento">
+                        <option value="">Selecionar</option>
+                        <option value="iniciante">Iniciante</option>
+                        <option value="intermediario">Intermediário</option>
+                        <option value="avancado">Avançado</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label for="diag-perfil-plano">Plano fechado</label>
+                      <select id="diag-perfil-plano">
+                        <option value="">Selecionar</option>
+                        <option value="mensal">Mensal</option>
+                        <option value="trimestral">Trimestral</option>
+                        <option value="semestral">Semestral</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label for="diag-perfil-formato">Formato</label>
+                      <select id="diag-perfil-formato">
+                        <option value="">Selecionar</option>
+                        <option value="presencial">Presencial</option>
+                        <option value="online">Online</option>
+                        <option value="hibrido">Híbrido</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label for="diag-triagem">Triagem física</label>
+                      <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar, baixa resistência..." />
+                    </div>
+
+                    <div class="field">
+                      <label for="foco-gap">Principal gap a trabalhar</label>
+                      <input id="foco-gap" type="text" placeholder="Ex.: Sono" />
+                    </div>
+
+                    <div class="field">
+                      <label for="foco-ambiente">Ajuste de ambiente urgente</label>
+                      <input id="foco-ambiente" type="text" placeholder="Ex.: retirar celular do quarto" />
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="foco-habito">1º hábito de ancoragem</label>
+                      <input id="foco-habito" type="text" placeholder="Ex.: deitar 30 min mais cedo todos os dias" />
+                    </div>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Combinados da sessão</h4>
+
+                  <div class="grid cols-2">
+                    <label class="checkbox-field">
+                      <input id="comb-plano-enviado" type="checkbox" />
+                      <span>Plano do Mês 1 enviado no MFIT em até 48h</span>
+                    </label>
+
+                    <label class="checkbox-field">
+                      <input id="comb-termo" type="checkbox" />
+                      <span>Termo de compromisso assinado</span>
+                    </label>
+
+                    <label class="checkbox-field">
+                      <input id="comb-checkin" type="checkbox" />
+                      <span>Check-in semanal explicado e aceito</span>
+                    </label>
+
+                    <div class="field">
+                      <label for="comb-proxima-sessao">Próxima sessão de fase agendada</label>
+                      <input id="comb-proxima-sessao" type="date" />
+                    </div>
+
+                    <div class="field">
+                      <label for="comb-protocolo-aplicado">Protocolo de avaliação física aplicado</label>
+                      <select id="comb-protocolo-aplicado">
+                        <option value="">Selecionar</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="cliente-section-actions">
+                    <span class="cliente-hub-updated" id="analise-caso-updated">Última atualização: —</span>
+                    <button class="cliente-btn cliente-btn-abrir" id="salvar-analise-caso-btn">Salvar análise do caso</button>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="lancamentos-col-side">
+              <section class="card launch-accordion" data-accordion="acompanhamento">
+                <div class="card-header">
+                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                    <div>
+                      <h3>Acompanhamento</h3>
+                      <p class="cliente-hero-meta">Registro da execução, ajustes e histórico.</p>
+                    </div>
+                    <span class="accordion-icon">⌄</span>
+                  </button>
+                </div>
+
+                <div class="card-body accordion-panel">
+                  <h4 class="subsection-title">Novo acompanhamento</h4>
+
+                  <div class="grid cols-1">
+                    <div class="field">
+                      <label for="acomp-data">Data</label>
+                      <input id="acomp-data" type="date" />
+                    </div>
+
+                    <div class="field">
+                      <label for="acomp-aderencia">Aderência</label>
+                      <input id="acomp-aderencia" type="text" placeholder="Ex.: alta, média, baixa" />
+                    </div>
+
+                    <div class="field">
+                      <label for="acomp-evolucao">Evolução</label>
+                      <textarea id="acomp-evolucao" placeholder="Descreva a evolução percebida..."></textarea>
+                    </div>
+
+                    <div class="field">
+                      <label for="acomp-dificuldades">Dificuldades</label>
+                      <textarea id="acomp-dificuldades" placeholder="Descreva as dificuldades atuais..."></textarea>
+                    </div>
+
+                    <div class="field">
+                      <label for="acomp-ajustes">Ajustes realizados</label>
+                      <textarea id="acomp-ajustes" placeholder="Descreva os ajustes feitos..."></textarea>
+                    </div>
+                  </div>
+
+                  <div class="cliente-section-actions">
+                    <span class="cliente-hub-updated" id="acomp-updated">Última atualização: —</span>
+                    <button class="cliente-btn cliente-btn-abrir" id="salvar-acompanhamento-btn">Salvar acompanhamento</button>
+                  </div>
+
+                  <div class="cliente-expand-divider"></div>
+
+                  <h4 class="subsection-title">Histórico de acompanhamentos</h4>
+                  <div id="acompanhamentos-lista" class="acompanhamentos-lista"></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- CORE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js?v=2"></script>
+  <script src="../assets/js/guard.js?v=1"></script>
+  <script src="../assets/js/storage.js?v=2"></script>
+  <script src="../assets/js/logout.js?v=1"></script>
+
+  <!-- PAGE -->
+  <script src="../assets/js/lancamentos.js?v=2"></script>
+</body>
+</html>
