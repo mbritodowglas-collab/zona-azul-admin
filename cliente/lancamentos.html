@@ -50,98 +50,53 @@
 
     .app-shell {
       display: grid;
-      grid-template-columns: 292px minmax(0, 1fr);
+      grid-template-columns: 64px minmax(0, 1fr);
       min-height: 100vh;
     }
 
     .sidebar {
-      padding: 24px 20px;
+      width: 64px;
+      padding: 16px 10px;
       border-right: 1px solid rgba(255,255,255,0.05);
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
       backdrop-filter: blur(12px);
-      min-width: 0;
-    }
-
-    .brand {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 14px;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow-lg);
-      margin-bottom: 26px;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
     }
 
-    .brand-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
+    .nav-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-mini-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      font-size: 20px;
-      font-weight: 900;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow: 0 14px 28px rgba(31,124,255,0.22);
-      letter-spacing: 0.04em;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      color: #ffffff;
-    }
-
-    .brand-highlight {
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #47b8ff, #7cff5a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .nav a {
-      min-height: 52px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      border-radius: 16px;
       text-decoration: none;
-      color: var(--muted);
-      font-weight: 700;
       transition: all 0.18s ease;
-      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
     }
 
-    .nav a:hover {
-      color: var(--text);
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.08);
-      transform: translateX(2px);
-    }
-
-    .nav a.active {
-      color: #ffffff;
-      background: linear-gradient(135deg, rgba(71,184,255,0.12), rgba(124,255,90,0.08));
-      border-color: rgba(71,184,255,0.16);
+    .nav-mini-btn:hover {
+      background: rgba(71,184,255,0.12);
+      border-color: rgba(71,184,255,0.25);
+      color: #fff;
+      transform: translateY(-1px);
     }
 
     .main {
@@ -179,13 +134,6 @@
       max-width: 760px;
     }
 
-    .cliente-topo-acoes {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
     .cliente-btn,
     .cliente-btn-secundario,
     .cliente-btn-abrir {
@@ -216,8 +164,8 @@
       border: 1px solid rgba(255,255,255,0.08);
     }
 
-    .cliente-btn-abrir,
-    .cliente-btn {
+    .cliente-btn,
+    .cliente-btn-abrir {
       background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
       color: #ffffff;
       box-shadow: 0 12px 22px rgba(31,124,255,0.18);
@@ -383,17 +331,9 @@
       gap: 14px;
     }
 
-    .grid.cols-1 {
-      grid-template-columns: 1fr;
-    }
-
-    .grid.cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .grid.cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+    .grid.cols-1 { grid-template-columns: 1fr; }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
     .field {
       display: grid;
@@ -572,14 +512,26 @@
       display: none !important;
     }
 
+    /* ── RESPONSIVE ── */
     @media (max-width: 1280px) {
       .app-shell {
         grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
       }
 
       .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        padding: 12px 16px;
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.05);
+        position: static;
+        justify-content: flex-start;
+      }
+
+      .nav-mini {
+        flex-direction: row;
       }
 
       .lancamentos-grid {
@@ -592,21 +544,12 @@
     }
 
     @media (max-width: 760px) {
-      .sidebar,
       .main {
         padding: 16px;
       }
 
       .topbar h2 {
         font-size: 30px;
-      }
-
-      .cliente-topo-acoes {
-        width: 100%;
-      }
-
-      .cliente-topo-acoes > * {
-        width: 100%;
       }
 
       .grid.cols-2,
@@ -625,33 +568,26 @@
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-badge">TR</div>
-        <div>
-          <h1>Trackion System</h1>
-          <span class="brand-highlight">CORPO • MENTE • PERFORMANCE</span>
-        </div>
-      </div>
 
-      <nav class="nav">
-        <a href="../index.html">Dashboard</a>
-        <a href="../pre-diagnostico/">Pré-diagnóstico</a>
-        <a class="active" href="../clientes/">Clientes</a>
+    <aside class="sidebar">
+      <nav class="nav-mini">
+        <a href="../cliente/index.html" class="nav-mini-btn" title="Voltar">←</a>
+        <a href="../index.html" class="nav-mini-btn" title="Dashboard">⌂</a>
+        <button
+          class="nav-mini-btn"
+          title="Sair"
+          onclick="window.ZALogout?.logout()"
+        >↪</button>
       </nav>
     </aside>
 
     <main class="main">
       <div class="page-wrap">
+
         <div class="topbar">
           <div>
             <h2 id="cliente-nome-topo">Lançamentos</h2>
             <p id="cliente-subtitulo">Registro técnico do caso.</p>
-          </div>
-
-          <div class="cliente-topo-acoes">
-            <a id="voltar-cliente-link" class="cliente-btn-secundario" href="../cliente/index.html">Voltar ao cliente</a>
-            <button id="logout-btn" class="cliente-btn-secundario" type="button">Sair</button>
           </div>
         </div>
 
@@ -662,6 +598,7 @@
         </div>
 
         <div id="lancamentos-page">
+
           <section class="card cliente-hero-card">
             <div class="card-body cliente-hero">
               <div class="cliente-hero-left">
@@ -678,9 +615,10 @@
           <section class="lancamentos-grid">
             <div class="lancamentos-col-main">
 
-              <section class="card launch-accordion is-open" data-accordion="dados-base">
+              <!-- DADOS BASE -->
+              <div class="card launch-accordion is-open" data-accordion="dados-base">
                 <div class="card-header">
-                  <button class="accordion-toggle" type="button" aria-expanded="true">
+                  <button class="accordion-toggle" type="button" aria-expanded="true" aria-controls="panel-dados-base">
                     <div>
                       <h3>Base do pré-diagnóstico</h3>
                       <p class="cliente-hero-meta">Dados herdados e ajustes finos.</p>
@@ -689,7 +627,7 @@
                   </button>
                 </div>
 
-                <div class="card-body accordion-panel">
+                <div class="card-body accordion-panel" id="panel-dados-base">
                   <div class="grid cols-2">
                     <div class="field">
                       <label for="pre-nome-edit">Nome</label>
@@ -752,14 +690,15 @@
 
                   <div class="cliente-section-actions">
                     <span class="cliente-hub-updated" id="dados-base-updated">Última atualização: —</span>
-                    <button class="cliente-btn cliente-btn-abrir" id="salvar-dados-base-btn">Salvar dados base</button>
+                    <button class="cliente-btn" id="salvar-dados-base-btn">Salvar dados base</button>
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section class="card launch-accordion" data-accordion="sessao-avaliacao">
+              <!-- SESSÃO E AVALIAÇÃO -->
+              <div class="card launch-accordion" data-accordion="sessao-avaliacao">
                 <div class="card-header">
-                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-sessao-avaliacao">
                     <div>
                       <h3>Sessão e avaliação</h3>
                       <p class="cliente-hero-meta">Estrutura da sessão, protocolo e avaliação física.</p>
@@ -768,7 +707,7 @@
                   </button>
                 </div>
 
-                <div class="card-body accordion-panel">
+                <div class="card-body accordion-panel" id="panel-sessao-avaliacao">
                   <h4 class="subsection-title">Estrutura da sessão</h4>
 
                   <div class="grid cols-3">
@@ -832,7 +771,7 @@
                     </div>
 
                     <div class="field" id="field-abdomen-marinha">
-                      <label for="abdomen-marinha">Abdômen (Marinha) (cm)</label>
+                      <label for="abdomen-marinha">Abdômen Marinha (cm)</label>
                       <input id="abdomen-marinha" type="number" step="0.1" />
                     </div>
 
@@ -919,22 +858,22 @@
 
                       <div class="field">
                         <label for="teste-sentar-alcancar">Sentar e alcançar</label>
-                        <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 cm ou não realiza" />
+                        <input id="teste-sentar-alcancar" type="text" placeholder="Ex.: 28 cm" />
                       </div>
 
                       <div class="field">
                         <label for="teste-step-fc">Step test / FC recuperação</label>
-                        <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm ou não realiza" />
+                        <input id="teste-step-fc" type="text" placeholder="Ex.: 98 bpm" />
                       </div>
 
                       <div class="field">
                         <label for="teste-step-borg">Step test / Borg</label>
-                        <input id="teste-step-borg" type="text" placeholder="Ex.: 13 ou não realiza" />
+                        <input id="teste-step-borg" type="text" placeholder="Ex.: 13" />
                       </div>
 
                       <div class="field">
                         <label for="teste-step-classificacao">Step test / Classificação</label>
-                        <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom ou não realiza" />
+                        <input id="teste-step-classificacao" type="text" placeholder="Ex.: bom" />
                       </div>
                     </div>
                   </div>
@@ -990,15 +929,16 @@
                     <span class="cliente-hub-updated" id="sessao-avaliacao-updated">Última atualização: —</span>
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
                       <button class="cliente-btn-secundario" id="calcular-btn">Calcular</button>
-                      <button class="cliente-btn cliente-btn-abrir" id="salvar-sessao-avaliacao-btn">Salvar sessão e avaliação</button>
+                      <button class="cliente-btn" id="salvar-sessao-avaliacao-btn">Salvar sessão e avaliação</button>
                     </div>
                   </div>
                 </div>
-              </section>
+              </div>
 
-              <section class="card launch-accordion" data-accordion="analise-caso">
+              <!-- ANÁLISE DO CASO -->
+              <div class="card launch-accordion" data-accordion="analise-caso">
                 <div class="card-header">
-                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-analise-caso">
                     <div>
                       <h3>Análise do caso</h3>
                       <p class="cliente-hero-meta">Radar revisado e diagnóstico completo.</p>
@@ -1007,7 +947,7 @@
                   </button>
                 </div>
 
-                <div class="card-body accordion-panel">
+                <div class="card-body accordion-panel" id="panel-analise-caso">
                   <h4 class="subsection-title">Radar revisado</h4>
 
                   <p class="cliente-hero-meta" style="margin-bottom: 16px;">
@@ -1089,12 +1029,12 @@
                   <div class="grid cols-2">
                     <div class="field">
                       <label for="diag-gargalo">Gargalo principal</label>
-                      <input id="diag-gargalo" type="text" placeholder="Ex.: sono, rotina, ansiedade, ambiente..." />
+                      <input id="diag-gargalo" type="text" placeholder="Ex.: sono, rotina, ansiedade..." />
                     </div>
 
                     <div class="field">
                       <label for="diag-prioridade">Prioridade imediata</label>
-                      <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono, treinar 3x, ajustar alimentação..." />
+                      <input id="diag-prioridade" type="text" placeholder="Ex.: regular sono, treinar 3x..." />
                     </div>
 
                     <div class="field" style="grid-column: 1 / -1;">
@@ -1104,7 +1044,7 @@
 
                     <div class="field" style="grid-column: 1 / -1;">
                       <label for="diag-sintese">Síntese diagnóstica</label>
-                      <textarea id="diag-sintese" placeholder="Resuma em 3–4 frases o padrão identificado e o que você leu nas entrelinhas..."></textarea>
+                      <textarea id="diag-sintese" placeholder="Resuma em 3–4 frases o padrão identificado..."></textarea>
                     </div>
                   </div>
 
@@ -1112,44 +1052,50 @@
 
                   <h4 class="subsection-title">Gaps prioritários identificados</h4>
 
-                  <div class="grid cols-3">
-                    <div class="field">
-                      <label for="gap1-pilar">1º GAP — Pilar</label>
-                      <input id="gap1-pilar" type="text" placeholder="Ex.: Sono" />
-                    </div>
-                    <div class="field">
-                      <label for="gap1-causa">1º GAP — Causa raiz</label>
-                      <input id="gap1-causa" type="text" placeholder="Ex.: rotina noturna desorganizada" />
-                    </div>
-                    <div class="field">
-                      <label for="gap1-acao">1º GAP — Ação</label>
-                      <input id="gap1-acao" type="text" placeholder="Ex.: higiene do sono + reduzir telas" />
-                    </div>
-
-                    <div class="field">
-                      <label for="gap2-pilar">2º GAP — Pilar</label>
-                      <input id="gap2-pilar" type="text" placeholder="Ex.: Movimento" />
-                    </div>
-                    <div class="field">
-                      <label for="gap2-causa">2º GAP — Causa raiz</label>
-                      <input id="gap2-causa" type="text" placeholder="Ex.: falta de regularidade" />
-                    </div>
-                    <div class="field">
-                      <label for="gap2-acao">2º GAP — Ação</label>
-                      <input id="gap2-acao" type="text" placeholder="Ex.: treino mínimo 3x/semana" />
+                  <div class="grid cols-1" style="gap: 10px;">
+                    <div class="grid cols-3">
+                      <div class="field">
+                        <label for="gap1-pilar">1º GAP — Pilar</label>
+                        <input id="gap1-pilar" type="text" placeholder="Ex.: Sono" />
+                      </div>
+                      <div class="field">
+                        <label for="gap1-causa">Causa raiz</label>
+                        <input id="gap1-causa" type="text" placeholder="Ex.: rotina noturna desorganizada" />
+                      </div>
+                      <div class="field">
+                        <label for="gap1-acao">Ação</label>
+                        <input id="gap1-acao" type="text" placeholder="Ex.: higiene do sono + reduzir telas" />
+                      </div>
                     </div>
 
-                    <div class="field">
-                      <label for="gap3-pilar">3º GAP — Pilar</label>
-                      <input id="gap3-pilar" type="text" placeholder="Ex.: Estresse" />
+                    <div class="grid cols-3">
+                      <div class="field">
+                        <label for="gap2-pilar">2º GAP — Pilar</label>
+                        <input id="gap2-pilar" type="text" placeholder="Ex.: Movimento" />
+                      </div>
+                      <div class="field">
+                        <label for="gap2-causa">Causa raiz</label>
+                        <input id="gap2-causa" type="text" placeholder="Ex.: falta de regularidade" />
+                      </div>
+                      <div class="field">
+                        <label for="gap2-acao">Ação</label>
+                        <input id="gap2-acao" type="text" placeholder="Ex.: treino mínimo 3x/semana" />
+                      </div>
                     </div>
-                    <div class="field">
-                      <label for="gap3-causa">3º GAP — Causa raiz</label>
-                      <input id="gap3-causa" type="text" placeholder="Ex.: sobrecarga crônica" />
-                    </div>
-                    <div class="field">
-                      <label for="gap3-acao">3º GAP — Ação</label>
-                      <input id="gap3-acao" type="text" placeholder="Ex.: ritual diário de pausa" />
+
+                    <div class="grid cols-3">
+                      <div class="field">
+                        <label for="gap3-pilar">3º GAP — Pilar</label>
+                        <input id="gap3-pilar" type="text" placeholder="Ex.: Estresse" />
+                      </div>
+                      <div class="field">
+                        <label for="gap3-causa">Causa raiz</label>
+                        <input id="gap3-causa" type="text" placeholder="Ex.: sobrecarga crônica" />
+                      </div>
+                      <div class="field">
+                        <label for="gap3-acao">Ação</label>
+                        <input id="gap3-acao" type="text" placeholder="Ex.: ritual diário de pausa" />
+                      </div>
                     </div>
                   </div>
 
@@ -1190,7 +1136,7 @@
 
                     <div class="field">
                       <label for="diag-triagem">Triagem física</label>
-                      <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar, baixa resistência..." />
+                      <input id="diag-triagem" type="text" placeholder="Ex.: sedentário, dor lombar..." />
                     </div>
 
                     <div class="field">
@@ -1230,12 +1176,12 @@
                     </label>
 
                     <div class="field">
-                      <label for="comb-proxima-sessao">Próxima sessão de fase agendada</label>
+                      <label for="comb-proxima-sessao">Próxima sessão agendada</label>
                       <input id="comb-proxima-sessao" type="date" />
                     </div>
 
                     <div class="field">
-                      <label for="comb-protocolo-aplicado">Protocolo de avaliação física aplicado</label>
+                      <label for="comb-protocolo-aplicado">Protocolo aplicado</label>
                       <select id="comb-protocolo-aplicado">
                         <option value="">Selecionar</option>
                         <option value="A">A</option>
@@ -1247,16 +1193,18 @@
 
                   <div class="cliente-section-actions">
                     <span class="cliente-hub-updated" id="analise-caso-updated">Última atualização: —</span>
-                    <button class="cliente-btn cliente-btn-abrir" id="salvar-analise-caso-btn">Salvar análise do caso</button>
+                    <button class="cliente-btn" id="salvar-analise-caso-btn">Salvar análise do caso</button>
                   </div>
                 </div>
-              </section>
+              </div>
+
             </div>
 
+            <!-- COLUNA LATERAL -->
             <div class="lancamentos-col-side">
-              <section class="card launch-accordion" data-accordion="acompanhamento">
+              <div class="card launch-accordion" data-accordion="acompanhamento">
                 <div class="card-header">
-                  <button class="accordion-toggle" type="button" aria-expanded="false">
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="panel-acompanhamento">
                     <div>
                       <h3>Acompanhamento</h3>
                       <p class="cliente-hero-meta">Registro da execução, ajustes e histórico.</p>
@@ -1265,7 +1213,7 @@
                   </button>
                 </div>
 
-                <div class="card-body accordion-panel">
+                <div class="card-body accordion-panel" id="panel-acompanhamento">
                   <h4 class="subsection-title">Novo acompanhamento</h4>
 
                   <div class="grid cols-1">
@@ -1297,7 +1245,7 @@
 
                   <div class="cliente-section-actions">
                     <span class="cliente-hub-updated" id="acomp-updated">Última atualização: —</span>
-                    <button class="cliente-btn cliente-btn-abrir" id="salvar-acompanhamento-btn">Salvar acompanhamento</button>
+                    <button class="cliente-btn" id="salvar-acompanhamento-btn">Salvar acompanhamento</button>
                   </div>
 
                   <div class="cliente-expand-divider"></div>
@@ -1305,22 +1253,22 @@
                   <h4 class="subsection-title">Histórico de acompanhamentos</h4>
                   <div id="acompanhamentos-lista" class="acompanhamentos-lista"></div>
                 </div>
-              </section>
+              </div>
             </div>
+
           </section>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- CORE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/supabase.js?v=2"></script>
   <script src="../assets/js/guard.js?v=1"></script>
   <script src="../assets/js/storage.js?v=2"></script>
   <script src="../assets/js/logout.js?v=1"></script>
-
-  <!-- PAGE -->
   <script src="../assets/js/lancamentos.js?v=2"></script>
 </body>
 </html>
+As mudanças aplicadas além da sidebar:
+O cliente-topo-acoes foi removido do topbar — os botões "Voltar" e "Sair" migraram para a nav-mini. Os <section> dentro do grid viraram <div> para corrigir a semântica. Os aria-controls foram adicionados em todos os accordion-toggles com id correspondente nos painéis. Os gaps ganharam cada um seu próprio container grid cols-3, então no mobile eles colapsam por grupo sem quebrar o alinhamento. A classe duplicada .cliente-btn-abrir foi fundida com .cliente-btn.
