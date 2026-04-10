@@ -209,14 +209,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getProtocolDisplayName(protocolo) {
-    const p = String(protocolo || "").toLowerCase();
+    const p = String(protocolo || "").trim().toUpperCase();
 
     if (!p) return "Não definido";
-    if (p.includes("marinha")) return "Marinha";
-    if (p.includes("perimetria")) return "Perimetria";
-    if (p.includes("completo")) return "Avaliação completa";
-    if (p.includes("dobras")) return "Dobras cutâneas";
-    if (p.includes("funcional")) return "Funcional";
+    if (p === "A") return "Protocolo A — Online (Marinha)";
+    if (p === "B") return "Protocolo B — Presencial sem dobras";
+    if (p === "C") return "Protocolo C — Presencial com dobras";
+
+    const lower = p.toLowerCase();
+    if (lower.includes("marinha")) return "Marinha";
+    if (lower.includes("perimetria")) return "Perimetria";
+    if (lower.includes("completo")) return "Avaliação completa";
+    if (lower.includes("dobras")) return "Dobras cutâneas";
+    if (lower.includes("funcional")) return "Funcional";
 
     return protocolo;
   }
@@ -235,7 +240,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     filledCount,
     totalCount
   }) {
-    const protocolo = String(protocoloFisico || "").toLowerCase();
+    const protocolo = String(protocoloFisico || "").trim().toUpperCase();
 
     if (filledCount === 0) {
       return "Ainda não há dados físicos lançados para gerar leitura automática deste bloco.";
@@ -255,8 +260,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let fechamento = " A leitura comparativa completa dependerá do lançamento progressivo dos demais indicadores do protocolo atual.";
 
-    if (protocolo.includes("marinha")) {
+    if (protocolo === "A" || protocolo === "B") {
       fechamento = " Como o protocolo atual segue a lógica da Marinha, os indicadores mais coerentes para acompanhamento aqui são peso, cintura, RCQ, RCE e percentual de gordura quando disponível.";
+    }
+
+    if (protocolo === "C") {
+      fechamento = " Como o protocolo atual inclui dobras e composição corporal ampliada, a leitura física pode ficar mais robusta conforme os marcadores forem sendo preenchidos.";
     }
 
     if (filledCount >= Math.ceil(totalCount / 2)) {
@@ -598,11 +607,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const hoje = formatDateBR(new Date());
   text("report-data-geracao", hoje);
+  text("report-data-geracao-2", hoje);
   text("report-fase-chip", `Fase atual: ${faseCliente}`);
   text("report-objetivo-chip", `Objetivo: ${objetivoCliente}`);
   text("report-cliente-meta-nome", nomeCliente);
   text("report-cliente-meta-objetivo", objetivoCliente);
   text("report-cliente-meta-fase", faseCliente);
+  text("report-cliente-meta-fase-side", faseCliente);
 
   const voltarLink = document.getElementById("voltar-cliente-link");
   if (voltarLink) {
@@ -614,11 +625,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   text("summary-gargalo", firstFilled(avaliacaoAtual.analise.gargalo_principal, "Gargalo principal ainda não registrado."));
   text("summary-prioridade", firstFilled(avaliacaoAtual.analise.prioridade, avaliacaoAtual.direcionamento.foco, "Prioridade do próximo ciclo ainda não definida."));
 
-  const protocoloFisico = String(firstFilled(avaliacaoAtual.protocolo, "")).toLowerCase();
-  const isMarinha = protocoloFisico.includes("marinha");
-  const usesPerimetria = protocoloFisico.includes("perimetria") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
-  const usesDobras = protocoloFisico.includes("dobras") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
-  const usesTestes = protocoloFisico.includes("teste") || protocoloFisico.includes("funcional") || protocoloFisico.includes("completo") || protocoloFisico.includes("avançado");
+  const protocoloCode = String(firstFilled(avaliacaoAtual.protocolo, "")).trim().toUpperCase();
+
+  const isProtocoloA = protocoloCode === "A";
+  const isProtocoloB = protocoloCode === "B";
+  const isProtocoloC = protocoloCode === "C";
+
+  const usesPerimetria = isProtocoloB || isProtocoloC;
+  const usesDobras = isProtocoloC;
+  const usesTestes = isProtocoloB || isProtocoloC;
+  const usesMassaMagra = isProtocoloC;
 
   const pesoAnterior = firstFilled(avaliacaoAnterior?.metricas?.peso, 0);
   const pesoAtual = firstFilled(avaliacaoAtual.metricas.peso, 0);
@@ -661,8 +677,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     {
       label: "Massa magra",
-      status: isMarinha ? "na" : (asNumber(massaAtual, 0) > 0 ? "filled" : "empty"),
-      html: isMarinha
+      status: !usesMassaMagra ? "na" : (asNumber(massaAtual, 0) > 0 ? "filled" : "empty"),
+      html: !usesMassaMagra
         ? metricCardNotApplicable("Massa magra")
         : (asNumber(massaAtual, 0) > 0
             ? metricCard("Massa magra", massaAtual, massaAnterior, " kg")
@@ -685,7 +701,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="status-list">
         <div class="status-row">
           <span>Protocolo usado</span>
-          <strong>${getProtocolDisplayName(protocoloFisico)}</strong>
+          <strong>${getProtocolDisplayName(protocoloCode)}</strong>
         </div>
         <div class="status-row">
           <span>Indicadores lançados</span>
@@ -713,7 +729,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           cinturaAtual,
           rcqAtual,
           rceAtual,
-          protocoloFisico,
+          protocoloFisico: protocoloCode,
           filledCount: countFilledIndicadores(indicadores),
           totalCount: indicadores.length
         })}
@@ -901,7 +917,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Dobras lançadas",
         dobrasFilled,
         dobrasCards.length,
-        protocoloFisico,
+        protocoloCode,
         dobrasFilled >= 4 ? "Parcial" : "Inicial"
       );
 
@@ -967,7 +983,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         "Testes lançados",
         testesFilled,
         testesCards.length,
-        protocoloFisico,
+        protocoloCode,
         testesFilled >= 2 ? "Parcial" : "Inicial"
       );
 
@@ -1033,9 +1049,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }));
 
     const timelineAcompanhamentos = acompanhamentos.map((item) => ({
-      titulo: item.titulo,
-      data: item.data,
-      descricao: item.descricao
+      titulo: "Acompanhamento",
+      data: item.data || item.createdAt,
+      descricao: [
+        item.aderencia ? `Aderência: ${item.aderencia}` : "",
+        item.evolucao ? `Evolução: ${item.evolucao}` : "",
+        item.dificuldades ? `Dificuldades: ${item.dificuldades}` : "",
+        item.ajustes ? `Ajustes: ${item.ajustes}` : ""
+      ].filter(Boolean).join(" | ")
     }));
 
     const timelineBase = timelineCliente.map((item) => ({
