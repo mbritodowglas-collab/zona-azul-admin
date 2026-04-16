@@ -733,8 +733,40 @@
     .sistema-grid { grid-template-columns: 1fr; }
     .pilares-grid { grid-template-columns: 1fr 1fr; }
     .checks { grid-template-columns: 1fr; }
-    .ciclo { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-    .ciclo-arrow { transform: rotate(90deg); }
+
+    .ciclo {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .ciclo-item {
+      width: min(100%, 240px);
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ciclo-arrow {
+      transform: rotate(90deg);
+      padding: 0;
+    }
+
+    .problema-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .problema-quote {
+      text-align: left;
+      width: 100%;
+      max-width: 700px;
+    }
   }
 
   @media (max-width: 480px) {
