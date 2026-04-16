@@ -441,6 +441,52 @@
 
   .score-dot.filled { background: var(--accent); }
 
+  .inspiracao {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .inspiracao-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .inspiracao-box {
+    margin-top: 2.5rem;
+    padding: 2rem;
+    border: 1px solid rgba(0,229,255,0.12);
+    background: rgba(255,255,255,0.02);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .inspiracao-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), rgba(0,229,255,0));
+  }
+
+  .inspiracao-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+
+  .inspiracao-text {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(245,242,238,0.72);
+    line-height: 1.9;
+    max-width: 860px;
+  }
+
   .jornada-inner { max-width: 900px; margin: 0 auto; }
 
   .fases {
@@ -860,6 +906,21 @@
           <div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="inspiracao">
+  <div class="inspiracao-inner">
+    <p class="section-label">Inspiração do método</p>
+    <h2 class="section-title">Inspirado nos princípios das Zonas Azuis</h2>
+    <p class="section-body">O Trackion não copia um modelo pronto. Ele se inspira em uma lógica simples e poderosa: saúde duradoura não nasce de extremos, mas de rotina, ambiente, movimento e comportamento sustentado ao longo do tempo.</p>
+
+    <div class="inspiracao-box">
+      <h3 class="inspiracao-title">Por que isso importa?</h3>
+      <p class="inspiracao-text">
+        As Zonas Azuis mostraram ao mundo que longevidade e qualidade de vida não dependem só de um treino isolado ou de uma dieta perfeita. Elas são consequência de um sistema de vida mais coerente. O Trackion traduz essa inspiração para a vida real de hoje: organiza os pilares que mais impactam seu resultado, ajuda você a sair do improviso e constrói uma evolução que faça sentido no seu contexto — físico, mental e comportamental.
+      </p>
     </div>
   </div>
 </section>
