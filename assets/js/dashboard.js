@@ -162,11 +162,15 @@ if ("Notification" in window && Notification.permission === "default") {
   }
 
   function init() {
-    enablePWA();
-    renderStats();
-    renderPublicLink();
-    bindEvents();
-  }
+  enablePWA();
+  renderStats();
+  renderPublicLink();
+  bindEvents();
+
+  setTimeout(() => {
+    window.ZAPushRegister?.register?.();
+  }, 1500);
+}
 
   return { init };
 })();
