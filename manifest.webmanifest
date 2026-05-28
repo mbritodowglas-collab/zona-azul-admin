@@ -1,27 +1,19 @@
 {
   "name": "Trackion System",
   "short_name": "Trackion",
-  "description": "Sistema de acompanhamento Trackion para leads, clientes, avaliações e relatórios.",
+  "description": "Sistema de acompanhamento Trackion para leads, clientes e avaliações.",
   "lang": "pt-BR",
-  "dir": "ltr",
-  "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#020816",
   "theme_color": "#020816",
-  "categories": ["health", "fitness", "productivity"],
+  "start_url": "/zona-azul-admin/",
+  "scope": "/zona-azul-admin/",
   "icons": [
     {
-      "src": "./assets/img/trackion-logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./assets/img/trackion-logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/zona-azul-admin/assets/img/trackion-pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]
