@@ -24,6 +24,12 @@ window.ZADashboard = (() => {
   }
 
   function enablePWA() {
+
+if ("Notification" in window && Notification.permission === "default") {
+  Notification.requestPermission().then((permission) => {
+    console.log("[Trackion] Permissão de notificação:", permission);
+  });
+}
     if (!document.querySelector('link[rel="manifest"]')) {
       const manifest = document.createElement("link");
       manifest.rel = "manifest";
