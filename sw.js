@@ -74,8 +74,7 @@ self.addEventListener("message", async (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = new URL(event.notification?.data?.url || "./clientes/", self.location.origin).href;
-
+  const targetUrl = new URL(event.notification?.data?.url || "./pre-diagnostico/", self.registration.scope).href;
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
