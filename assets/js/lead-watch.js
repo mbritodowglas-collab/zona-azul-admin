@@ -1,5 +1,6 @@
 window.ZALeadWatch = (() => {
   const KEY = "trackion_last_lead_seen";
+  const INTERVAL = 15000;
 
   function getClient() {
     return window.ZASupabase?.getClient?.() || null;
@@ -9,70 +10,76 @@ window.ZALeadWatch = (() => {
     const lead = row?.data || {};
     const nome = lead.nome || lead.nome_completo || "Novo lead";
 
+    if ("Notification" in window && Notification.permission === "default") {
+      await Notification.requestPermission();
+    }
+
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification("🔥 Novo lead no Trackion", {
         body: `${nome} acabou de preencher o pré-diagnóstico.`,
         icon: "./assets/img/trackion-logo.png",
-        tag: `trackion-lead-${row?.id || Date.now()}`
+        tag: `trackion-lead-${row.id}`
       });
-    }
-
-    if ("serviceWorker" in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      const worker = registration.active || navigator.serviceWorker.controller;
-
-      worker?.postMessage({
-        type: "TRACKION_NEW_LEAD",
-        lead: {
-          id: row?.id || Date.now(),
-          nome
-        }
-      });
+    } else {
+      alert(`Novo lead no Trackion: ${nome}`);
     }
   }
 
-  function start() {
+  async function checkLatestLead({ silent = false } = {}) {
     const supabase = getClient();
     if (!supabase) {
       console.warn("[LeadWatch] Supabase não encontrado.");
       return;
     }
 
-    console.log("[LeadWatch] Iniciando monitoramento de leads...");
+    const { data, error } = await supabase
+      .from("leads")
+      .select("id, data, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(1);
 
-    supabase
-      .channel("trackion-leads-watch-v2")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "leads" },
-        async (payload) => {
-          console.log("[LeadWatch] Evento recebido:", payload);
+    if (error) {
+      console.error("[LeadWatch] Erro ao buscar leads:", error);
+      return;
+    }
 
-          if (!["INSERT", "UPDATE"].includes(payload.eventType)) return;
+    const latest = data?.[0];
+    if (!latest?.id) return;
 
-          const row = payload?.new || null;
-          if (!row?.id) return;
+    const currentKey = `${latest.id}:${latest.updated_at || ""}`;
+    const lastKey = localStorage.getItem(KEY);
 
-          const uniqueKey = `${payload.eventType}:${row.id}:${row.updated_at || ""}`;
-          const last = localStorage.getItem(KEY);
+    if (!lastKey) {
+      localStorage.setItem(KEY, currentKey);
+      console.log("[LeadWatch] Lead base registrado:", currentKey);
+      return;
+    }
 
-          if (String(last) === String(uniqueKey)) return;
+    if (currentKey !== lastKey) {
+      localStorage.setItem(KEY, currentKey);
 
-          localStorage.setItem(KEY, String(uniqueKey));
-          await notifyLead(row);
+      if (!silent) {
+        await notifyLead(latest);
 
-          setTimeout(async () => {
-            await window.ZAStorage?.init?.({ force: true });
-            window.location.reload();
-          }, 1500);
-        }
-      )
-      .subscribe((status) => {
-        console.log("[LeadWatch] Status realtime:", status);
-      });
+        setTimeout(async () => {
+          await window.ZAStorage?.init?.({ force: true });
+          window.location.reload();
+        }, 1200);
+      }
+    }
   }
 
-  return { start };
+  function start() {
+    console.log("[LeadWatch] Monitoramento por polling iniciado.");
+
+    checkLatestLead({ silent: true });
+
+    setInterval(() => {
+      checkLatestLead();
+    }, INTERVAL);
+  }
+
+  return { start, checkLatestLead };
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
