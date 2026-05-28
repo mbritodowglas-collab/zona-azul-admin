@@ -1,4 +1,4 @@
-const TRACKION_CACHE = "trackion-pwa-v2";
+const TRACKION_CACHE = "trackion-pwa-v3";
 
 const APP_SHELL = [
   "./",
@@ -39,7 +39,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-self.addEventListener("message", (event) => {
+self.addEventListener("message", async (event) => {
   const data = event.data || {};
 
   if (data.type !== "TRACKION_NEW_LEAD") return;
@@ -47,19 +47,28 @@ self.addEventListener("message", (event) => {
   const lead = data.lead || {};
   const nome = lead.nome || "Novo lead";
 
-  event.waitUntil(
-    self.registration.showNotification("Novo lead no Trackion", {
-      body: `${nome} preencheu o pré-diagnóstico.`,
-      icon: "./assets/img/trackion-logo.png",
-      badge: "./assets/img/trackion-logo.png",
-      tag: `trackion-lead-${lead.id || Date.now()}`,
-      renotify: true,
-      data: {
-        url: "./clientes/",
-        leadId: lead.id || null
+  try {
+    await self.registration.showNotification(
+      "🔥 Novo lead no Trackion",
+      {
+        body: `${nome} acabou de preencher o pré-diagnóstico.`,
+        icon: "./assets/img/trackion-logo.png",
+        badge: "./assets/img/trackion-logo.png",
+        vibrate: [200, 100, 200],
+        requireInteraction: true,
+        tag: `trackion-lead-${lead.id || Date.now()}`,
+        renotify: true,
+        data: {
+          url: "./pre-diagnostico/",
+          leadId: lead.id || null
+        }
       }
-    })
-  );
+    );
+
+    console.log("[SW] Notificação enviada");
+  } catch (err) {
+    console.error("[SW] Falha na notificação:", err);
+  }
 });
 
 self.addEventListener("notificationclick", (event) => {
