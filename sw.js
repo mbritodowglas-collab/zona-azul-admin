@@ -1,4 +1,4 @@
-const TRACKION_CACHE = "trackion-pwa-v3";
+const TRACKION_CACHE = "trackion-pwa-v4";
 
 const APP_SHELL = [
   "./",
@@ -16,6 +16,7 @@ const APP_SHELL = [
   "./assets/js/dashboard.js",
   "./assets/js/logout.js",
   "./assets/img/trackion-logo.png",
+  "./assets/js/lead-watch.js",
   "./manifest.webmanifest"
 ];
 
