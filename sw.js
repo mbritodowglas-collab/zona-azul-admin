@@ -1,4 +1,4 @@
-const TRACKION_CACHE = "trackion-pwa-v1";
+const TRACKION_CACHE = "trackion-pwa-v2";
 
 const APP_SHELL = [
   "./",
@@ -37,6 +37,52 @@ self.addEventListener("activate", (event) => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener("message", (event) => {
+  const data = event.data || {};
+
+  if (data.type !== "TRACKION_NEW_LEAD") return;
+
+  const lead = data.lead || {};
+  const nome = lead.nome || "Novo lead";
+
+  event.waitUntil(
+    self.registration.showNotification("Novo lead no Trackion", {
+      body: `${nome} preencheu o pré-diagnóstico.`,
+      icon: "./assets/img/trackion-logo.png",
+      badge: "./assets/img/trackion-logo.png",
+      tag: `trackion-lead-${lead.id || Date.now()}`,
+      renotify: true,
+      data: {
+        url: "./clientes/",
+        leadId: lead.id || null
+      }
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const targetUrl = new URL(event.notification?.data?.url || "./clientes/", self.location.origin).href;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes("/zona-azul-admin/") && "focus" in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+
+      return null;
+    })
+  );
 });
 
 self.addEventListener("fetch", (event) => {
