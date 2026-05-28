@@ -1,4 +1,6 @@
 window.ZADashboard = (() => {
+  let deferredPrompt = null;
+
   function getData() {
     return window.ZAStorage?.getData?.() || { leads: [], clientes: [] };
   }
@@ -19,6 +21,60 @@ window.ZADashboard = (() => {
         : `${pathname}/`;
 
     return `${origin}${basePath}formulario-publico/`;
+  }
+
+  function enablePWA() {
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const manifest = document.createElement("link");
+      manifest.rel = "manifest";
+      manifest.href = "./manifest.webmanifest";
+      document.head.appendChild(manifest);
+    }
+
+    const theme = document.createElement("meta");
+    theme.name = "theme-color";
+    theme.content = "#020816";
+    document.head.appendChild(theme);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(console.error);
+      });
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      showInstallButton();
+    });
+  }
+
+  function showInstallButton() {
+    if (document.getElementById("install-trackion-btn")) return;
+
+    const target = document.querySelector(".hero-chips");
+    if (!target) return;
+
+    const button = document.createElement("button");
+    button.id = "install-trackion-btn";
+    button.className = "btn secondary";
+    button.style.marginTop = "10px";
+    button.textContent = "Instalar App";
+
+    button.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+
+      if (choice.outcome === "accepted") {
+        button.textContent = "App instalado";
+      }
+
+      deferredPrompt = null;
+    });
+
+    target.parentNode.appendChild(button);
   }
 
   function renderStats() {
@@ -54,71 +110,12 @@ window.ZADashboard = (() => {
     setText("stat-novos", String(leadsNovos));
     setText("stat-convertidos", String(leadsConvertidos));
     setText("stat-clientes", String(clientesAtivos));
-
     setText("hero-total-clientes", `${baseTotalClientes} cliente${baseTotalClientes === 1 ? "" : "s"}`);
     setText("hero-total-leads", `${totalLeads} lead${totalLeads === 1 ? "" : "s"}`);
-
-    setText(
-      "stat-leads-meta",
-      totalLeads === 0
-        ? "Ainda não há leads cadastrados."
-        : `Base atual com ${totalLeads} lead${totalLeads === 1 ? "" : "s"} registrado${totalLeads === 1 ? "" : "s"}.`
-    );
-
-    setText(
-      "stat-novos-meta",
-      leadsNovos === 0
-        ? "Nenhum lead aguardando ação."
-        : `${leadsNovos} lead${leadsNovos === 1 ? "" : "s"} aguardando revisão ou conversão.`
-    );
-
-    setText(
-      "stat-convertidos-meta",
-      leadsConvertidos === 0
-        ? "Nenhuma conversão identificada ainda."
-        : `${leadsConvertidos} convers${leadsConvertidos === 1 ? "ão" : "ões"} já consolidadas na base.`
-    );
-
-    setText(
-      "stat-clientes-meta",
-      clientesAtivos === 0
-        ? "Nenhum cliente ativo no momento."
-        : `${clientesAtivos} cliente${clientesAtivos === 1 ? "" : "s"} em operação ativa.`
-    );
-
     setText("insight-conversao", `${taxaConversao}%`);
     setText("insight-arquivados", String(clientesArquivados));
     setText("insight-aguardando", String(leadsNovos));
     setText("insight-base-clientes", String(baseTotalClientes));
-
-    renderStrategicNote({
-      totalLeads,
-      leadsNovos,
-      leadsConvertidos,
-      clientesAtivos,
-      clientesArquivados,
-      baseTotalClientes,
-      taxaConversao
-    });
-  }
-
-  function renderStrategicNote(stats) {
-    const note = document.getElementById("dashboard-strategy-note");
-    if (!note) return;
-
-    let text = "";
-
-    if (stats.totalLeads === 0 && stats.baseTotalClientes === 0) {
-      text = "O sistema está limpo. O próximo movimento é alimentar a máquina: gerar entradas no formulário e começar a formar base.";
-    } else if (stats.leadsNovos > 0) {
-      text = `Você tem ${stats.leadsNovos} lead${stats.leadsNovos === 1 ? "" : "s"} aguardando ação. O melhor ROI agora é revisar o pré-diagnóstico e converter o que já está quente.`;
-    } else if (stats.clientesAtivos > 0) {
-      text = `A operação está rodando com ${stats.clientesAtivos} cliente${stats.clientesAtivos === 1 ? "" : "s"} ativo${stats.clientesAtivos === 1 ? "" : "s"}. O foco agora é manter aderência, histórico e planejamento bem atualizados.`;
-    } else {
-      text = "A base existe, mas está fria. Vale revisar clientes arquivados, reativar oportunidades e recolocar a esteira em movimento.";
-    }
-
-    note.textContent = text;
   }
 
   function renderPublicLink() {
@@ -159,6 +156,7 @@ window.ZADashboard = (() => {
   }
 
   function init() {
+    enablePWA();
     renderStats();
     renderPublicLink();
     bindEvents();
