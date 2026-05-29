@@ -101,7 +101,7 @@ window.ZACalculos = (() => {
   function validarFormulario(payload) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!payload.nome || !payload.email || !payload.data_nascimento || !payload.origem) {
+    if (!payload.nome || !payload.email || !payload.whatsapp || !payload.data_nascimento || !payload.origem) {
       return "Preencha os dados de identificação.";
     }
 
@@ -160,6 +160,7 @@ window.ZACalculos = (() => {
       created_at: new Date().toISOString(),
       nome: payload.nome.trim(),
       email: payload.email.toLowerCase().trim(),
+      whatsapp: String(payload.whatsapp || "").trim(),
       data_nascimento: payload.data_nascimento,
       idade: calcularIdade(payload.data_nascimento),
 
