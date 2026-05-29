@@ -24,12 +24,6 @@ window.ZADashboard = (() => {
   }
 
   function enablePWA() {
-
-if ("Notification" in window && Notification.permission === "default") {
-  Notification.requestPermission().then((permission) => {
-    console.log("[Trackion] Permissão de notificação:", permission);
-  });
-}
     if (!document.querySelector('link[rel="manifest"]')) {
       const manifest = document.createElement("link");
       manifest.rel = "manifest";
@@ -81,6 +75,33 @@ if ("Notification" in window && Notification.permission === "default") {
     });
 
     target.parentNode.appendChild(button);
+  }
+
+  function showPushButton() {
+    const target = document.querySelector(".hero-chips");
+    if (!target || document.getElementById("push-register-btn")) return;
+
+    const button = document.createElement("button");
+    button.id = "push-register-btn";
+    button.className = "btn secondary";
+    button.type = "button";
+    button.textContent = "Ativar notificações";
+
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      button.textContent = "Ativando...";
+
+      try {
+        await window.ZAPushRegister?.register?.();
+        button.textContent = "Notificações ativadas";
+      } catch (err) {
+        console.error("[Dashboard] Erro ao ativar notificações:", err);
+        button.disabled = false;
+        button.textContent = "Tentar novamente";
+      }
+    });
+
+    target.appendChild(button);
   }
 
   function renderStats() {
@@ -162,15 +183,12 @@ if ("Notification" in window && Notification.permission === "default") {
   }
 
   function init() {
-  enablePWA();
-  renderStats();
-  renderPublicLink();
-  bindEvents();
-
-  setTimeout(() => {
-    window.ZAPushRegister?.register?.();
-  }, 1500);
-}
+    enablePWA();
+    renderStats();
+    renderPublicLink();
+    bindEvents();
+    showPushButton();
+  }
 
   return { init };
 })();
