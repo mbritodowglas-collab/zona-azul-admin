@@ -130,6 +130,7 @@
     return {
       nome: document.getElementById("nome")?.value || "",
       email: document.getElementById("email")?.value || "",
+whatsapp: document.getElementById("whatsapp")?.value || "",
       data_nascimento: dataNascimento,
       genero: document.getElementById("genero")?.value || "",
       cidade: document.getElementById("cidade")?.value || "",
