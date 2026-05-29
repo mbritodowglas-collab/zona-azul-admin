@@ -11,67 +11,71 @@ window.ZAPushRegister = (() => {
     return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
   }
 
+  function timeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Service Worker demorou demais")), ms)
+      )
+    ]);
+  }
+
   async function register() {
-    try {
-      if (!("serviceWorker" in navigator)) {
-        console.warn("[Push] Service Worker não suportado");
-        return;
-      }
-
-      if (!("PushManager" in window)) {
-        console.warn("[Push] Push não suportado");
-        return;
-      }
-
-      const permission = await Notification.requestPermission();
-
-      if (permission !== "granted") {
-        console.warn("[Push] Permissão negada");
-        return;
-      }
-
-      const registration = await navigator.serviceWorker.ready;
-
-      const subscription =
-        await registration.pushManager.getSubscription();
-
-      let sub = subscription;
-
-      if (!sub) {
-        sub = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey:
-            urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-        });
-      }
-
-      const json = sub.toJSON();
-
-      const client = window.ZASupabase?.getClient?.();
-
-      if (!client) {
-        console.error("[Push] Supabase indisponível");
-        return;
-      }
-
-      const { error } = await client
-        .from("push_subscriptions")
-        .upsert({
-          endpoint: json.endpoint,
-          p256dh: json.keys.p256dh,
-          auth: json.keys.auth,
-        });
-
-      if (error) {
-        console.error("[Push] Erro ao salvar:", error);
-        return;
-      }
-
-      console.log("[Push] Celular registrado com sucesso");
-      alert("Notificações do Trackion ativadas.");
-    } catch (err) {
-      console.error("[Push] Falha:", err);
+    if (!("serviceWorker" in navigator)) {
+      throw new Error("Service Worker não suportado.");
     }
+
+    if (!("PushManager" in window)) {
+      throw new Error("Push não suportado.");
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      throw new Error("Permissão de notificação não concedida.");
+    }
+
+    const registration = await navigator.serviceWorker.register("./sw.js", {
+      scope: "./",
+      updateViaCache: "none"
+    });
+
+    await registration.update().catch(() => null);
+
+    const readyRegistration = await timeout(navigator.serviceWorker.ready, 8000);
+
+    const oldSub = await readyRegistration.pushManager.getSubscription();
+
+    if (oldSub) {
+      await oldSub.unsubscribe().catch(() => null);
+    }
+
+    const sub = await readyRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+
+    const json = sub.toJSON();
+    const client = window.ZASupabase?.getClient?.();
+
+    if (!client) {
+      throw new Error("Supabase indisponível.");
+    }
+
+    const { error } = await client
+      .from("push_subscriptions")
+      .upsert({
+        endpoint: json.endpoint,
+        p256dh: json.keys.p256dh,
+        auth: json.keys.auth
+      });
+
+    if (error) {
+      throw new Error(error.message || "Erro ao salvar push.");
+    }
+
+    alert("Notificações do Trackion ativadas.");
+    return true;
   }
 
   return { register };
