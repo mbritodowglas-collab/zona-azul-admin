@@ -1,4 +1,4 @@
-const TRACKION_CACHE = "trackion-pwa-v4";
+const TRACKION_CACHE = "trackion-pwa-v5";
 
 const APP_SHELL = [
   "./",
@@ -15,6 +15,7 @@ const APP_SHELL = [
   "./assets/js/storage.js",
   "./assets/js/dashboard.js",
   "./assets/js/logout.js",
+  "./assets/js/push-register.js",
   "./assets/img/trackion-logo.png",
   "./assets/js/lead-watch.js",
   "./manifest.webmanifest"
@@ -38,6 +39,28 @@ self.addEventListener("activate", (event) => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener("push", (event) => {
+  const data = event.data?.json() ?? {};
+
+  event.waitUntil(
+    self.registration.showNotification(
+      data.title || "Trackion",
+      {
+        body: data.body || "Novo lead recebido!",
+        icon: "./assets/img/trackion-logo.png",
+        badge: "./assets/img/trackion-logo.png",
+        vibrate: [200, 100, 200],
+        requireInteraction: true,
+        tag: data.tag || "trackion-push",
+        renotify: true,
+        data: {
+          url: data.url || "./pre-diagnostico/"
+        }
+      }
+    )
+  );
 });
 
 self.addEventListener("message", async (event) => {
